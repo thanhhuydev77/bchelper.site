@@ -18,7 +18,7 @@
         <v-img v-bind="props" gradient="to top right, rgba(19,84,122,.5), rgba(128,208,199,.8)"></v-img>
       </template>
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>BC Configuration Helper</v-toolbar-title>
+      <v-toolbar-title @click="goToHome" style="cursor: pointer;">BC Configuration Helper</v-toolbar-title>
       
     </v-app-bar>
     <v-main>
@@ -67,6 +67,11 @@ export default {
       right: null,
     };
   },
+  methods: {
+    goToHome() {
+      this.$router.push('/');
+    }
+  }
 };
 </script>
 <style>
