@@ -49,7 +49,7 @@
 export default {
   data() {
     return {
-      profileImage: "/src/assets/avatar.jpg",
+      profileImage: "/avatar.jpg",
       socialLinks: {
         linkedin: "https://www.linkedin.com/in/alexha77/",
         facebook: "https://www.facebook.com/thanhhuydev"
