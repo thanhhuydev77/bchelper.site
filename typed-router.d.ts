@@ -19,7 +19,9 @@ declare module 'vue-router/auto-routes' {
    */
   export interface RouteNamedMap {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
+    '/BCAddInstance': RouteRecordInfo<'/BCAddInstance', '/BCAddInstance', Record<never, never>, Record<never, never>>,
     '/BCAddNewUser': RouteRecordInfo<'/BCAddNewUser', '/BCAddNewUser', Record<never, never>, Record<never, never>>,
+    '/BCBuildApiUrl': RouteRecordInfo<'/BCBuildApiUrl', '/BCBuildApiUrl', Record<never, never>, Record<never, never>>,
     '/BCChangeAuthType': RouteRecordInfo<'/BCChangeAuthType', '/BCChangeAuthType', Record<never, never>, Record<never, never>>,
     '/BCEnableDevMode': RouteRecordInfo<'/BCEnableDevMode', '/BCEnableDevMode', Record<never, never>, Record<never, never>>,
     '/BCEnableIntegration': RouteRecordInfo<'/BCEnableIntegration', '/BCEnableIntegration', Record<never, never>, Record<never, never>>,

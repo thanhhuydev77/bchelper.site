@@ -1,21 +1,23 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
-import Home from '../pages/index.vue'
-import BCEnableDevMode from '../pages/BCEnableDevMode.vue'
-import BCImportLicense from '../pages/BCImportLicense.vue'
-import BCAddNewUser from '../pages/BCAddNewUser.vue'
-import BCChangeAuthType from '../pages/BCChangeAuthType.vue'
 import BCAddInstance from '../pages/BCAddInstance.vue'
+import BCAddNewUser from '../pages/BCAddNewUser.vue'
+import BCBuildApiUrl from '../pages/BCBuildApiUrl.vue'
+import BCChangeAuthType from '../pages/BCChangeAuthType.vue'
+import BCEnableDevMode from '../pages/BCEnableDevMode.vue'
 import BCEnableIntegration from '../pages/BCEnableIntegration.vue'
+import BCImportLicense from '../pages/BCImportLicense.vue'
+import Home from '../pages/index.vue'
 //import { routes } from 'vue-router/auto-routes'
 
 const routes = [
   { path: '/', name: 'default', component: Home },
-  { path: '/BCEnableDevMode', name: 'BCEnableDevMode', component: BCEnableDevMode },
-  { path: '/BCImportLicense', name: 'BCImportLicense', component: BCImportLicense },
-  { path: '/BCAddNewUser', name: 'BCAddNewUser', component: BCAddNewUser },
-  { path: '/BCChangeAuthType', name: 'BCChangeAuthType', component: BCChangeAuthType },
   { path: '/BCAddInstance', name: 'BCAddInstance', component: BCAddInstance },
-  { path: '/BCEnableIntegration', name: 'BCEnableIntegration', component: BCEnableIntegration }
+  { path: '/BCAddNewUser', name: 'BCAddNewUser', component: BCAddNewUser },
+  { path: '/BCBuildApiUrl', name: 'BCBuildApiUrl', component: BCBuildApiUrl },
+  { path: '/BCChangeAuthType', name: 'BCChangeAuthType', component: BCChangeAuthType },
+  { path: '/BCEnableDevMode', name: 'BCEnableDevMode', component: BCEnableDevMode },
+  { path: '/BCEnableIntegration', name: 'BCEnableIntegration', component: BCEnableIntegration },
+  { path: '/BCImportLicense', name: 'BCImportLicense', component: BCImportLicense },
 ]
 
 const router = createRouter({

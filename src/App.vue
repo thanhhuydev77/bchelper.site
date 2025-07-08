@@ -1,7 +1,12 @@
 <template>
   <v-app id="inspire">
-    <v-navigation-drawer app v-model="drawer"  image="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
-    theme="dark" permanent>
+    <v-navigation-drawer
+      v-model="drawer"
+      app
+      image="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
+      theme="dark"
+      permanent
+    >
       <v-list-item>
         <v-list-item-content>
           <v-list-item-subtitle>
@@ -10,7 +15,14 @@
         </v-list-item-content>
       </v-list-item>
       <v-list dense nav>
-        <v-list-item v-for="item in items" :key="item.title" link :to="item.url" :prepend-icon="item.icon" :title="item.title" />
+        <v-list-item
+          v-for="item in items"
+          :key="item.title"
+          link
+          :prepend-icon="item.icon"
+          :to="item.url"
+          :title="item.title"
+        />
       </v-list>
     </v-navigation-drawer>
     <v-app-bar app prominent dark src="https://picsum.photos/1920/1080?random">
@@ -62,6 +74,11 @@ export default {
           title: "Add New User",
           icon: "mdi-account-plus",
           url: "BCAddNewUser",
+        },
+        {
+          title: "Build API URL",
+          icon: "mdi-link-variant",
+          url: "/BCBuildApiUrl",
         },
       ],
       right: null,
