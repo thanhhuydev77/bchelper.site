@@ -92,13 +92,13 @@ import { useClipboardCopy } from "@/composables/useClipboard";
 export default {
   data() {
     return {
-      baseUrl: "http://172.16.121.6",
-      apiPort: "7048",
-      apiGroup: "fpt",
-      apiPublisher: "fsoft",
+      baseUrl: "http://192.00.100.1",
+      apiPort: "7748",
+      apiGroup: "group",
+      apiPublisher: "publisher",
       apiVersion: "v1.0",
       entitySetName: "itemmasters",
-      instanceName: "JVL-LIVE",
+      instanceName: "UAT",
       companyId: "e3e063a7-5d79-ef11-a06b-00155d0a0105",
       generatedUrl: "",
     };
