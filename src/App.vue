@@ -4,8 +4,8 @@
       v-model="drawer"
       app
       image="https://cdn.vuetifyjs.com/images/backgrounds/bg-2.jpg"
+      :temporary="drawerType"
       theme="dark"
-      permanent
     >
       <v-list-item>
         <v-list-item-content>
@@ -20,18 +20,17 @@
           :key="item.title"
           link
           :prepend-icon="item.icon"
-          :to="item.url"
           :title="item.title"
+          :to="item.url"
         />
       </v-list>
     </v-navigation-drawer>
-    <v-app-bar app prominent dark src="https://picsum.photos/1920/1080?random">
+    <v-app-bar app dark prominent src="https://picsum.photos/1920/1080?random">
       <template v-slot:img="{ props }">
         <v-img v-bind="props" gradient="to top right, rgba(19,84,122,.5), rgba(128,208,199,.8)"></v-img>
       </template>
-      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title @click="goToHome" style="cursor: pointer;">BC Configuration Helper</v-toolbar-title>
-      
+      <v-app-bar-nav-icon style="cursor: pointer;" @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title @click="goToHome">BC Configuration Helper</v-toolbar-title>
     </v-app-bar>
     <v-main>
       <router-view></router-view>
@@ -41,7 +40,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       drawer: true,
       items: [
@@ -82,11 +81,31 @@ export default {
         },
       ],
       right: null,
+      isMobile: window.innerWidth < 960,
     };
   },
+  computed: {
+    drawerType () {
+      return this.isMobile ? 'temporary' : 'permanent';
+    }
+  },
+  mounted () {
+    window.addEventListener('resize', this.handleResize);
+  },
+  beforeUnmount () {
+    window.removeEventListener('resize', this.handleResize);
+  },
   methods: {
-    goToHome() {
+    goToHome () {
       this.$router.push('/');
+    },
+    handleResize () {
+      this.isMobile = window.innerWidth < 960;
+      if (this.isMobile) {
+        this.drawer = false;
+      } else {
+        this.drawer = true;
+      }
     }
   }
 };
@@ -94,5 +113,15 @@ export default {
 <style>
 html {
   overflow-y: auto;
+}
+
+/* Responsive global padding/margin for mobile */
+@media (max-width: 600px) {
+  .pa-2, .ma-0, .v-container {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
 }
 </style>
