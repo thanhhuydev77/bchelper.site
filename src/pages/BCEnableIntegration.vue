@@ -31,31 +31,31 @@
               <v-col cols="12" md="3">
                 <v-switch
                   v-model="ODataEnabled"
+                  color="primary"
                   label="OData Enable"
                   v-on:change="onChange($event)"
-                  color="primary"
                 ></v-switch>
               </v-col>
               <v-col cols="12" md="3">
                 <v-text-field
                   v-model="ODataPort"
-                  type="number"
+                  :disabled="!ODataEnabled"
                   label="OData Port"
                   placeholder="7048"
-                  v-on:change="onChange($event)"
                   solo
-                  :disabled="!ODataEnabled"
+                  type="number"
+                  v-on:change="onChange($event)"
                 ></v-text-field>
               </v-col>
               <v-col cols="12" md="6">
                 <v-text-field
                   v-model="ODataBaseLink"
-                  type="text"
+                  :disabled="!ODataEnabled"
                   label="OData Base Link"
                   placeholder="http://localhost:7048/BC230/ODataV4"
-                  v-on:change="onChange($event)"
                   solo
-                  :disabled="!ODataEnabled"
+                  type="text"
+                  v-on:change="onChange($event)"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -70,31 +70,20 @@
               <v-col cols="12" md="3">
                 <v-switch
                   v-model="APIEnabled"
+                  color="primary"
                   label="API Enable"
                   v-on:change="onChange($event)"
-                  color="primary"
                 ></v-switch>
               </v-col>
               <v-col cols="12" md="3">
                 <v-text-field
                   v-model="APIPort"
-                  type="number"
+                  :disabled="!APIEnabled"
                   label="API Port"
                   placeholder="7048"
-                  v-on:change="onChange($event)"
                   solo
-                  :disabled="!APIEnabled"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="APIBaseLink"
-                  type="text"
-                  label="API Base Link"
-                  placeholder="http://localhost:7048/BC230/api/v2.0"
+                  type="number"
                   v-on:change="onChange($event)"
-                  solo
-                  :disabled="!APIEnabled"
                 ></v-text-field>
               </v-col>
             </v-row>
@@ -103,13 +92,13 @@
       </v-row>
     </v-container>
     <v-textarea
-      label="Generated Script"
       v-model="GeneratedScript"
+      label="Generated Script"
       v-on:beforeMount="onLoad($event)"
     ></v-textarea>
     <v-btn
-      color="primary"
       id="CopyClipboardBtn"
+      color="primary"
       @click="copyToClipboard"
     >Copy</v-btn>
     <v-btn
@@ -142,7 +131,6 @@ export default {
       ODataBaseLink: "http://localhost:7048/BC230/ODataV4",
       APIEnabled: true,
       APIPort: 7048,
-      APIBaseLink: "http://localhost:7048/BC230/api/v2.0",
       GeneratedScript: "",
       GeneratedBATScript: ""
     }
@@ -155,7 +143,7 @@ export default {
       if (this.ODataEnabled) {
         Script2 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ODataServicesEnabled -KeyValue true;\n"
         Script2 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ODataServicesPort -KeyValue " + this.ODataPort + ";\n"
-        Script2 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ODataServicesUrl -KeyValue '" + this.ODataBaseLink + "';\n"
+        Script2 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName PublicODataBaseUrl -KeyValue '" + this.ODataBaseLink + "';\n"
       } else {
         Script2 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ODataServicesEnabled -KeyValue false;\n"
       }
@@ -164,7 +152,6 @@ export default {
       if (this.APIEnabled) {
         Script3 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ApiServicesEnabled -KeyValue true;\n"
         Script3 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ApiServicesPort -KeyValue " + this.APIPort + ";\n"
-        Script3 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ApiServicesUrl -KeyValue '" + this.APIBaseLink + "';\n"
       } else {
         Script3 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ApiServicesEnabled -KeyValue false;\n"
       }
