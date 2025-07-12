@@ -52,25 +52,14 @@
       label="Generated Script"
       v-model="GeneratedScript"
       v-on:beforeMount="onLoad($event)"
+      append-inner-icon="mdi-content-copy"
+      @click:append-inner="copyToClipboard"
     ></v-textarea>
-    <v-btn
-      color="primary"
-      id="CopyClipboardBtn"
-      @click="copyToClipboard"
-    >Copy</v-btn>
-    <v-btn
-      color="secondary"
-      style="margin-left: 20px;"
-      v-on:click="downloadFileAL"
-    >Download Batch File</v-btn>
+
     <br />
     <br />
     <label style="color: red;">
       <i>** With PowerShell, Need to be run by Admin priviledge.</i>
-    </label>
-    <br />
-    <label style="color: red;">
-      <i>** With BATCH file, right click and Choose RUN AS ADMINISTRATOR to run.</i>
     </label>
     <notifications group="foo" />
   </div>
@@ -127,14 +116,7 @@ export default {
         alert(result.message)
       }
     },
-    downloadFileAL() {
-      const blob = new Blob([this.GeneratedBATScript], { type: "application/txt" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = "ChangeAuthType.bat";
-      link.click();
-      URL.revokeObjectURL(link.href);
-    },
+
 
   },
   mounted() {

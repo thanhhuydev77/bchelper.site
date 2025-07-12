@@ -79,6 +79,11 @@ export default {
           icon: "mdi-link-variant",
           url: "/BCBuildApiUrl",
         },
+        {
+          title: "Database Backup/Restore",
+          icon: "mdi-database",
+          url: "/BCDatabaseBackup",
+        },
       ],
       right: null,
       isMobile: window.innerWidth < 960,
