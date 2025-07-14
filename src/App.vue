@@ -84,6 +84,11 @@ export default {
           icon: "mdi-database",
           url: "/BCDatabaseBackup",
         },
+        {
+          title: "CalcDate Simulator",
+          icon: "mdi-calendar-range",
+          url: "/calcdate",
+        },
       ],
       right: null,
       isMobile: window.innerWidth < 960,

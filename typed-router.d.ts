@@ -22,6 +22,7 @@ declare module 'vue-router/auto-routes' {
     '/BCAddInstance': RouteRecordInfo<'/BCAddInstance', '/BCAddInstance', Record<never, never>, Record<never, never>>,
     '/BCAddNewUser': RouteRecordInfo<'/BCAddNewUser', '/BCAddNewUser', Record<never, never>, Record<never, never>>,
     '/BCBuildApiUrl': RouteRecordInfo<'/BCBuildApiUrl', '/BCBuildApiUrl', Record<never, never>, Record<never, never>>,
+    '/BCCalcDate': RouteRecordInfo<'/BCCalcDate', '/BCCalcDate', Record<never, never>, Record<never, never>>,
     '/BCChangeAuthType': RouteRecordInfo<'/BCChangeAuthType', '/BCChangeAuthType', Record<never, never>, Record<never, never>>,
     '/BCDatabaseBackup': RouteRecordInfo<'/BCDatabaseBackup', '/BCDatabaseBackup', Record<never, never>, Record<never, never>>,
     '/BCEnableDevMode': RouteRecordInfo<'/BCEnableDevMode', '/BCEnableDevMode', Record<never, never>, Record<never, never>>,

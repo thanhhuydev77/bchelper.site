@@ -87,6 +87,7 @@ export default {
       Script2 += "Stop-NAVServerInstance -ServerInstance " + this.Instance + " -Force;\n"
       
       var Script3 = "Write-Host 'Updating server instance configuration...';\n"
+      Script3 += "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName ClientServicesCredentialType -KeyValue " + this.AuthType + ";\n"
       Script3 += "Set-NAVWebServerInstanceConfiguration -WebServerInstance " + this.WebServerInstance + " -KeyName ClientServicesCredentialType -KeyValue " + this.AuthType + ";\n"
       
       var Script4 = "Write-Host 'Starting server instance...';\n"

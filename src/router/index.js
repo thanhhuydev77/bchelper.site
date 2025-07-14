@@ -7,6 +7,7 @@ import BCEnableDevMode from '../pages/BCEnableDevMode.vue'
 import BCEnableIntegration from '../pages/BCEnableIntegration.vue'
 import BCImportLicense from '../pages/BCImportLicense.vue'
 import BCDatabaseBackup from '../pages/BCDatabaseBackup.vue'
+import BCCalcDate from '../pages/BCCalcDate.vue'
 import Home from '../pages/index.vue'
 //import { routes } from 'vue-router/auto-routes'
 
@@ -20,6 +21,7 @@ const routes = [
   { path: '/BCEnableIntegration', name: 'BCEnableIntegration', component: BCEnableIntegration },
   { path: '/BCImportLicense', name: 'BCImportLicense', component: BCImportLicense },
   { path: '/BCDatabaseBackup', name: 'BCDatabaseBackup', component: BCDatabaseBackup },
+  { path: '/calcdate', name: 'BCCalcDate', component: BCCalcDate },
 ]
 
 const router = createRouter({
