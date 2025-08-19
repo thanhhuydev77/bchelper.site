@@ -18,7 +18,7 @@
           </p>
           
           <!-- Social Media Links -->
-          <div class="social-links mb-8">
+          <!-- <div class="social-links mb-8"> -->
             <v-btn
               :href="socialLinks.linkedin"
               target="_blank"
@@ -26,19 +26,15 @@
               size="large"
               class="mr-4"
               prepend-icon="mdi-linkedin"
-            >
-              LinkedIn
-            </v-btn>
+            >LinkedIn</v-btn>
             <v-btn
               :href="socialLinks.facebook"
               target="_blank"
               color="primary"
               size="large"
               prepend-icon="mdi-facebook"
-            >
-              Facebook
-            </v-btn>
-          </div>
+            >Facebook</v-btn>
+          
         </v-col>
       </v-row>
     </v-container>

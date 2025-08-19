@@ -42,6 +42,7 @@
 export default {
   data () {
     return {
+      isMobile: window.innerWidth < window.innerHeight,
       drawer: true,
       items: [
         {
@@ -91,7 +92,6 @@ export default {
         },
       ],
       right: null,
-      isMobile: window.innerWidth < 960,
     };
   },
   computed: {
@@ -101,6 +101,7 @@ export default {
   },
   mounted () {
     window.addEventListener('resize', this.handleResize);
+    window.addEventListener('load',this.handleResize);
   },
   beforeUnmount () {
     window.removeEventListener('resize', this.handleResize);
@@ -110,13 +111,10 @@ export default {
       this.$router.push('/');
     },
     handleResize () {
-      this.isMobile = window.innerWidth < 960;
-      if (this.isMobile) {
-        this.drawer = false;
-      } else {
-        this.drawer = true;
-      }
-    }
+      this.isMobile = window.innerWidth < window.innerHeight;
+      // Keep drawer open by default on all screen sizes
+        this.drawer = !this.isMobile;
+      }   
   }
 };
 </script>
