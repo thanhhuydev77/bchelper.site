@@ -65,6 +65,18 @@ export default {
     }
   },
   methods: {
+    formatWithOriginLocale(date) {
+      try {
+        const formatter = new Intl.DateTimeFormat(navigator.language, {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit'
+        });
+        return formatter.format(date);
+      } catch (e) {
+        return date.toISOString().slice(0, 10);
+      }
+    },
     onFormulaInput(e) {
       this.dateFormula = e.target.value.toUpperCase();
       this.calculateResult();
@@ -92,7 +104,14 @@ export default {
         const end = this.calcDate(endExpr, dateStr);
         return `${start} .. ${end}`;
       }
-      let date = new Date(dateStr);
+      // Parse origin as local date to avoid timezone shifts
+      const [yStr, mStr, dStr] = (dateStr || '').split('-');
+      const y = Number(yStr);
+      const m = Number(mStr);
+      const d = Number(dStr);
+      let date = isFinite(y) && isFinite(m) && isFinite(d)
+        ? new Date(y, m - 1, d)
+        : new Date(dateStr);
       // Handle -CM/+CM/CM (first/last day of current month), -CQ/+CQ/CQ (first/last day of current quarter), -CY/+CY/CY (first/last day of current year)
       let specialMatch = formula.match(/^([+-]?)(CM|CQ|CY)/i);
       if (specialMatch) {
@@ -198,7 +217,7 @@ export default {
         }
       }
       if (!found && formula.trim() !== "") throw new Error("Invalid formula format.");
-      return date.toISOString().slice(0, 10);
+      return this.formatWithOriginLocale(date);
     }
   }
 };
