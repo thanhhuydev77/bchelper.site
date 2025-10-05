@@ -94,6 +94,12 @@
 
    
     },
+    watch: {
+      Version() {
+        this.Instance = "BC" + this.Version
+        this.generateScriptImportLicense()
+      }
+    },
     mounted() {
       this.generateScriptImportLicense()
     }

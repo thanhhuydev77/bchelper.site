@@ -98,6 +98,12 @@ export default {
 
 
   },
+  watch: {
+    Version() {
+      this.Instance = "BC" + this.Version
+      this.generateScript()
+    }
+  },
   mounted() {
     this.generateScript()
   }

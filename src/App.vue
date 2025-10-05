@@ -80,11 +80,17 @@ export default {
           icon: "mdi-link-variant",
           url: "/BCBuildApiUrl",
         },
+        
         {
           title: "Database Backup/Restore",
           icon: "mdi-database",
           url: "/BCDatabaseBackup",
         },
+        {
+          title: "Manage App (Publish/Install)",
+          icon: "mdi-package-variant",
+          url: "/BCManageApp",
+        }
       ],
       right: null,
     };
