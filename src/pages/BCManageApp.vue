@@ -1,168 +1,246 @@
 <template>
-  <div class="pa-2">
-    <v-container class="ma-0">
-      <v-row>
-        <v-col cols="12" md="3">
-          <v-combobox
-            v-model="Version"
-            label="Platform Version"
-            :items="['190', '200', '210', '220', '230', '240', '250', '260', '270', '280']"
-            v-on:blur="onChange($event)"
-            solo
-          ></v-combobox>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-text-field
-            v-model="Instance"
-            type="text"
-            label="Instance Name"
-            placeholder="BC260"
-            required
-            solo
-            v-on:change="onChange($event)"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-select
-            v-model="SelectedActions"
-            :items="Actions"
-            label="Actions"
-            multiple
-            chips
-            closable-chips
-            solo
-            v-on:change="onChange($event)"
-          ></v-select>
-        </v-col>
-      </v-row>
+  <v-container class="pa-4">
+    <v-row>
+      <v-col cols="12">
+        <h1 class="mb-4">Manage App</h1>
+        <v-card>
+          <v-card-text>
+            <v-form>
+              <!-- Basic Configuration -->
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    v-model="version"
+                    :items="versionOptions"
+                    label="Platform Version"
+                    outlined
+                    dense
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="instanceName"
+                    label="Instance Name"
+                    placeholder="BC260"
+                    outlined
+                    dense
+                  ></v-text-field>
+                </v-col>
+              </v-row>
 
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model="AppPath"
-            type="text"
-            label="App File Path (for Publish)"
-            placeholder="C:\\Apps\\YourApp.app"
-            :disabled="!requiresAppPath"
-            required
-            solo
-            v-on:change="onChange($event)"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model="AppName"
-            type="text"
-            label="App Name (for Install/Uninstall/Unpublish)"
-            placeholder="YourAppName"
-            :disabled="!requiresAppName"
-            required
-            solo
-            v-on:change="onChange($event)"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-container>
+              <v-row>
+                <v-col cols="12">
+                  <v-select
+                    v-model="selectedActions"
+                    :items="actionOptions"
+                    label="Actions"
+                    multiple
+                    chips
+                    closable-chips
+                    outlined
+                    dense
+                  ></v-select>
+                </v-col>
+              </v-row>
 
-    <v-textarea 
-      label="Generated Script" 
-      v-model="GeneratedScript"
-      v-on:beforeMount="onLoad($event)"
-      append-inner-icon="mdi-content-copy"
-      @click:append-inner="copyToClipboard"
-    ></v-textarea>
+              <!-- App Configuration -->
+              <v-divider class="my-4"></v-divider>
 
-    <br>
-    <br>
-    <label style="color: red;"><i>** With PowerShell, Need to be run by Admin priviledge.</i></label>
-    <notifications group="foo" />
-  </div>
+              <h3>App Configuration</h3>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="appPath"
+                    label="App File Path (for Publish)"
+                    placeholder="C:\\Apps\\YourApp.app"
+                    :disabled="!requiresAppPath"
+                    outlined
+                    dense
+                  ></v-text-field>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="appName"
+                    label="App Name (for Install/Uninstall/Unpublish)"
+                    placeholder="YourAppName"
+                    :disabled="!requiresAppName"
+                    outlined
+                    dense
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+
+              <!-- Generate Script -->
+              <v-row class="mt-4">
+                <v-col cols="12">
+                  <v-btn
+                    @click="toggleGenerateScript"
+                    color="primary"
+                    class="mr-2"
+                  >
+                    Generate Script
+                  </v-btn>
+                  <v-btn
+                    color="secondary"
+                    @click="copyScript"
+                    :disabled="!generatedScript"
+                  >
+                    Copy Script
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+
+            <v-divider class="my-4" v-if="generatedScript && showScript"></v-divider>
+
+            <div v-if="generatedScript && showScript">
+              <h3 class="mb-2">Generated PowerShell Script:</h3>
+              <v-card class="bg-grey-lighten-3 pa-4" color="surface">
+                <code class="text-caption">{{ generatedScript }}</code>
+              </v-card>
+              <v-alert type="warning" class="mt-4">
+                <strong>⚠️ Important:</strong>
+                <ul class="mt-2">
+                  <li>This script must be run with Admin privileges</li>
+                  <li>It will execute all selected actions in order</li>
+                  <li>Ensure the app file or app name is specified correctly</li>
+                </ul>
+              </v-alert>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
-<script>
-import { useClipboardCopy } from '@/composables/useClipboard'
 
+<script>
 export default {
+  name: 'BCManageApp',
   data() {
     return {
-      Version: 260,
-      Instance: 'BC260',
-      SelectedActions: ['Publish', 'Install'],
-      Actions: ['Publish', 'Unpublish', 'Install', 'Uninstall'],
-      AppPath: 'C\\Apps\\YourApp.app',
-      AppName: 'YourAppName',
-      GeneratedScript: '',
-      GeneratedBATScript: ''
+      version: '260',
+      instanceName: 'BC260',
+      selectedActions: ['Publish', 'Install'],
+      appPath: 'C:\\Apps\\YourApp.app',
+      appName: 'YourAppName',
+      showScript: false,
+      generatedScript: '',
+      versionOptions: [
+        { title: '190', value: '190' },
+        { title: '200', value: '200' },
+        { title: '210', value: '210' },
+        { title: '220', value: '220' },
+        { title: '230', value: '230' },
+        { title: '240', value: '240' },
+        { title: '250', value: '250' },
+        { title: '260', value: '260' },
+        { title: '270', value: '270' },
+        { title: '280', value: '280' }
+      ],
+      actionOptions: [
+        { title: 'Publish', value: 'Publish' },
+        { title: 'Unpublish', value: 'Unpublish' },
+        { title: 'Install', value: 'Install' },
+        { title: 'Uninstall', value: 'Uninstall' }
+      ]
     }
   },
   computed: {
     requiresAppPath() {
-      return this.SelectedActions.includes('Publish')
+      return this.selectedActions.includes('Publish')
     },
     requiresAppName() {
-      return this.SelectedActions.some(a => a === 'Unpublish' || a === 'Install' || a === 'Uninstall')
+      return this.selectedActions.some(a => a === 'Unpublish' || a === 'Install' || a === 'Uninstall')
     }
   },
   methods: {
-    generateScriptManageApp() {
-      var Script1 = "Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\" + this.Version + "\\Service\\NavAdminTool.ps1'|Out-Null;\n"
-
-      var Script2 = ''
-      for (const action of this.SelectedActions) {
+    toggleGenerateScript() {
+      if (!this.generatedScript) {
+        this.generateScript()
+      }
+      this.showScript = !this.showScript
+    },
+    generateScript() {
+      const versionPath = this.version.slice(0, -1) + '.' + this.version.slice(-1)
+      let script = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;\n`
+      
+      for (let i = 0; i < this.selectedActions.length; i++) {
+        const action = this.selectedActions[i]
         if (action === 'Publish') {
-          const sanitizedPath = (this.AppPath || '').replaceAll('"','')
-          Script2 += "Publish-NAVApp -ServerInstance '" + this.Instance + "' -Path '" + sanitizedPath + "' -SkipVerification;\n"
+          const sanitizedPath = (this.appPath || '').replaceAll('"', '')
+          script += `Publish-NAVApp -ServerInstance '${this.instanceName}' -Path '${sanitizedPath}' -SkipVerification;\n`
         }
         if (action === 'Unpublish') {
-          Script2 += "Unpublish-NAVApp -ServerInstance '" + this.Instance + "' -Name '" + (this.AppName || '') + "';\n"
+          script += `Unpublish-NAVApp -ServerInstance '${this.instanceName}' -Name '${this.appName || ''}';\n`
         }
         if (action === 'Install') {
-          Script2 += "Install-NAVApp -ServerInstance '" + this.Instance + "' -Name '" + (this.AppName || '') + "';\n"
+          // Add Sync-NAVApp before Install if Publish is also selected
+          if (this.selectedActions.includes('Publish')) {
+            script += `Sync-NAVApp -ServerInstance '${this.instanceName}' -Name '${this.appName || ''}' -Mode ForceSync;\n`
+          }
+          script += `Install-NAVApp -ServerInstance '${this.instanceName}' -Name '${this.appName || ''}';\n`
         }
         if (action === 'Uninstall') {
-          Script2 += "Uninstall-NAVApp -ServerInstance '" + this.Instance + "' -Name '" + (this.AppName || '') + "';\n"
+          script += `Uninstall-NAVApp -ServerInstance '${this.instanceName}' -Name '${this.appName || ''}';\n`
         }
       }
 
-      this.GeneratedScript = Script1 + Script2
-
-      var BATPrefix = 'powershell -Command "& { '
-      var BATSuffix = " } set /p=All Done.;pause"
-      this.GeneratedBATScript = BATPrefix + Script1 + Script2 + BATSuffix
+      this.generatedScript = script
     },
-    onChange() {
-      this.generateScriptManageApp()
-    },
-    onLoad() {
-      this.generateScriptManageApp()
-    },
-    async copyToClipboard() {
-      const { copyToClipboard } = useClipboardCopy()
-      const result = await copyToClipboard(this.GeneratedScript)
-      if (result.success) {
-        alert(result.message)
-      } else {
-        alert(result.message)
+    copyScript() {
+      if (this.generatedScript) {
+        navigator.clipboard.writeText(this.generatedScript).then(() => {
+          this.$notify({
+            group: 'foo',
+            title: 'Success',
+            text: 'Script copied to clipboard!',
+            type: 'success'
+          })
+        }).catch(() => {
+          this.$notify({
+            group: 'foo',
+            title: 'Error',
+            text: 'Failed to copy script',
+            type: 'error'
+          })
+        })
       }
-    },
+    }
   },
   watch: {
-    SelectedActions: {
-      handler() { this.generateScriptManageApp() },
+    selectedActions: {
+      handler() {
+        this.generateScript()
+      },
       deep: true
     },
-    AppPath() { this.generateScriptManageApp() },
-    AppName() { this.generateScriptManageApp() },
-    Instance() { this.generateScriptManageApp() },
-    Version() {
-      this.Instance = 'BC' + this.Version
-      this.generateScriptManageApp()
+    appPath() {
+      this.generateScript()
+    },
+    appName() {
+      this.generateScript()
+    },
+    instanceName() {
+      this.generateScript()
+    },
+    version() {
+      this.instanceName = 'BC' + this.version
+      this.generateScript()
     }
   },
   mounted() {
-    this.generateScriptManageApp()
+    this.generateScript()
   }
 }
 </script>
+
+<style scoped>
+code {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+</style>
 
 
 

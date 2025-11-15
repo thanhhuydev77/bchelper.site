@@ -8,6 +8,7 @@ import BCEnableIntegration from '../pages/BCEnableIntegration.vue'
 import BCImportLicense from '../pages/BCImportLicense.vue'
 import BCManageApp from '../pages/BCManageApp.vue'
 import BCDatabaseBackup from '../pages/BCDatabaseBackup.vue'
+import BCCreateDocker from '../pages/BCCreateDocker.vue'
 import Home from '../pages/index.vue'
 //import { routes } from 'vue-router/auto-routes'
 
@@ -22,6 +23,7 @@ const routes = [
   { path: '/BCImportLicense', name: 'BCImportLicense', component: BCImportLicense },
   { path: '/BCManageApp', name: 'BCManageApp', component: BCManageApp },
   { path: '/BCDatabaseBackup', name: 'BCDatabaseBackup', component: BCDatabaseBackup },
+  { path: '/BCCreateDocker', name: 'BCCreateDocker', component: BCCreateDocker },
 ]
 
 const router = createRouter({

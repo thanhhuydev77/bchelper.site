@@ -10,7 +10,7 @@
       <v-list-item>
         <v-list-item-content>
           <v-list-item-subtitle>
-            <strong>On-Premise</strong>
+            <strong>I want to </strong>
           </v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
@@ -18,10 +18,9 @@
         <v-list-item
           v-for="item in items"
           :key="item.title"
-          link
+          :to="item.url"
           :prepend-icon="item.icon"
           :title="item.title"
-          :to="item.url"
         />
       </v-list>
     </v-navigation-drawer>
@@ -53,34 +52,33 @@ export default {
         {
           title: "Apply License",
           icon: "mdi-license",
-          url: "BCImportLicense",
+          url: "/BCImportLicense",
         },
         {
           title: "Enable Integration",
           icon: "mdi-api",
-          url: "BCEnableIntegration",
+          url: "/BCEnableIntegration",
         },
         {
           title: "Change Authentication Type",
           icon: "mdi-account-convert",
-          url: "BCChangeAuthType",
+          url: "/BCChangeAuthType",
         },
         {
           title: "Add BC Instance",
           icon: "mdi-plus-circle",
-          url: "BCAddInstance",
+          url: "/BCAddInstance",
         },
         {
           title: "Add New User",
           icon: "mdi-account-plus",
-          url: "BCAddNewUser",
+          url: "/BCAddNewUser",
         },
         {
           title: "Build API URL",
           icon: "mdi-link-variant",
           url: "/BCBuildApiUrl",
         },
-        
         {
           title: "Database Backup/Restore",
           icon: "mdi-database",
@@ -90,7 +88,12 @@ export default {
           title: "Manage App (Publish/Install)",
           icon: "mdi-package-variant",
           url: "/BCManageApp",
-        }
+        },
+        {
+          title: "Create Docker BC",
+          icon: "mdi-docker",
+          url: "/BCCreateDocker",
+        },
       ],
       right: null,
     };

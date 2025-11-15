@@ -1,184 +1,250 @@
 <template>
-  <div class="pa-2">
-    <v-container class="ma-0">
-      <v-row>
-        <v-col cols="12" md="3">
-          <v-combobox
-            v-model="Version"
-            label="Platform Version"
-            :items="['190', '200', '210', '220', '230', '240', '250', '260', '270', '280']"
-            v-on:blur="onChange($event)" 
-            solo
-          ></v-combobox>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-text-field
-            v-model="Instance"
-            type="text"
-            label="Instance Name"
-            placeholder="BC230"
-            required
-            solo
-            v-on:change="onChange($event)"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-combobox
-            v-model="AuthType"
-            label="Authentication Type"
-            :items="['Windows', 'NavUserPassword']"
-            v-on:change="onChange($event)"
-            v-on:blur="onChange($event)"
-            solo
-          ></v-combobox>
-        </v-col>
-      </v-row>
-      <v-row v-if="AuthType === 'NavUserPassword'">
-        <v-col cols="12">
-          <v-card class="pa-4" variant="outlined">
-            <v-card-title class="text-h6">NAV User Info</v-card-title>
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="Username"
-                  type="text"
-                  label="Username"
-                  placeholder="admin"
-                  required
-                  solo
-                  v-on:change="onChange($event)"
-                ></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="Password"
-                  type="password"
-                  label="Password"
-                  placeholder="Abc@12345"
-                  v-on:change="onChange($event)"
-                  solo
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="AuthType === 'Windows'">
-        <v-col cols="12">
-          <v-card class="pa-4" variant="outlined">
-            <v-card-title class="text-h6">Windows User Info</v-card-title>
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="WindowsAccount"
-                  type="text"
-                  label="Windows Account (Domain\\Username)"
-                  placeholder="huyht7"
-                  v-on:change="onChange($event)"
-                  solo
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row>
-        <v-col cols="12" md="6">
-          <v-combobox
-            v-model="PermissionSet"
-            label="Permission Set"
-            :items="['SUPER', 'BASIC', 'DEVELOPER', 'FULL', 'READ', 'SECURITY']"
-            v-on:change="onChange($event)"
-            v-on:blur="onChange($event)"
-            solo
-          ></v-combobox>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-textarea
-      label="Generated Script"
-      v-model="GeneratedScript"
-      v-on:beforeMount="onLoad($event)"
-      append-inner-icon="mdi-content-copy"
-      @click:append-inner="copyToClipboard"
-    ></v-textarea>
+  <v-container class="pa-4">
+    <v-row>
+      <v-col cols="12">
+        <h1 class="mb-4">Add New User</h1>
+        <v-card>
+          <v-card-text>
+            <v-form>
+              <!-- Basic Configuration -->
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    v-model="version"
+                    :items="versionOptions"
+                    label="Platform Version"
+                    outlined
+                    dense
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="instanceName"
+                    label="Instance Name"
+                    placeholder="e.g., BC230"
+                    outlined
+                    dense
+                  ></v-text-field>
+                </v-col>
+              </v-row>
 
-    <br />
-    <br />
-    <label style="color: red;">
-      <i>** With PowerShell, Need to be run by Admin priviledge.</i>
-    </label>
-    <notifications group="foo" />
-  </div>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    v-model="authType"
+                    :items="authTypeOptions"
+                    label="Authentication Type"
+                    outlined
+                    dense
+                  ></v-select>
+                </v-col>
+              </v-row>
+
+              <!-- NAV User Configuration (NavUserPassword) -->
+              <v-divider class="my-4" v-if="authType === 'NavUserPassword'"></v-divider>
+
+              <div v-if="authType === 'NavUserPassword'">
+                <h3>NAV User Credentials</h3>
+                <v-row>
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="username"
+                      label="Username"
+                      placeholder="admin"
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="password"
+                      label="Password"
+                      type="password"
+                      placeholder="Abc@12345"
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </div>
+
+              <!-- Windows User Configuration (Windows) -->
+              <v-divider class="my-4" v-if="authType === 'Windows'"></v-divider>
+
+              <div v-if="authType === 'Windows'">
+                <h3>Windows User Account</h3>
+                <v-row>
+                  <v-col cols="12" sm="6">
+                    <v-text-field
+                      v-model="windowsAccount"
+                      label="Windows Account (Domain\\Username)"
+                      placeholder="DOMAIN\\username"
+                      outlined
+                      dense
+                    ></v-text-field>
+                  </v-col>
+                </v-row>
+              </div>
+
+              <!-- Permission Set -->
+              <v-divider class="my-4"></v-divider>
+
+              <h3>Permissions</h3>
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    v-model="permissionSet"
+                    :items="permissionSetOptions"
+                    label="Permission Set"
+                    outlined
+                    dense
+                  ></v-select>
+                </v-col>
+              </v-row>
+
+              <!-- Generate Script -->
+              <v-row class="mt-4">
+                <v-col cols="12">
+                  <v-btn
+                    @click="toggleGenerateScript"
+                    color="primary"
+                    class="mr-2"
+                  >
+                    Generate Script
+                  </v-btn>
+                  <v-btn
+                    color="secondary"
+                    @click="copyScript"
+                    :disabled="!generatedScript"
+                  >
+                    Copy Script
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+
+            <v-divider class="my-4" v-if="generatedScript && showScript"></v-divider>
+
+            <div v-if="generatedScript && showScript">
+              <h3 class="mb-2">Generated PowerShell Script:</h3>
+              <v-card class="bg-grey-lighten-3 pa-4" color="surface">
+                <code class="text-caption">{{ generatedScript }}</code>
+              </v-card>
+              <v-alert type="warning" class="mt-4">
+                <strong>⚠️ Important:</strong>
+                <ul class="mt-2">
+                  <li>This script must be run with Admin privileges</li>
+                  <li>It will create a new user in the BC instance</li>
+                  <li>User will be granted the specified permission set</li>
+                </ul>
+              </v-alert>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
-  <script>
-import { useClipboardCopy } from '@/composables/useClipboard'
-
+<script>
 export default {
+  name: 'BCAddNewUser',
   data() {
     return {
-      Version: 230,
-      Instance: "BC230",
-      AuthType: "NavUserPassword",
-      Username: "admin",
-      Password: "",
-      PermissionSet: "SUPER",
-      WindowsAccount: "huyht7",
-      GeneratedScript: "",
-      GeneratedBATScript: ""
+      version: '230',
+      instanceName: 'BC230',
+      authType: 'NavUserPassword',
+      username: 'admin',
+      password: '',
+      windowsAccount: '',
+      permissionSet: 'SUPER',
+      showScript: false,
+      generatedScript: '',
+      versionOptions: [
+        { title: '190', value: '190' },
+        { title: '200', value: '200' },
+        { title: '210', value: '210' },
+        { title: '220', value: '220' },
+        { title: '230', value: '230' },
+        { title: '240', value: '240' },
+        { title: '250', value: '250' },
+        { title: '260', value: '260' },
+        { title: '270', value: '270' },
+        { title: '280', value: '280' }
+      ],
+      authTypeOptions: [
+        { title: 'Windows', value: 'Windows' },
+        { title: 'NavUserPassword', value: 'NavUserPassword' }
+      ],
+      permissionSetOptions: [
+        { title: 'SUPER', value: 'SUPER' },
+        { title: 'BASIC', value: 'BASIC' },
+        { title: 'DEVELOPER', value: 'DEVELOPER' },
+        { title: 'FULL', value: 'FULL' },
+        { title: 'READ', value: 'READ' },
+        { title: 'SECURITY', value: 'SECURITY' }
+      ]
     }
   },
   methods: {
+    toggleGenerateScript() {
+      if (!this.generatedScript) {
+        this.generateScript()
+      }
+      this.showScript = !this.showScript
+    },
     generateScript() {
-      var Script1 = "Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\" + this.Version + "\\Service\\NavAdminTool.ps1'|Out-Null;\n"
+      const versionPath = this.version.slice(0, -1) + '.' + this.version.slice(-1)
+      let script = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;\n`
       
-      var Script2 = ""
-      if (this.AuthType === "NavUserPassword") {
-        Script2 += "$user = \"" + this.Username + "\"\n"
-        Script2 += "$password = ConvertTo-SecureString \"" + this.Password + "\" -AsPlainText -Force\n"
-        Script2 += "New-NAVServerUser -ServerInstance " + this.Instance + " -UserName $user -Password $password\n"
-        Script2 += "New-NAVServerUserPermissionSet -ServerInstance " + this.Instance + " -PermissionSetId \"" + this.PermissionSet + "\" -UserName $user\n"
-      } else if (this.AuthType === "Windows") {
-        Script2 += "New-NAVServerUser -ServerInstance " + this.Instance + " -WindowsAccount " + this.WindowsAccount + "\n"
-        Script2 += "New-NAVServerUserPermissionSet -PermissionSetId " + this.PermissionSet + " -ServerInstance " + this.Instance + " -WindowsAccount " + this.WindowsAccount + "\n"
+      if (this.authType === 'NavUserPassword') {
+        script += `$user = "${this.username}"\n`
+        script += `$password = ConvertTo-SecureString "${this.password}" -AsPlainText -Force\n`
+        script += `New-NAVServerUser -ServerInstance ${this.instanceName} -UserName $user -Password $password\n`
+        script += `New-NAVServerUserPermissionSet -ServerInstance ${this.instanceName} -PermissionSetId "${this.permissionSet}" -UserName $user\n`
+      } else if (this.authType === 'Windows') {
+        script += `New-NAVServerUser -ServerInstance ${this.instanceName} -WindowsAccount ${this.windowsAccount}\n`
+        script += `New-NAVServerUserPermissionSet -PermissionSetId ${this.permissionSet} -ServerInstance ${this.instanceName} -WindowsAccount ${this.windowsAccount}\n`
       }
       
-      var Script3 = "Write-Host 'User created successfully!';\n"
+      script += `Write-Host 'User created successfully!';\n`
 
-      this.GeneratedScript = Script1 + Script2 + Script3
-
-      var BATPrefix = 'powershell -Command "& {'
-      var BATSuffix = '} set /p=All Done.;pause'
-      this.GeneratedBATScript = BATPrefix + Script1 + Script2 + Script3 + BATSuffix
+      this.generatedScript = script
     },
-    onChange() {
-      this.generateScript()
-    },
-    onLoad() {
-      this.generateScript()
-    },
-    async copyToClipboard() {
-      const { copyToClipboard } = useClipboardCopy()
-      const result = await copyToClipboard(this.GeneratedScript)
-      
-      if (result.success) {
-        alert(result.message)
-      } else {
-        alert(result.message)
+    copyScript() {
+      if (this.generatedScript) {
+        navigator.clipboard.writeText(this.generatedScript).then(() => {
+          this.$notify({
+            group: 'foo',
+            title: 'Success',
+            text: 'Script copied to clipboard!',
+            type: 'success'
+          })
+        }).catch(() => {
+          this.$notify({
+            group: 'foo',
+            title: 'Error',
+            text: 'Failed to copy script',
+            type: 'error'
+          })
+        })
       }
-    },
-
-
+    }
   },
   watch: {
-    Version() {
-      this.Instance = "BC" + this.Version
+    version(newVal) {
+      this.instanceName = `BC${newVal}`
       this.generateScript()
     }
   },
   mounted() {
     this.generateScript()
   }
-
 }
 </script>
+
+<style scoped>
+code {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+</style>

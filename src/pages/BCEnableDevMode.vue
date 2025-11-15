@@ -1,112 +1,171 @@
 <template>
-  <div class="pa-2">
-    <v-container class="ma-0">
-      <v-row>
-        <v-col cols="12" md="3">
-          <v-combobox
-            v-model="Version"
-            label="Platform Version"
-            :items="['190', '200', '210', '220', '230', '240', '250', '260', '270', '280']"
-            v-on:blur="onChange($event)" 
-            solo
-          ></v-combobox>
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-text-field
-            v-model="Instance"
-            type="text"
-            label="Instance Name"
-            placeholder="BC230"
-            required
-            solo
-            v-on:change="onChange($event)"
-          ></v-text-field>
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model="BaseUrl"
-            type="text"
-            label="Default Web Url"
-            placeholder="Http://localhost:8080/BC230"
-            v-on:change="onChange($event)"
-            solo
-            required
-            @afterRender="onChange($event)"
-          ></v-text-field>
-        </v-col>
-      </v-row>
-    </v-container>
-    <v-textarea
-      label="Generated Script"
-      v-model="GeneratedScript"
-      v-on:beforeMount="onLoad($event)"
-      append-inner-icon="mdi-content-copy"
-      @click:append-inner="copyToClipboard"
-    ></v-textarea>
+  <v-container class="pa-4">
+    <v-row>
+      <v-col cols="12">
+        <h1 class="mb-4">Enable Development Mode</h1>
+        <v-card>
+          <v-card-text>
+            <v-form @submit.prevent="generateScript">
+              <v-row>
+                <v-col cols="12" sm="6">
+                  <v-select
+                    v-model="version"
+                    :items="versionOptions"
+                    label="Platform Version"
+                    outlined
+                    dense
+                  ></v-select>
+                </v-col>
+                <v-col cols="12" sm="6">
+                  <v-text-field
+                    v-model="instanceName"
+                    label="Instance Name"
+                    placeholder="e.g., BC230"
+                    outlined
+                    dense
+                    @input="updateInstance"
+                  ></v-text-field>
+                </v-col>
+              </v-row>
 
-    <br />
-    <br />
-    <label style="color: red;">
-      <i>** With PowerShell, Need to be run by Admin priviledge.</i>
-    </label>
-    <notifications group="foo" />
-  </div>
+              <v-row>
+                <v-col cols="12">
+                  <v-text-field
+                    v-model="baseUrl"
+                    label="Default Web URL"
+                    placeholder="e.g., http://localhost:8080/BC230"
+                    outlined
+                    dense
+                  ></v-text-field>
+                </v-col>
+              </v-row>
+
+              <v-row>
+                <v-col cols="12">
+                  <v-btn
+                    @click="toggleGenerateScript"
+                    color="primary"
+                    class="mr-2"
+                  >
+                    Generate Script
+                  </v-btn>
+                  <v-btn
+                    color="secondary"
+                    @click="copyScript"
+                    :disabled="!generatedScript"
+                  >
+                    Copy Script
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-form>
+
+            <v-divider class="my-4" v-if="generatedScript && showScript"></v-divider>
+
+            <div v-if="generatedScript && showScript">
+              <h3 class="mb-2">Generated PowerShell Script:</h3>
+              <v-card class="bg-grey-lighten-3 pa-4" color="surface">
+                <code class="text-caption">{{ generatedScript }}</code>
+              </v-card>
+              <v-alert type="warning" class="mt-4">
+                <strong>⚠️ Important:</strong>
+                <ul class="mt-2">
+                  <li>This script must be run with Admin privileges</li>
+                  <li>It will enable debugging and developer services on your BC instance</li>
+                  <li>The instance will be restarted automatically</li>
+                </ul>
+              </v-alert>
+            </div>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
-  <script>
-import { useClipboardCopy } from '@/composables/useClipboard'
 
+<script>
 export default {
+  name: 'BCEnableDevMode',
   data() {
     return {
-      Version: 230,
-      Instance: "BC230",
-      BaseUrl: "http://localhost:8080/BC230",
-      GeneratedScript: "",
-      GeneratedBATScript: ""
+      version: '230',
+      instanceName: 'BC230',
+      baseUrl: 'http://localhost:8080/BC230',
+      showScript: false,
+      versionOptions: [
+        { title: '190', value: '190' },
+        { title: '200', value: '200' },
+        { title: '210', value: '210' },
+        { title: '220', value: '220' },
+        { title: '230', value: '230' },
+        { title: '240', value: '240' },
+        { title: '250', value: '250' },
+        { title: '260', value: '260' },
+        { title: '270', value: '270' },
+        { title: '280', value: '280' },
+      ],
+      generatedScript: '',
     }
   },
   methods: {
+    toggleGenerateScript() {
+      if (!this.generatedScript) {
+        this.generateScript();
+      }
+      this.showScript = !this.showScript;
+    },
     generateScript() {
-      var Script1 = "Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\" + this.Version + "\\Service\\NavAdminTool.ps1'|Out-Null;\n"
-      var Script2 = 'Set-NAVServerConfiguration -ServerInstance ' + this.Instance + ' -KeyName PublicWebBaseUrl -KeyValue ' + this.BaseUrl + ';\n'
-      var Script3 = "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName EnableDebugging -KeyValue true;\n"
-      var Script4 = "Set-NAVServerConfiguration -ServerInstance " + this.Instance + " -KeyName DeveloperServicesEnabled -KeyValue true;\n"
-      var Script5 = "Write-Host 'Restarting Service...';\nRestart-NAVServerInstance -ServerInstance " + this.Instance 
-
-      this.GeneratedScript = Script1 + Script2 + Script3 + Script4 + Script5
-
-      var BATPrefix = 'powershell -Command "& {'
-      var BATSuffix = '} set /p=All Done.;pause'
-      this.GeneratedBATScript = BATPrefix + Script1 + Script2 + Script3 + Script4 + Script5 + BATSuffix
-    },
-    onChange() {
-      this.generateScript()
-    },
-    onLoad() {
-      this.generateScript()
-    },
-    async copyToClipboard() {
-      const { copyToClipboard } = useClipboardCopy()
-      const result = await copyToClipboard(this.GeneratedScript)
+      // Convert version like "230" to "23.0" format for path
+      const versionPath = this.version.slice(0, -1) + '.' + this.version.slice(-1);
       
-      if (result.success) {
-        alert(result.message)
-      } else {
-        alert(result.message)
+      const script1 = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;`;
+      const script2 = `Set-NAVServerConfiguration -ServerInstance ${this.instanceName} -KeyName PublicWebBaseUrl -KeyValue ${this.baseUrl};`;
+      const script3 = `Set-NAVServerConfiguration -ServerInstance ${this.instanceName} -KeyName EnableDebugging -KeyValue true;`;
+      const script4 = `Set-NAVServerConfiguration -ServerInstance ${this.instanceName} -KeyName DeveloperServicesEnabled -KeyValue true;`;
+      const script5 = `Write-Host 'Restarting Service...';`;
+      const script6 = `Restart-NAVServerInstance -ServerInstance ${this.instanceName}`;
+
+      this.generatedScript = `${script1}\n${script2}\n${script3}\n${script4}\n${script5}\n${script6}`;
+    },
+    updateInstance() {
+      this.baseUrl = `http://localhost:8080/${this.instanceName}`;
+    },
+    copyScript() {
+      if (this.generatedScript) {
+        navigator.clipboard.writeText(this.generatedScript).then(() => {
+          this.$notify({
+            group: 'foo',
+            title: 'Success',
+            text: 'Script copied to clipboard!',
+            type: 'success',
+          });
+        }).catch(() => {
+          this.$notify({
+            group: 'foo',
+            title: 'Error',
+            text: 'Failed to copy script',
+            type: 'error',
+          });
+        });
       }
     },
-
-
   },
   watch: {
-    Version() {
-      this.Instance = "BC" + this.Version
-      this.generateScript()
+    version(newVal) {
+      this.instanceName = `BC${newVal}`;
+      this.baseUrl = `http://localhost:8080/BC${newVal}`;
+      this.generateScript();
     }
   },
   mounted() {
-    this.generateScript()
+    this.generateScript();
   }
-
 }
 </script>
+
+<style scoped>
+code {
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+</style>
