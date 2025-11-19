@@ -233,8 +233,27 @@ export default {
       this.odataBaseLink = `http://localhost:${this.odataPort}/${this.instanceName}/ODataV4`;
       this.generateScript();
     },
+    odataEnabled() {
+      this.generateScript();
+    },
     odataPort(newVal) {
       this.odataBaseLink = `http://localhost:${newVal}/${this.instanceName}/ODataV4`;
+      this.generateScript();
+    },
+    odataBaseLink() {
+      this.generateScript();
+    },
+    apiEnabled() {
+      this.generateScript();
+    },
+    apiPort() {
+      this.generateScript();
+    },
+    apiBaseLink() {
+      this.generateScript();
+    },
+    instanceName() {
+      this.generateScript();
     }
   },
   mounted() {

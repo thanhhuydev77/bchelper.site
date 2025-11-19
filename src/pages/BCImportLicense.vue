@@ -117,11 +117,11 @@ export default {
     generateScript() {
       const versionPath = this.version;
       let script = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;\n`;
-      const script2 = `Import-NAVServerLicense -ServerInstance ${this.instance} -LicenseFile "${this.licensePath}";`;
-      const script3 = `Write-Host 'Restarting Service...';`;
-      const script4 = `Restart-NAVServerInstance -ServerInstance ${this.instance}`;
+      script += `Import-NAVServerLicense -ServerInstance ${this.instance} -LicenseFile "${this.licensePath}";\n`;
+      script += `Write-Host 'Restarting Service...';\n`;
+      script += `Restart-NAVServerInstance -ServerInstance ${this.instance}`;
 
-      this.generatedScript = `${script1}\n${script2}\n${script3}\n${script4}`;
+      this.generatedScript = script;
     },
     updateInstance() {
       // Auto-update when instance name changes
@@ -149,6 +149,12 @@ export default {
   watch: {
     version(newVal) {
       this.instance = `BC${newVal}`;
+      this.generateScript();
+    },
+    instance() {
+      this.generateScript();
+    },
+    licensePath() {
       this.generateScript();
     }
   },

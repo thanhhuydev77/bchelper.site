@@ -234,6 +234,24 @@ export default {
     version(newVal) {
       this.instanceName = `BC${newVal}`
       this.generateScript()
+    },
+    instanceName() {
+      this.generateScript()
+    },
+    authType() {
+      this.generateScript()
+    },
+    username() {
+      this.generateScript()
+    },
+    password() {
+      this.generateScript()
+    },
+    windowsAccount() {
+      this.generateScript()
+    },
+    permissionSet() {
+      this.generateScript()
     }
   },
   mounted() {

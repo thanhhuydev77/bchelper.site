@@ -286,6 +286,39 @@ export default {
       this.webServerInstance = `BC${newVal}`
       this.databaseName = `BC${newVal}`
       this.generateScript()
+    },
+    instanceName() {
+      this.generateScript()
+    },
+    authType() {
+      this.generateScript()
+    },
+    webServerInstance() {
+      this.generateScript()
+    },
+    managementServicesPort() {
+      this.generateScript()
+    },
+    clientServicesPort() {
+      this.generateScript()
+    },
+    soapServicesPort() {
+      this.generateScript()
+    },
+    odataServicesPort() {
+      this.generateScript()
+    },
+    developerServicesPort() {
+      this.generateScript()
+    },
+    databaseServer() {
+      this.generateScript()
+    },
+    databaseName() {
+      this.generateScript()
+    },
+    addFirewallException() {
+      this.generateScript()
     }
   },
   mounted() {

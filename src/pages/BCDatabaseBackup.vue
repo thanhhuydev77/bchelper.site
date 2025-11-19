@@ -193,6 +193,21 @@ export default {
   watch: {
     operationType() {
       this.generateScript()
+    },
+    serverInstance() {
+      this.generateScript()
+    },
+    databaseName() {
+      this.generateScript()
+    },
+    backupFilePath() {
+      this.generateScript()
+    },
+    installSqlServerModule() {
+      this.generateScript()
+    },
+    includeCompression() {
+      this.generateScript()
     }
   },
   mounted() {

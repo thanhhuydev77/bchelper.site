@@ -152,6 +152,20 @@ export default {
       }
     },
   },
+  watch: {
+    containerType() {
+      this.generateCommand()
+    },
+    containerVersion() {
+      this.generateCommand()
+    },
+    containerName() {
+      this.generateCommand()
+    }
+  },
+  mounted() {
+    this.generateCommand()
+  }
 }
 </script>
 
