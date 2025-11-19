@@ -130,7 +130,7 @@ export default {
       this.showScript = !this.showScript;
     },
     generateScript() {
-      const versionPath = this.version.slice(0, -1) + '.' + this.version.slice(-1);
+      const versionPath = this.version;
       
       let script = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;\n`;
       script += `Write-Host 'Stopping server instance...';\n`;
@@ -171,6 +171,15 @@ export default {
     version(newVal) {
       this.instanceName = `BC${newVal}`;
       this.webServerInstance = `BC${newVal}`;
+      this.generateScript();
+    },
+    authType() {
+      this.generateScript();
+    },
+    instanceName() {
+      this.generateScript();
+    },
+    webServerInstance() {
       this.generateScript();
     }
   },

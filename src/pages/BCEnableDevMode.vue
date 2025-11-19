@@ -115,8 +115,8 @@ export default {
       this.showScript = !this.showScript;
     },
     generateScript() {
-      // Convert version like "230" to "23.0" format for path
-      const versionPath = this.version.slice(0, -1) + '.' + this.version.slice(-1);
+      // Use version directly as path (e.g., "230" not "23.0")
+      const versionPath = this.version;
       
       const script1 = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;`;
       const script2 = `Set-NAVServerConfiguration -ServerInstance ${this.instanceName} -KeyName PublicWebBaseUrl -KeyValue ${this.baseUrl};`;

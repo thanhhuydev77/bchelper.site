@@ -115,8 +115,8 @@ export default {
       this.showScript = !this.showScript;
     },
     generateScript() {
-      const versionPath = this.version.slice(0, -1) + '.' + this.version.slice(-1);
-      const script1 = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;`;
+      const versionPath = this.version;
+      let script = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;\n`;
       const script2 = `Import-NAVServerLicense -ServerInstance ${this.instance} -LicenseFile "${this.licensePath}";`;
       const script3 = `Write-Host 'Restarting Service...';`;
       const script4 = `Restart-NAVServerInstance -ServerInstance ${this.instance}`;

@@ -180,7 +180,7 @@ export default {
       this.showScript = !this.showScript;
     },
     generateScript() {
-      const versionPath = this.version.slice(0, -1) + '.' + this.version.slice(-1);
+      const versionPath = this.version;
       
       let script = `Import-Module 'C:\\Program Files\\Microsoft Dynamics 365 Business Central\\${versionPath}\\Service\\NavAdminTool.ps1'|Out-Null;\n`;
       
