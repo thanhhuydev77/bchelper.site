@@ -3,14 +3,14 @@ import BCAddInstance from '../pages/BCAddInstance.vue'
 import BCAddNewUser from '../pages/BCAddNewUser.vue'
 import BCBuildApiUrl from '../pages/BCBuildApiUrl.vue'
 import BCChangeAuthType from '../pages/BCChangeAuthType.vue'
+import BCCreateDocker from '../pages/BCCreateDocker.vue'
+import BCDatabaseBackup from '../pages/BCDatabaseBackup.vue'
 import BCEnableDevMode from '../pages/BCEnableDevMode.vue'
 import BCEnableIntegration from '../pages/BCEnableIntegration.vue'
 import BCImportLicense from '../pages/BCImportLicense.vue'
 import BCManageApp from '../pages/BCManageApp.vue'
-import BCDatabaseBackup from '../pages/BCDatabaseBackup.vue'
-import BCCreateDocker from '../pages/BCCreateDocker.vue'
 import Home from '../pages/index.vue'
-//import { routes } from 'vue-router/auto-routes'
+// import { routes } from 'vue-router/auto-routes'
 
 const routes = [
   { path: '/', name: 'default', component: Home },
@@ -52,7 +52,7 @@ router.isReady().then(() => {
     {
       path: '/BCEnableDevMode',
       name: 'BCEnableDevMode',
-      component: BCEnableDevMode
+      component: BCEnableDevMode,
     },
   )
 })
