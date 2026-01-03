@@ -21,13 +21,17 @@
       <v-row>
         <v-col cols="12">
           <v-tabs v-model="activeNavTab" class="nav-tabs-container">
-            <v-tab value="generator">
+            <v-tab value="generator" class="tab-generator">
               <v-icon left>mdi-script-text</v-icon>
-              PS Script Generator
+              PS Script
             </v-tab>
-            <v-tab value="blog">
+            <v-tab value="blog" class="tab-blog">
               <v-icon left>mdi-book-open</v-icon>
               Blog
+            </v-tab>
+            <v-tab value="about" class="tab-about">
+              <v-icon left>mdi-account-circle</v-icon>
+              About Me
             </v-tab>
           </v-tabs>
 
@@ -94,6 +98,44 @@
                       <v-list-item-subtitle>{{ post.date }}</v-list-item-subtitle>
                     </v-list-item>
                   </v-list>
+                </v-card-text>
+              </v-card>
+            </v-window-item>
+
+            <!-- About Me Tab -->
+            <v-window-item value="about">
+              <v-card class="nav-card">
+                <v-card-text class="pa-6">
+                  <v-row align="center" justify="center" class="mb-6">
+                    <v-col cols="auto">
+                      <v-avatar size="120">
+                        <v-img :src="profileImage" alt="Profile" />
+                      </v-avatar>
+                    </v-col>
+                  </v-row>
+                  <h3 class="text-h5 text-center mb-4">About Me</h3>
+                  <p class="text-body-1 mb-4">
+                    I'm a Business Central developer with 5+ years of experience. I specialize in creating automation tools and solutions that streamline BC operations and improve efficiency.
+                  </p>
+                  <p class="text-body-1 mb-6">
+                    This tool was built to help developers like me automate repetitive tasks and focus on what matters most - building great solutions for Business Central.
+                  </p>
+                  <v-divider class="my-6" />
+                  <v-row justify="center" class="gap-3">
+                    <v-col cols="auto">
+                    <h5 class="text-h5 mb-4">Connect With Me</h5>
+                    </v-col>
+                    <v-col cols="auto">
+                      <v-btn
+                        color="primary"
+                        :href="socialLinks.linkedin"
+                        target="_blank"
+                        prepend-icon="mdi-linkedin"
+                      >
+                        LinkedIn
+                      </v-btn>
+                    </v-col>
+                  </v-row>
                 </v-card-text>
               </v-card>
             </v-window-item>
@@ -266,6 +308,18 @@ export default {
 
 .nav-tabs-container :deep(.v-tab) {
   color: var(--text-primary) !important;
+}
+
+.nav-tabs-container :deep(.tab-generator) {
+  color: #1976d2 !important;
+}
+
+.nav-tabs-container :deep(.tab-blog) {
+  color: #f57c00 !important;
+}
+
+.nav-tabs-container :deep(.tab-about) {
+  color: #388e3c !important;
 }
 
 .nav-tab-content {
