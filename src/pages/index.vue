@@ -230,22 +230,22 @@ export default {
 
 <style scoped>
 .home-container {
-  background-color: #ffffff;
+  background-color: var(--bg-primary);
   min-height: 50vh;
 }
 
 .header-section {
-  background: linear-gradient(135deg, #e8eaf6 0%, #f3e5f5 100%);
-  color: #333;
+  background: linear-gradient(135deg, var(--header-gradient-1) 0%, var(--header-gradient-2) 100%);
+  color: var(--text-primary);
   padding: 10px 0;
 }
 
 .header-section h1 {
-  color: #333;
+  color: #0C74A1;
 }
 
 .header-section p {
-  color: rgba(51, 51, 51, 0.7);
+  color: var(--text-secondary);
 }
 
 .bc-logo {
@@ -259,17 +259,17 @@ export default {
 }
 
 .nav-tabs-container {
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   border-radius: 12px 12px 0 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .nav-tabs-container :deep(.v-tab) {
-  color: #333 !important;
+  color: var(--text-primary) !important;
 }
 
 .nav-tab-content {
-  background-color: #46ECD5;
+  background-color: var(--bg-secondary);
   border-radius: 0 0 12px 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
@@ -277,8 +277,8 @@ export default {
 .nav-card {
   border-radius: 0 0 12px 12px;
   box-shadow: none;
-  border-top: 1px solid #e0e0e0;
-  background-color: #f8f9fa;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
 }
 
 .script-textarea {
@@ -294,11 +294,11 @@ export default {
 .blog-item {
   cursor: pointer;
   transition: all 0.2s ease;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .blog-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--bg-hover);
 }
 
 .blog-item:last-child {
@@ -310,14 +310,14 @@ export default {
   cursor: pointer;
   border-radius: 8px;
   height: 100%;
-  background-color: #ffffff;
-  border: 1px solid #e0e0e0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
 }
 
 .feature-tile:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  border-color: #d0d0d0;
+  border-color: var(--border-hover);
 }
 
 .feature-tile :deep(.v-card-item) {
