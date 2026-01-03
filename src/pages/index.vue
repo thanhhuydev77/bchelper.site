@@ -23,7 +23,7 @@
           <v-tabs v-model="activeNavTab" class="nav-tabs-container">
             <v-tab value="generator">
               <v-icon left>mdi-script-text</v-icon>
-              Power Shell Script Generator
+              PS Script Generator
             </v-tab>
             <v-tab value="blog">
               <v-icon left>mdi-book-open</v-icon>
@@ -72,7 +72,7 @@
                 </v-card-text>
               </v-card>
             </v-window-item>
-            
+
             <!-- Blog Tab -->
             <v-window-item value="blog">
               <v-card class="nav-card">
