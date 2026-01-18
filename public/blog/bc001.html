@@ -19,6 +19,30 @@
             --code-bg: #1e1e1e;
             --code-text: #d4d4d4;
             --success-color: #107c10;
+            --timeline-line: #e1dfdd;
+            --tag-bg: #f3f2f1;
+            --highlight-bg: #eff6fc;
+            --pro-list-bg: #fdfdfd;
+            --img-container-bg: #fff;
+        }
+
+        /* Dark mode variables */
+        html.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #404040;
+            --code-bg: #0d1117;
+            --code-text: #e6edf3;
+            --timeline-line: #404040;
+            --tag-bg: #2d2d2d;
+            --highlight-bg: #1e3a5f;
+            --pro-list-bg: #2a2a2a;
+            --img-container-bg: #1e1e1e;
+            --primary-color: #4dabf7;
+            --primary-dark: #2196f3;
+            --success-color: #4caf50;
         }
 
         body {
@@ -31,7 +55,6 @@
         }
 
         .container {
-            max-width: 900px;
             margin: 0 auto;
             background: var(--card-bg);
             padding: 50px;
@@ -89,7 +112,7 @@
 
         /* Highlight Box */
         .highlight-box {
-            background-color: #eff6fc;
+            background-color: var(--highlight-bg);
             border-left: 4px solid var(--primary-color);
             padding: 20px;
             margin: 20px 0;
@@ -111,7 +134,7 @@
         }
 
         .tag {
-            background-color: #f3f2f1;
+            background-color: var(--tag-bg);
             padding: 4px 10px;
             border-radius: 4px;
             font-size: 12px;
@@ -197,7 +220,7 @@
             top: 20px;
             width: 2px;
             height: 100%;
-            background-color: #e1dfdd;
+            background-color: var(--timeline-line);
             z-index: 1;
         }
 
@@ -214,7 +237,7 @@
             border: 1px solid var(--border-color);
             padding: 5px;
             border-radius: 8px;
-            background: #fff;
+            background: var(--img-container-bg);
         }
 
         img {
@@ -231,7 +254,7 @@
         }
 
         .pro-list li {
-            background-color: #fdfdfd;
+            background-color: var(--pro-list-bg);
             border-left: 3px solid var(--success-color);
             padding: 10px 15px;
             margin-bottom: 10px;
@@ -245,6 +268,41 @@
         @media (max-width: 768px) {
             .container { padding: 20px; }
             h1 { font-size: 22px; }
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .theme-toggle i {
+            font-size: 24px;
+            color: var(--text-main);
+            transition: color 0.3s ease;
+        }
+
+        html.dark-mode .theme-toggle {
+            background: var(--card-bg);
+            border-color: var(--border-color);
         }
     </style>
 </head>
@@ -412,5 +470,48 @@ end;</code></pre>
         </div>
     </section>
 </div>
+
+<script>
+    // Dark Mode Functionality
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const html = document.documentElement;
+
+    // Check for saved theme preference or default to light mode
+    const savedTheme = localStorage.getItem('blog-theme') || 'light';
+    if (savedTheme === 'dark') {
+        html.classList.add('dark-mode');
+        themeIcon.className = 'ri-sun-line';
+    } else {
+        themeIcon.className = 'ri-moon-line';
+    }
+
+    // Toggle theme function
+    function toggleTheme() {
+        const isDark = html.classList.contains('dark-mode');
+        
+        if (isDark) {
+            html.classList.remove('dark-mode');
+            themeIcon.className = 'ri-moon-line';
+            localStorage.setItem('blog-theme', 'light');
+        } else {
+            html.classList.add('dark-mode');
+            themeIcon.className = 'ri-sun-line';
+            localStorage.setItem('blog-theme', 'dark');
+        }
+    }
+
+    // Add click event listener
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // Add keyboard shortcut (Ctrl/Cmd + Shift + D)
+    document.addEventListener('keydown', function(event) {
+        if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'D') {
+            event.preventDefault();
+            toggleTheme();
+        }
+    });
+</script>
+
 </body>
 </html>
