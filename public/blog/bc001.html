@@ -304,6 +304,11 @@
             background: var(--card-bg);
             border-color: var(--border-color);
         }
+
+        /* Hide toggle button - using system preference */
+        .theme-toggle {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -472,45 +477,25 @@ end;</code></pre>
 </div>
 
 <script>
-    // Dark Mode Functionality
-    const themeToggle = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
+    // Auto Dark Mode based on system preference
     const html = document.documentElement;
-
-    // Check for saved theme preference or default to light mode
-    const savedTheme = localStorage.getItem('blog-theme') || 'light';
-    if (savedTheme === 'dark') {
-        html.classList.add('dark-mode');
-        themeIcon.className = 'ri-sun-line';
-    } else {
-        themeIcon.className = 'ri-moon-line';
-    }
-
-    // Toggle theme function
-    function toggleTheme() {
-        const isDark = html.classList.contains('dark-mode');
+    
+    // Function to apply theme based on system preference
+    function applySystemTheme() {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         
-        if (isDark) {
-            html.classList.remove('dark-mode');
-            themeIcon.className = 'ri-moon-line';
-            localStorage.setItem('blog-theme', 'light');
-        } else {
+        if (prefersDark) {
             html.classList.add('dark-mode');
-            themeIcon.className = 'ri-sun-line';
-            localStorage.setItem('blog-theme', 'dark');
+        } else {
+            html.classList.remove('dark-mode');
         }
     }
-
-    // Add click event listener
-    themeToggle.addEventListener('click', toggleTheme);
-
-    // Add keyboard shortcut (Ctrl/Cmd + Shift + D)
-    document.addEventListener('keydown', function(event) {
-        if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'D') {
-            event.preventDefault();
-            toggleTheme();
-        }
-    });
+    
+    // Apply theme on load
+    applySystemTheme();
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applySystemTheme);
 </script>
 
 </body>

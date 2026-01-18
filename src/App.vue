@@ -4,21 +4,6 @@
       <router-view />
     </v-main>
     
-    <!-- Dark Mode Switch Button -->
-    <v-btn
-      class="fab-theme"
-      color="primary"
-      icon
-      size="large"
-      @click="toggleTheme"
-      title="Toggle Dark Mode"
-    >
-      <v-icon>{{ isDark ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent' }}</v-icon>
-      <v-tooltip activator="parent" location="start">
-        {{ isDark ? 'Light Mode' : 'Dark Mode' }}
-      </v-tooltip>
-    </v-btn>
-    
     <!-- Floating Action Button -->
     <v-btn
       v-if="!isHomePage"
@@ -105,10 +90,24 @@ export default {
     goToHome() {
       this.$router.push('/')
     },
-    toggleTheme() {
-      this.isDark = !this.isDark
-      this.$vuetify.theme.global.name = this.isDark ? 'dark' : 'light'
-      if (this.isDark) {
+  },
+  mounted() {
+    // Set theme based on system preference
+    this.setSystemTheme()
+    
+    // Listen for system theme changes
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', this.setSystemTheme)
+  },
+  methods: {
+    goToHome() {
+      this.$router.push('/')
+    },
+    setSystemTheme() {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+      this.$vuetify.theme.global.name = prefersDark ? 'dark' : 'light'
+      
+      // Also update document class for custom CSS variables
+      if (prefersDark) {
         document.documentElement.classList.add('dark-mode')
       } else {
         document.documentElement.classList.remove('dark-mode')
@@ -149,6 +148,22 @@ html.dark-mode {
   --header-gradient-2: #0d47a1;
 }
 
+/* Auto dark mode based on system preference */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-card: #2a2a2a;
+    --bg-hover: #333333;
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --border-color: #404040;
+    --border-hover: #505050;
+    --header-gradient-1: #1a237e;
+    --header-gradient-2: #0d47a1;
+  }
+}
+
 .fab-theme {
   position: fixed !important;
   bottom: 24px !important;
@@ -170,11 +185,6 @@ html.dark-mode {
     padding-right: 4px !important;
     margin-left: 0 !important;
     margin-right: 0 !important;
-  }
-
-  .fab-theme {
-    bottom: 16px !important;
-    right: 80px !important;
   }
 
   .fab-home {

@@ -81,10 +81,6 @@
             <v-window-item value="blog">
               <v-card class="nav-card">
                 <v-card-text class="pa-6">
-                  <h3 class="text-h5 mb-4">Blog</h3>
-                  <p class="text-body-1 mb-4">
-                    Read articles and tutorials about Business Central development.
-                  </p>
                   <v-list>
                     <v-list-item
                       v-for="post in blogPosts"
