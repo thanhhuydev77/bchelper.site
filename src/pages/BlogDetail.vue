@@ -29,6 +29,11 @@ export default {
         date: 'January 18, 2026',
         contentFile: '/blog/bc001.html',
       },
+      'BC-SOLUTIONS-002': {
+        title: 'Handling Slow API Calls with Page Background Tasks',
+        date: 'January 19, 2026',
+        contentFile: '/blog/bc002.html',
+      },
     }
     
     if (blogData[blogId]) {

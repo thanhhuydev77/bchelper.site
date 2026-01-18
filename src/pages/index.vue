@@ -9,7 +9,7 @@
               <img src="/bclogo.svg" alt="BC Logo" class="bc-logo" />
             </v-col>
             <v-col cols="auto">
-              <h5 class="text-h2 font-weight-bold" style="color: #0C74A1;">Business Central</h5>
+              <h5 class="text-h2 font-weight-bold" style="color: #0C74A1;">Alex & BC</h5>
             </v-col>
           </v-row>
         </v-col>
@@ -81,20 +81,64 @@
             <v-window-item value="blog">
               <v-card class="nav-card">
                 <v-card-text class="pa-6">
-                  <v-list>
-                    <v-list-item
+                  <v-row>
+                    <v-col
                       v-for="post in blogPosts"
                       :key="post.id"
-                      class="blog-item"
-                      @click="navigateToBlog(post.id)"
+                      cols="12"
+                      md="6"
+                      class="mb-4"
                     >
-                      <template #prepend>
-                        <v-icon color="primary">mdi-file-document</v-icon>
-                      </template>
-                      <v-list-item-title>{{ post.title }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ post.date }}</v-list-item-subtitle>
-                    </v-list-item>
-                  </v-list>
+                      <v-card
+                        class="blog-post-card"
+                        hover
+                        @click="navigateToBlog(post.id)"
+                      >
+                        <v-card-item class="pb-2">
+                          <template #prepend>
+                            <v-avatar color="primary" size="40">
+                              <v-icon color="white">mdi-file-document-outline</v-icon>
+                            </v-avatar>
+                          </template>
+                          <v-card-title class="blog-title">{{ post.title }}</v-card-title>
+                          <v-card-subtitle class="blog-date">
+                            <v-icon size="16" class="mr-1">mdi-calendar</v-icon>
+                            {{ post.date }}
+                          </v-card-subtitle>
+                        </v-card-item>
+
+                        <v-card-text class="pt-0">
+                          <div class="blog-excerpt">
+                            {{ post.excerpt || 'Click to read this Business Central development article...' }}
+                          </div>
+                          <div class="blog-tags mt-3">
+                            <v-chip
+                              v-for="tag in post.tags"
+                              :key="tag"
+                              size="small"
+                              variant="outlined"
+                              color="primary"
+                              class="mr-1 mb-1"
+                            >
+                              {{ tag }}
+                            </v-chip>
+                          </div>
+                        </v-card-text>
+
+                        <v-card-actions class="pt-0">
+                          <v-spacer></v-spacer>
+                          <v-btn
+                            variant="text"
+                            color="primary"
+                            size="small"
+                            append-icon="mdi-arrow-right"
+                          >
+                            Read More
+                          </v-btn>
+                        </v-card-actions>
+                      </v-card>
+                    </v-col>
+                  </v-row>
                 </v-card-text>
               </v-card>
             </v-window-item>
@@ -159,6 +203,15 @@ export default {
           id: 'BC-SOLUTIONS-001',
           title: 'View Attachment File Related to Sales Order on Archived Sales Order',
           date: 'January 18, 2026',
+          excerpt: '',
+          tags: ['Factboxes','SetTableView','Page.Update']
+        },
+        {
+          id: 'BC-SOLUTIONS-002',
+          title: 'Handling Slow API Calls with Page Background Tasks',
+          date: 'January 19, 2026',
+          excerpt: '',
+          tags: ['CurrPage.EnqueueBackgroundTask','OnPageBackgroundTaskCompleted','OnPageBackgroundTaskError']
         },
       ],
       items: [
@@ -334,18 +387,72 @@ export default {
   gap: 12px;
 }
 
-.blog-item {
+/* Blog Styles */
+.blog-header {
+  text-align: center;
+}
+
+.blog-post-card {
+  transition: all 0.3s ease;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border-bottom: 1px solid var(--border-color);
+  border-radius: 12px;
+  height: 100%;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
 }
 
-.blog-item:hover {
-  background-color: var(--bg-hover);
+.blog-post-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-color: var(--border-hover);
 }
 
-.blog-item:last-child {
-  border-bottom: none;
+.blog-title {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.blog-date {
+  font-size: 14px;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+}
+
+.blog-excerpt {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.blog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.blog-post-card :deep(.v-card-item) {
+  padding: 16px 16px 8px 16px;
+}
+
+.blog-post-card :deep(.v-card-text) {
+  padding: 0 16px 8px 16px;
+}
+
+.blog-post-card :deep(.v-card-actions) {
+  padding: 0 16px 16px 16px;
 }
 
 .feature-tile {

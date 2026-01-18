@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Async Shipping Quotes via Page Background Tasks</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <style>
+         :root {
+            --primary-color: #0078d4; /* MS Business Central Blue */
+            --primary-dark: #005a9e;
+            --bg-color: #f3f2f1;
+            --card-bg: #ffffff;
+            --text-main: #323130;
+            --text-secondary: #605e5c;
+            --border-color: #e1dfdd;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+            --success-color: #107c10;
+            --timeline-line: #e1dfdd;
+            --tag-bg: #f3f2f1;
+            --highlight-bg: #eff6fc;
+            --pro-list-bg: #fdfdfd;
+            --img-container-bg: #fff;
+        }
+
+        /* Dark mode variables */
+        html.dark-mode {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #ffffff;
+            --text-secondary: #cccccc;
+            --border-color: #404040;
+            --code-bg: #0d1117;
+            --code-text: #e6edf3;
+            --timeline-line: #404040;
+            --tag-bg: #2d2d2d;
+            --highlight-bg: #1e3a5f;
+            --pro-list-bg: #2a2a2a;
+            --img-container-bg: #1e1e1e;
+            --primary-color: #4dabf7;
+            --primary-dark: #2196f3;
+            --success-color: #4caf50;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: var(--text-main);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 50px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border-radius: 12px;
+        }
+
+        /* Header */
+        header {
+            border-bottom: 3px solid var(--primary-color);
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1 i {
+            font-size: 32px;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: var(--primary-dark);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2 i {
+            color: var(--primary-color);
+            opacity: 0.8;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 25px;
+            color: var(--text-main);
+        }
+
+        p, li {
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background-color: var(--highlight-bg);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .highlight-box strong {
+            color: var(--primary-dark);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Tags */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            background-color: var(--tag-bg);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Code Blocks */
+        .code-wrapper {
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .code-header {
+            background-color: #2d2d2d;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot.red { background-color: #ff5f56; }
+        .dot.yellow { background-color: #ffbd2e; }
+        .dot.green { background-color: #27c93f; }
+        .code-title { 
+            color: #888; 
+            font-size: 12px; 
+            margin-left: 10px; 
+            font-family: monospace;
+        }
+
+        pre {
+            margin: 0;
+            padding: 20px;
+            overflow-x: auto;
+            color: var(--code-text);
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 14px;
+        }
+
+        /* Timeline Test Plan */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 20px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 2px var(--primary-color);
+            z-index: 2;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: -27px;
+            top: 20px;
+            width: 2px;
+            height: 100%;
+            background-color: var(--timeline-line);
+            z-index: 1;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Images */
+        .img-container {
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            border-radius: 8px;
+            background: var(--img-container-bg);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            display: block;
+        }
+
+        /* Pro List */
+        .pro-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .pro-list li {
+            background-color: var(--pro-list-bg);
+            border-left: 3px solid var(--success-color);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 4px 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            h1 { font-size: 22px; }
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .theme-toggle i {
+            font-size: 24px;
+            color: var(--text-main);
+            transition: color 0.3s ease;
+        }
+
+        html.dark-mode .theme-toggle {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        /* Hide toggle button - using system preference */
+        .theme-toggle {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<button id="theme-toggle" class="theme-toggle" aria-label="Toggle Dark Mode">
+    <i class="ri-moon-line"></i>
+</button>
+
+<div class="container">
+    <header>
+        <h1><i class="ri-truck-line"></i> BC-SOLUTIONS-002</h1>
+        <p style="margin-top: 5px; color: var(--primary-color); font-weight: 500;">Async Shipping Quotes via Page Background Tasks</p>
+    </header>
+
+    <section>
+        <h2><i class="ri-building-2-line"></i> Background</h2>
+        <p>My company manufactures furniture and sells directly to customers. Given the vast geography of the USA, we partner with third-party shipping agents (FedEx, UPS, etc.) for logistics, operating out of three warehouses across the country.</p>
+        
+        <div class="highlight-box">
+            <strong><i class="ri-alert-line"></i> The Problem</strong>
+            When the Sales Team creates a Sales Order, they need to quickly check shipping costs via carrier APIs. Because these API calls can be slow and we check multiple agents simultaneously, traditional <strong>foreground calls were freezing the UI</strong>, leading to long wait times and user frustration.
+        </div>
+
+        <div class="diagram-placeholder">
+            <i class="ri-image-line"></i>
+            
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-lightbulb-line"></i> Solution</h2>
+        <p>I implemented <strong>Page Background Tasks</strong> to solve this. I added fields on the Sales Order page to display quote prices for each shipping agent and created an Action to trigger the API calls asynchronously. The prices update automatically once the data is received from the third-party service without blocking the user.</p>
+
+        <div class="diagram-placeholder">
+            <i class="ri-flow-chart"></i>
+            
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
+        <div class="tags-container">
+            <span class="tag"><i class="ri-hashtag"></i> CurrPage.EnqueueBackgroundTask</span>
+            <span class="tag"><i class="ri-hashtag"></i> OnPageBackgroundTaskCompleted</span>
+            <span class="tag"><i class="ri-hashtag"></i> OnPageBackgroundTaskError</span>
+        </div>
+
+        <h3>Step 1: Add "Quote Price" fields</h3>
+        <p>I used Page Variables for this purpose since these values do not need to be stored in the database.</p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">PageExtension.al</div>
+            </div>
+<pre><code>pageextension 70002 "ALE Sales Order PageExt" extends "Sales Order"
+{
+    layout
+    {
+        addlast(General)
+        {
+            group(ALEShippingQuotes)
+            {
+                Editable = false;
+                Caption = 'Shipping Quotes';
+
+                field("ALE Fedex Quote"; gFedexQuote)
+                {
+                    Caption = 'Fedex Quote';
+                    ApplicationArea = All;
+                    StyleExpr = gFeDexStyleExpr;
+                    ToolTip = 'Specifies the value of the Fedex Quote field.';
+                }
+                field("ALE UPS Quote"; gUPSQuote)
+                {
+                    Caption = 'UPS Quote';
+                    ApplicationArea = All;
+                    StyleExpr = gUPSStyleExpr;
+                    ToolTip = 'Specifies the value of the UPS Quote field.';
+                }
+                // ... (Fields for Purolator, SpeeDee, Dicom omitted for brevity)
+            }
+        }
+    }
+    var
+        gFedexQuote: Decimal;
+        gUPSQuote: Decimal;
+        // ... (Variables for other carriers)
+
+        gFeDexStyleExpr: Text;
+        gUPSStyleExpr: Text;
+        // ... (Style variables for other carriers)
+}</code></pre>
+        </div>
+
+        <h3>Step 2: Create a Codeunit to handle API Logic</h3>
+        <p>Since this runs as a background task, I added logic to retrieve parameters passed from the page.</p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">Codeunit.al</div>
+            </div>
+<pre><code>codeunit 70000 "ALE Get Web Order Status"
+{
+    trigger OnRun()
+    var
+        Inputs: Dictionary of [Text, Text];
+        Results: Dictionary of [Text, Text];
+        SalesOrderNo: Text;
+        ShippingVendorNo: Text;
+    begin
+        Inputs := Page.GetBackgroundParameters();
+
+        SalesOrderNo := Inputs.Get('NO');
+        ShippingVendorNo := Inputs.Get('VENDOR');
+
+        Results.Add('Price', CallAPIGetShippingCost(SalesOrderNo, ShippingVendorNo));
+
+        Page.SetBackgroundTaskResult(Results);
+    end;
+
+    local procedure CallAPIGetShippingCost(pNo: Text; ShippingVendorNo: Text): Text
+    begin
+        // Call API - Logic simulated with sleep/random for demo
+        Sleep(Random(10000));
+        exit(Format(Random(1000)));
+    end;
+}</code></pre>
+        </div>
+
+        <h3>Step 3: Add Action to trigger the process</h3>
+        <p>I used the system function <code>EnqueueBackgroundTask</code> to execute the Codeunit asynchronously.</p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">Action.al</div>
+            </div>
+<pre><code>addlast(processing)
+{
+    action(ALEGetQuote)
+    {
+        Image = Questionaire;
+        ApplicationArea = All;
+        Caption = 'Get Shipment Quote';
+        trigger OnAction()
+        var
+            TimeoutinMs: Integer;
+        begin
+            TimeoutinMs := 10000;
+            GetShippingQuote('Fedex', TimeoutinMs, gFedexQuoteTaskID);
+            GetShippingQuote('UPS', TimeoutinMs, gUPSQuoteTaskID);
+            // ... Call for other carriers
+        end;
+    }
+}
+
+local procedure GetShippingQuote(VendorNo: Text; TimeoutinMs: Integer; var TaskID: Integer)
+var
+    Input: Dictionary of [Text, Text];
+begin
+    Input.Add('NO', Rec."No.");
+    Input.Add('VENDOR', VendorNo);
+    CurrPage.EnqueueBackgroundTask(TaskID, Codeunit::"ALE Get Web Order Status", Input, TimeoutinMs);
+end;</code></pre>
+        </div>
+
+        <h3>Step 4: Handle Completion (UI Update)</h3>
+        <p>The <code>OnPageBackgroundTaskCompleted</code> trigger retrieves results. Successful quotes are highlighted in green.</p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">Trigger_Completed.al</div>
+            </div>
+<pre><code>trigger OnPageBackgroundTaskCompleted(TaskId: Integer; Results: Dictionary of [Text, Text])
+begin
+    if TaskId = gFedexQuoteTaskID then begin
+        Evaluate(gFedexQuote, Results.Get('Price'));
+        gFeDexStyleExpr := 'Favorable'; // Green + Bold
+    end;
+    if TaskId = gUPSQuoteTaskID then begin
+        Evaluate(gUPSQuote, Results.Get('Price'));
+        gUPSStyleExpr := 'Favorable';
+    end;
+    // ... Repeat for other carriers
+end;</code></pre>
+        </div>
+
+        <h3>Step 5: Handle Errors</h3>
+        <p>The <code>OnPageBackgroundTaskError</code> trigger handles failures (e.g., timeout). Failed quotes display as 0 and are highlighted in red.</p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">Trigger_Error.al</div>
+            </div>
+<pre><code>trigger OnPageBackgroundTaskError(TaskId: Integer; ErrorCode: Text; ErrorText: Text; ErrorCallStack: Text; var IsHandled: Boolean)
+begin
+    if TaskId = gFedexQuoteTaskID then begin
+        IsHandled := true;
+        gFedexQuote := 0;
+        gFeDexStyleExpr := 'Unfavorable'; // Red + Bold
+    end;
+    // ... Repeat for other carriers
+end;</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-thumb-up-line"></i> Pros</h2>
+        <ul class="pro-list">
+            <li><i class="ri-check-line"></i> <strong>Zero UI Blocking:</strong> Users can continue working in BC while the system calls the API.</li>
+            <li><i class="ri-check-line"></i> <strong>Parallel Processing:</strong> Minimizes wait time compared to sequential foreground calls.</li>
+            <li><i class="ri-check-line"></i> <strong>Minimize Customization:</strong> Clean implementation using standard platform capabilities.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2><i class="ri-movie-line"></i> Test</h2>
+        <p>Click the section below to watch the demo video.</p>
+        <div class="highlight-box" style="text-align: center; cursor: pointer;">
+            <strong><i class="ri-play-circle-line" style="font-size: 32px; display: inline-block; vertical-align: middle;"></i> Watch Demo Video</strong>
+            (Check out the video below 👇)
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const toggleBtn = document.getElementById('theme-toggle');
+    const icon = toggleBtn.querySelector('i');
+    
+    // 1. Check for saved preference
+    const currentTheme = localStorage.getItem('theme');
+    
+    if (currentTheme == "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+        icon.className = "ri-sun-line"; 
+    } else if (currentTheme == "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+        icon.className = "ri-moon-line";
+    }
+
+    // 2. Handle Click
+    toggleBtn.addEventListener('click', function() {
+        let theme = "light";
+        if (document.documentElement.getAttribute("data-theme") !== "dark") {
+            theme = "dark";
+            icon.className = "ri-sun-line";
+        } else {
+            icon.className = "ri-moon-line";
+        }
+        
+        document.documentElement.setAttribute("data-theme", theme);
+        localStorage.setItem('theme', theme);
+    });
+</script>
+
+</body>
+</html>
