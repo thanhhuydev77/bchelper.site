@@ -4,127 +4,248 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Attachment File on Archived Sales Order</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
     <style>
         :root {
-            --primary-color: #005a9e; /* Business Central Blueish */
-            --secondary-color: #f3f2f1;
-            --text-color: #333;
+            --primary-color: #0078d4; /* MS Business Central Blue */
+            --primary-dark: #005a9e;
+            --bg-color: #f3f2f1;
+            --card-bg: #ffffff;
+            --text-main: #323130;
+            --text-secondary: #605e5c;
+            --border-color: #e1dfdd;
             --code-bg: #1e1e1e;
             --code-text: #d4d4d4;
-            --border-color: #e1dfdd;
+            --success-color: #107c10;
         }
 
         body {
-            font-family: "Segoe UI", "Roboto", Helvetica, Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
+            color: var(--text-main);
+            background-color: var(--bg-color);
             margin: 0;
-            padding: 0;
-            background-color: #f9f9f9;
+            padding: 20px;
         }
 
         .container {
-            margin: 40px auto;
-            background: white;
-            padding: 40px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            border-radius: 8px;
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            padding: 50px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border-radius: 12px;
         }
 
+        /* Header */
         header {
-            border-bottom: 2px solid var(--primary-color);
-            margin-bottom: 30px;
-            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary-color);
+            margin-bottom: 40px;
+            padding-bottom: 20px;
         }
 
         h1 {
-            color: var(--primary-color);
-            font-size: 24px;
+            color: var(--primary-dark);
+            font-size: 28px;
+            font-weight: 700;
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h1 i {
+            font-size: 32px;
         }
 
         h2 {
-            font-size: 18px;
+            font-size: 20px;
+            color: var(--primary-dark);
+            margin-top: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        h2 i {
             color: var(--primary-color);
-            margin-top: 25px;
-            border-left: 4px solid var(--primary-color);
-            padding-left: 10px;
+            opacity: 0.8;
         }
 
         h3 {
             font-size: 16px;
             font-weight: 600;
-            margin-top: 20px;
+            margin-top: 25px;
+            color: var(--text-main);
         }
 
         p, li {
             font-size: 15px;
+            color: var(--text-secondary);
         }
 
-        ul {
-            margin-bottom: 15px;
-        }
-
+        /* Highlight Box */
         .highlight-box {
-            background-color: #e6f2f9;
-            border-left: 4px solid #0078d4;
-            padding: 15px;
-            margin: 15px 0;
+            background-color: #eff6fc;
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
         }
 
-        /* Code Styling */
-        pre {
+        .highlight-box strong {
+            color: var(--primary-dark);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Tags */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            background-color: #f3f2f1;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Code Blocks */
+        .code-wrapper {
             background-color: var(--code-bg);
-            color: var(--code-text);
-            padding: 15px;
-            border-radius: 6px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .code-header {
+            background-color: #2d2d2d;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .dot.red { background-color: #ff5f56; }
+        .dot.yellow { background-color: #ffbd2e; }
+        .dot.green { background-color: #27c93f; }
+        .code-title { 
+            color: #888; 
+            font-size: 12px; 
+            margin-left: 10px; 
+            font-family: monospace;
+        }
+
+        pre {
+            margin: 0;
+            padding: 20px;
             overflow-x: auto;
+            color: var(--code-text);
             font-family: "Consolas", "Monaco", monospace;
             font-size: 14px;
         }
 
-        code {
-            font-family: "Consolas", "Monaco", monospace;
+        /* Timeline Test Plan */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin-top: 20px;
         }
 
-        /* Image Placeholder Styling */
-        .img-placeholder {
-            background-color: #eee;
-            border: 2px dashed #ccc;
-            color: #777;
-            padding: 20px;
-            text-align: center;
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 2px var(--primary-color);
+            z-index: 2;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: -27px;
+            top: 20px;
+            width: 2px;
+            height: 100%;
+            background-color: #e1dfdd;
+            z-index: 1;
+        }
+
+        .timeline-title {
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* Images */
+        .img-container {
             margin: 15px 0;
-            font-style: italic;
+            border: 1px solid var(--border-color);
+            padding: 5px;
+            border-radius: 8px;
+            background: #fff;
         }
 
-        .tag {
-            display: inline-block;
-            background-color: #eee;
-            padding: 2px 6px;
+        img {
+            max-width: 100%;
+            height: auto;
             border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            color: #555;
-            margin-right: 5px;
+            display: block;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        
-        th, td {
-            text-align: left;
-            padding: 10px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        th {
-            background-color: var(--secondary-color);
+        /* Pro List */
+        .pro-list {
+            list-style: none;
+            padding: 0;
         }
 
+        .pro-list li {
+            background-color: #fdfdfd;
+            border-left: 3px solid var(--success-color);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 0 4px 4px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            h1 { font-size: 22px; }
+        }
     </style>
 </head>
 <body>
@@ -135,24 +256,25 @@
     </header>
 
     <section>
-        <h2>Background</h2>
+        <h2><i class="ri-information-line"></i> Background</h2>
         <p>In the company, operations are divided between two primary teams:</p>
         <ul>
             <li><strong>Sales Order Processing Team:</strong> Can create, add attachments, post Sales Orders (SO), and view Archived SOs.</li>
             <li><strong>Accounting Team:</strong> Can view Posted Sales Invoices.</li>
         </ul>
         <div class="highlight-box">
-            <strong>The Problem:</strong> In Business Central (BC), a Sales Order is archived and deleted after full posting. The Sales Team can only review the order on the <em>Archived Sales Order</em> page, but standard BC functionality does not include the attachment part on this page.
+            <strong><i class="ri-alert-line"></i> The Problem</strong>
+            In Business Central (BC), a Sales Order is archived and deleted after full posting. The Sales Team can only review the order on the <em>Archived Sales Order</em> page, but standard BC functionality does not include the attachment part on this page.
         </div>
     </section>
 
     <section>
-        <h2>Requirement</h2>
+        <h2><i class="ri-checkbox-circle-line"></i> Requirement</h2>
         <p>The Sales Team requires the ability to view attachments associated with a fully posted Sales Order via the <strong>Archived Sales Order</strong> page.</p>
     </section>
 
     <section>
-        <h2>Solution Overview</h2>
+        <h2><i class="ri-lightbulb-line"></i> Solution Overview</h2>
         <p>Add a new <strong>Factbox</strong> on the Archived Sales Order page. When a user opens the page, the system automatically retrieves attachments related to the Sales Order.</p>
         <ul>
             <li><strong>Scenario A (Order Exists):</strong> If the Sales Order still exists, filter attachments based on the current Sales Order.</li>
@@ -161,17 +283,22 @@
     </section>
 
     <section>
-        <h2>Technical Implementation</h2>
-        <p>
-            <span class="tag">Factboxes</span>
-            <span class="tag">OnAfterGetCurrRecord</span>
-            <span class="tag">CurrPage</span>
-            <span class="tag">Page.SetTableView</span>
-            <span class="tag">Page.Update</span>
-        </p>
+        <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
+        <div class="tags-container">
+            <span class="tag"><i class="ri-hashtag"></i> Factboxes</span>
+            <span class="tag"><i class="ri-hashtag"></i> OnAfterGetCurrRecord</span>
+            <span class="tag"><i class="ri-hashtag"></i> CurrPage</span>
+            <span class="tag"><i class="ri-hashtag"></i> Page.SetTableView</span>
+            <span class="tag"><i class="ri-hashtag"></i> Page.Update</span>
+        </div>
 
         <h3>Step 1: Add New Factbox to Page Archived Sales Orders</h3>
-        <pre><code>pageextension 70001 "ALE Sales Order Archives" extends "Sales Order Archives"
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">PageExtension.al</div>
+            </div>
+<pre><code>pageextension 70001 "ALE Sales Order Archives" extends "Sales Order Archives"
 {
     layout
     {
@@ -184,9 +311,15 @@
         }
     }
 }</code></pre>
+        </div>
 
         <h3>Step 2: Add Function to Filter Related Attachment</h3>
-        <pre><code>local procedure HandleDocumentAttachmentFactbox()
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">Procedures.al</div>
+            </div>
+<pre><code>local procedure HandleDocumentAttachmentFactbox()
 var
     DocumentAttachment: Record "Document Attachment";
 begin
@@ -218,43 +351,65 @@ begin
         end;
     end;
 end;</code></pre>
+        </div>
 
         <h3>Step 3: Add Function to Trigger OnAfterGetCurrRecord</h3>
-        <pre><code>trigger OnAfterGetCurrRecord()
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">Triggers.al</div>
+            </div>
+<pre><code>trigger OnAfterGetCurrRecord()
 begin
     HandleDocumentAttachmentFactbox();
 end;</code></pre>
+        </div>
     </section>
 
     <section>
-        <h2>Pros</h2>
-        <ul>
-            <li>✅ <strong>No Data Duplication:</strong> Does not require duplicating the attachment file itself.</li>
-            <li>✅ <strong>Minimal Customization:</strong> Logic is contained within a page extension and helper functions.</li>
-            <li>✅ <strong>Standard Integrity:</strong> Keeps standard functionalities intact.</li>
+        <h2><i class="ri-thumb-up-line"></i> Pros</h2>
+        <ul class="pro-list">
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>No Data Duplication:</strong> Does not require duplicating the attachment file itself.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Minimal Customization:</strong> Logic is contained within a page extension and helper functions.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Standard Integrity:</strong> Keeps standard functionalities intact.</li>
         </ul>
     </section>
 
     <section>
-        <h2>Test Plan</h2>
-        <ol>
-            <li>
-                <strong>Create a new Sales Order:</strong> Create a new Sales Order (SO) and attach a file to it.
-                            <img src="/blogAsset/bc001/bc001-1.png" style="width:90%;height:auto;"/>
-            </li>
-            <li>
-                <strong>Verify Archive (Pre-Post):</strong> Click "Archived Document" on the SO, navigate to "Archived Sales Order". You should see the new Document part on the right panel including the file attached in Step 1.
-                <img src="/blogAsset/bc001/bc001-2.png" style="width:90%;height:auto;"/>
-            </li>
-            <li>
-                <strong>Post Order:</strong> Post the full Sales Order. Navigate to "Posted Sales Invoice". The attachment should transfer from the SO automatically (standard BC behavior).
-                <img src="/blogAsset/bc001/bc001-3.png" style="width:90%;height:auto;"/>
-            </li>
-            <li>
-                <strong>Verify Archive (Post-Post):</strong> Navigate to "Archived Sales Order". The attachment should still exist and be visible on the right panel (fetched via the posted invoice link).
-                <img src="/blogAsset/bc001/bc001-4.png" style="width:90%;height:auto;"/>
-            </li>
-        </ol>
+        <h2><i class="ri-flask-line"></i> Test Plan</h2>
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-title">1. Create a new Sales Order</span>
+                <p>Create a new Sales Order (SO) and attach a file to it.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc001/bc001-1.png" alt="Sales Order Creation Screenshot"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">2. Verify Archive (Pre-Post)</span>
+                <p>Click "Archived Document" on the SO, navigate to "Archived Sales Order". You should see the new Document part on the right panel including the file attached in Step 1.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc001/bc001-2.png" alt="Archived SO Screenshot"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">3. Post Order</span>
+                <p>Post the full Sales Order. Navigate to "Posted Sales Invoice". The attachment should transfer from the SO automatically (standard BC behavior).</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc001/bc001-3.png" alt="Posted Invoice Screenshot"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">4. Verify Archive (Post-Post)</span>
+                <p>Navigate to "Archived Sales Order". The attachment should still exist and be visible on the right panel (fetched via the posted invoice link).</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc001/bc001-4.png" alt="Final Verification Screenshot"/>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 </body>
