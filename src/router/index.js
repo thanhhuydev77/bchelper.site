@@ -9,11 +9,13 @@ import BCEnableDevMode from '../pages/BCEnableDevMode.vue'
 import BCEnableIntegration from '../pages/BCEnableIntegration.vue'
 import BCImportLicense from '../pages/BCImportLicense.vue'
 import BCManageApp from '../pages/BCManageApp.vue'
+import BlogDetail from '../pages/BlogDetail.vue'
 import Home from '../pages/index.vue'
 // import { routes } from 'vue-router/auto-routes'
 
 const routes = [
   { path: '/', name: 'default', component: Home },
+  { path: '/blog/:id', name: 'BlogDetail', component: BlogDetail },
   { path: '/BCAddInstance', name: 'BCAddInstance', component: BCAddInstance },
   { path: '/BCAddNewUser', name: 'BCAddNewUser', component: BCAddNewUser },
   { path: '/BCBuildApiUrl', name: 'BCBuildApiUrl', component: BCBuildApiUrl },

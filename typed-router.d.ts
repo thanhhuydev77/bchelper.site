@@ -29,5 +29,6 @@ declare module 'vue-router/auto-routes' {
     '/BCEnableIntegration': RouteRecordInfo<'/BCEnableIntegration', '/BCEnableIntegration', Record<never, never>, Record<never, never>>,
     '/BCImportLicense': RouteRecordInfo<'/BCImportLicense', '/BCImportLicense', Record<never, never>, Record<never, never>>,
     '/BCManageApp': RouteRecordInfo<'/BCManageApp', '/BCManageApp', Record<never, never>, Record<never, never>>,
+    '/BlogDetail': RouteRecordInfo<'/BlogDetail', '/BlogDetail', Record<never, never>, Record<never, never>>,
   }
 }

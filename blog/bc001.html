@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Attachment File on Archived Sales Order</title>
+    <style>
+        :root {
+            --primary-color: #005a9e; /* Business Central Blueish */
+            --secondary-color: #f3f2f1;
+            --text-color: #333;
+            --code-bg: #1e1e1e;
+            --code-text: #d4d4d4;
+            --border-color: #e1dfdd;
+        }
+
+        body {
+            font-family: "Segoe UI", "Roboto", Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            margin: 40px auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        header {
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-top: 25px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        p, li {
+            font-size: 15px;
+        }
+
+        ul {
+            margin-bottom: 15px;
+        }
+
+        .highlight-box {
+            background-color: #e6f2f9;
+            border-left: 4px solid #0078d4;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        /* Code Styling */
+        pre {
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: "Consolas", "Monaco", monospace;
+            font-size: 14px;
+        }
+
+        code {
+            font-family: "Consolas", "Monaco", monospace;
+        }
+
+        /* Image Placeholder Styling */
+        .img-placeholder {
+            background-color: #eee;
+            border: 2px dashed #ccc;
+            color: #777;
+            padding: 20px;
+            text-align: center;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #eee;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #555;
+            margin-right: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--secondary-color);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>View Attachment File Related to Sales Order on Archived Sales Order</h1>
+    </header>
+
+    <section>
+        <h2>Background</h2>
+        <p>In the company, operations are divided between two primary teams:</p>
+        <ul>
+            <li><strong>Sales Order Processing Team:</strong> Can create, add attachments, post Sales Orders (SO), and view Archived SOs.</li>
+            <li><strong>Accounting Team:</strong> Can view Posted Sales Invoices.</li>
+        </ul>
+        <div class="highlight-box">
+            <strong>The Problem:</strong> In Business Central (BC), a Sales Order is archived and deleted after full posting. The Sales Team can only review the order on the <em>Archived Sales Order</em> page, but standard BC functionality does not include the attachment part on this page.
+        </div>
+    </section>
+
+    <section>
+        <h2>Requirement</h2>
+        <p>The Sales Team requires the ability to view attachments associated with a fully posted Sales Order via the <strong>Archived Sales Order</strong> page.</p>
+    </section>
+
+    <section>
+        <h2>Solution Overview</h2>
+        <p>Add a new <strong>Factbox</strong> on the Archived Sales Order page. When a user opens the page, the system automatically retrieves attachments related to the Sales Order.</p>
+        <ul>
+            <li><strong>Scenario A (Order Exists):</strong> If the Sales Order still exists, filter attachments based on the current Sales Order.</li>
+            <li><strong>Scenario B (Order Posted):</strong> If the Sales Order is posted, use the Order No. from the Archived SO to find the last <strong>Posted Sales Invoice</strong> and filter attachments based on that invoice.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Technical Implementation</h2>
+        <p>
+            <span class="tag">Factboxes</span>
+            <span class="tag">OnAfterGetCurrRecord</span>
+            <span class="tag">CurrPage</span>
+            <span class="tag">Page.SetTableView</span>
+            <span class="tag">Page.Update</span>
+        </p>
+
+        <h3>Step 1: Add New Factbox to Page Archived Sales Orders</h3>
+        <pre><code>pageextension 70001 "ALE Sales Order Archives" extends "Sales Order Archives"
+{
+    layout
+    {
+        addfirst(factboxes)
+        {
+            part(ALEAttachment; "Doc. Attachment List Factbox")
+            {
+                ApplicationArea = All;
+            }
+        }
+    }
+}</code></pre>
+
+        <h3>Step 2: Add Function to Filter Related Attachment</h3>
+        <pre><code>local procedure HandleDocumentAttachmentFactbox()
+var
+    DocumentAttachment: Record "Document Attachment";
+begin
+    GetAttachmentDocumentFilterFromArchivedSO(Rec, DocumentAttachment);
+    CurrPage.ALEAttachment.Page.SetTableView(DocumentAttachment);
+    CurrPage.ALEAttachment.Page.Update();
+end;
+
+local procedure GetAttachmentDocumentFilterFromArchivedSO(SalesHeaderArchive: Record "Sales Header Archive";
+                                                    var DocumentAttachment: Record "Document Attachment")
+var
+    SalesHeader: Record "Sales Header";
+    SalesInvoiceHeader: Record "Sales Invoice Header";
+    IsOrderExisted: Boolean;
+begin
+    IsOrderExisted := SalesHeader.Get(SalesHeaderArchive."Document Type", SalesHeaderArchive."No.");
+    
+    if IsOrderExisted then begin
+        // Case: Order still exists
+        DocumentAttachment.SetRange("Table ID", Database::"Sales Header");
+        DocumentAttachment.SetRange("Document Type", SalesHeaderArchive."Document Type");
+        DocumentAttachment.SetRange("No.", SalesHeaderArchive."No.");
+    end else begin
+        // Case: Order is fully posted
+        SalesInvoiceHeader.SetRange("Order No.", SalesHeaderArchive."No.");
+        if SalesInvoiceHeader.FindLast() then begin
+            DocumentAttachment.SetRange("Table ID", Database::"Sales Invoice Header");
+            DocumentAttachment.SetFilter("No.", SalesInvoiceHeader."No.");
+        end;
+    end;
+end;</code></pre>
+
+        <h3>Step 3: Add Function to Trigger OnAfterGetCurrRecord</h3>
+        <pre><code>trigger OnAfterGetCurrRecord()
+begin
+    HandleDocumentAttachmentFactbox();
+end;</code></pre>
+    </section>
+
+    <section>
+        <h2>Pros</h2>
+        <ul>
+            <li>✅ <strong>No Data Duplication:</strong> Does not require duplicating the attachment file itself.</li>
+            <li>✅ <strong>Minimal Customization:</strong> Logic is contained within a page extension and helper functions.</li>
+            <li>✅ <strong>Standard Integrity:</strong> Keeps standard functionalities intact.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Test Plan</h2>
+        <ol>
+            <li>
+                <strong>Create a new Sales Order:</strong> Create a new Sales Order (SO) and attach a file to it.
+                            <img src="/blogAsset/bc001/bc001-1.png" style="width:90%;height:auto;"/>
+            </li>
+            <li>
+                <strong>Verify Archive (Pre-Post):</strong> Click "Archived Document" on the SO, navigate to "Archived Sales Order". You should see the new Document part on the right panel including the file attached in Step 1.
+                <img src="/blogAsset/bc001/bc001-2.png" style="width:90%;height:auto;"/>
+            </li>
+            <li>
+                <strong>Post Order:</strong> Post the full Sales Order. Navigate to "Posted Sales Invoice". The attachment should transfer from the SO automatically (standard BC behavior).
+                <img src="/blogAsset/bc001/bc001-3.png" style="width:90%;height:auto;"/>
+            </li>
+            <li>
+                <strong>Verify Archive (Post-Post):</strong> Navigate to "Archived Sales Order". The attachment should still exist and be visible on the right panel (fetched via the posted invoice link).
+                <img src="/blogAsset/bc001/bc001-4.png" style="width:90%;height:auto;"/>
+            </li>
+        </ol>
+    </section>
+</div>
+</body>
+</html>

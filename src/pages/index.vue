@@ -87,9 +87,10 @@
                   </p>
                   <v-list>
                     <v-list-item
-                      v-for="(post, index) in blogPosts"
-                      :key="index"
+                      v-for="post in blogPosts"
+                      :key="post.id"
                       class="blog-item"
+                      @click="navigateToBlog(post.id)"
                     >
                       <template #prepend>
                         <v-icon color="primary">mdi-file-document</v-icon>
@@ -159,20 +160,9 @@ export default {
       },
       blogPosts: [
         {
-          title: 'Getting Started with Business Central Development',
-          date: 'January 15, 2024',
-        },
-        {
-          title: 'PowerShell Automation for BC Configuration',
-          date: 'January 10, 2024',
-        },
-        {
-          title: 'Best Practices for BC Instance Management',
-          date: 'January 5, 2024',
-        },
-        {
-          title: 'API Integration with Business Central',
-          date: 'December 28, 2023',
+          id: 'BC-SOLUTIONS-001',
+          title: 'View Attachment File Related to Sales Order on Archived Sales Order',
+          date: 'January 18, 2026',
         },
       ],
       items: [
@@ -250,6 +240,9 @@ export default {
     }
   },
   methods: {
+    navigateToBlog(blogId) {
+      this.$router.push(`/blog/${blogId}`)
+    },
     copyGeneratorScript() {
       navigator.clipboard.writeText(this.generatorContent).then(() => {
         alert('Script copied to clipboard!')
