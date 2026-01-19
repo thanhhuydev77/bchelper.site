@@ -319,8 +319,7 @@
 
 <div class="container">
     <header>
-        <h1><i class="ri-truck-line"></i> BC-SOLUTIONS-002</h1>
-        <p style="margin-top: 5px; color: var(--primary-color); font-weight: 500;">Async Shipping Quotes via Page Background Tasks</p>
+        <h1>Handling Slow API Calls with Page Background Tasks</h1>
     </header>
 
     <section>
@@ -329,31 +328,21 @@
         
         <div class="highlight-box">
             <strong><i class="ri-alert-line"></i> The Problem</strong>
-            When the Sales Team creates a Sales Order, they need to quickly check shipping costs via carrier APIs. Because these API calls can be slow and we check multiple agents simultaneously, traditional <strong>foreground calls were freezing the UI</strong>, leading to long wait times and user frustration.
-        </div>
-
-        <div class="diagram-placeholder">
-            <i class="ri-image-line"></i>
-            
+            When the Sales Team creates a Sales Order, they need to quickly check shipping costs via carrier APIs. Because these API calls can be slow and we check multiple agents simultaneously and <b>traditional foreground calls were freezing the UI</b>, leading to long wait times and user frustration.
         </div>
     </section>
 
     <section>
         <h2><i class="ri-lightbulb-line"></i> Solution</h2>
         <p>I implemented <strong>Page Background Tasks</strong> to solve this. I added fields on the Sales Order page to display quote prices for each shipping agent and created an Action to trigger the API calls asynchronously. The prices update automatically once the data is received from the third-party service without blocking the user.</p>
-
-        <div class="diagram-placeholder">
-            <i class="ri-flow-chart"></i>
-            
-        </div>
     </section>
 
     <section>
         <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
         <div class="tags-container">
-            <span class="tag"><i class="ri-hashtag"></i> CurrPage.EnqueueBackgroundTask</span>
-            <span class="tag"><i class="ri-hashtag"></i> OnPageBackgroundTaskCompleted</span>
-            <span class="tag"><i class="ri-hashtag"></i> OnPageBackgroundTaskError</span>
+            <span class="tag"><i class="ri-hashtag"></i>CurrPage.EnqueueBackgroundTask</span>
+            <span class="tag"><i class="ri-hashtag"></i>OnPageBackgroundTaskCompleted</span>
+            <span class="tag"><i class="ri-hashtag"></i>OnPageBackgroundTaskError</span>
         </div>
 
         <h3>Step 1: Add "Quote Price" fields</h3>
@@ -525,11 +514,8 @@ end;</code></pre>
 
     <section>
         <h2><i class="ri-movie-line"></i> Test</h2>
-        <p>Click the section below to watch the demo video.</p>
-        <div class="highlight-box" style="text-align: center; cursor: pointer;">
-            <strong><i class="ri-play-circle-line" style="font-size: 32px; display: inline-block; vertical-align: middle;"></i> Watch Demo Video</strong>
-            (Check out the video below 👇)
-        </div>
+        
+        <iframe width="90%" height="700px" src="https://www.youtube.com/embed/OnGw5xTV6wM?si=7cHWo5eUaDGdWAPz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     </section>
 
 </div>

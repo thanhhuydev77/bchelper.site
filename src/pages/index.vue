@@ -95,16 +95,7 @@
                         @click="navigateToBlog(post.id)"
                       >
                         <v-card-item class="pb-2">
-                          <template #prepend>
-                            <v-avatar color="primary" size="40">
-                              <v-icon color="white">mdi-file-document-outline</v-icon>
-                            </v-avatar>
-                          </template>
                           <v-card-title class="blog-title">{{ post.title }}</v-card-title>
-                          <v-card-subtitle class="blog-date">
-                            <v-icon size="16" class="mr-1">mdi-calendar</v-icon>
-                            {{ post.date }}
-                          </v-card-subtitle>
                         </v-card-item>
 
                         <v-card-text class="pt-0">
@@ -202,15 +193,13 @@ export default {
         {
           id: 'BC-SOLUTIONS-001',
           title: 'View Attachment File Related to Sales Order on Archived Sales Order',
-          date: 'January 18, 2026',
-          excerpt: '',
+          excerpt: 'Create a Dynamics Link Factbox to view Attachment File base on complex condition.',
           tags: ['Factboxes','SetTableView','Page.Update']
         },
         {
           id: 'BC-SOLUTIONS-002',
           title: 'Handling Slow API Calls with Page Background Tasks',
-          date: 'January 19, 2026',
-          excerpt: '',
+          excerpt: 'Using Background Process to call parallel API and update result to Sales Order Realtime.',
           tags: ['CurrPage.EnqueueBackgroundTask','OnPageBackgroundTaskCompleted','OnPageBackgroundTaskError']
         },
       ],
