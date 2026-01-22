@@ -83,7 +83,7 @@
                 <v-card-text class="pa-6">
                   <v-row>
                     <v-col
-                      v-for="post in blogPosts.reverse()"
+                      v-for="post in blogPosts"
                       :key="post.id"
                       cols="12"
                       md="6"
