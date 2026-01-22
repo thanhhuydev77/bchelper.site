@@ -30,5 +30,8 @@ declare module 'vue-router/auto-routes' {
     '/BCImportLicense': RouteRecordInfo<'/BCImportLicense', '/BCImportLicense', Record<never, never>, Record<never, never>>,
     '/BCManageApp': RouteRecordInfo<'/BCManageApp', '/BCManageApp', Record<never, never>, Record<never, never>>,
     '/BlogDetail': RouteRecordInfo<'/BlogDetail', '/BlogDetail', Record<never, never>, Record<never, never>>,
+    '/tabs/AboutTab': RouteRecordInfo<'/tabs/AboutTab', '/tabs/AboutTab', Record<never, never>, Record<never, never>>,
+    '/tabs/BlogTab': RouteRecordInfo<'/tabs/BlogTab', '/tabs/BlogTab', Record<never, never>, Record<never, never>>,
+    '/tabs/GeneratorTab': RouteRecordInfo<'/tabs/GeneratorTab', '/tabs/GeneratorTab', Record<never, never>, Record<never, never>>,
   }
 }

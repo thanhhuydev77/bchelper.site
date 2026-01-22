@@ -11,10 +11,35 @@ import BCImportLicense from '../pages/BCImportLicense.vue'
 import BCManageApp from '../pages/BCManageApp.vue'
 import BlogDetail from '../pages/BlogDetail.vue'
 import Home from '../pages/index.vue'
+// Tab components
+import GeneratorTab from '../pages/tabs/GeneratorTab.vue'
+import BlogTab from '../pages/tabs/BlogTab.vue'
+import AboutTab from '../pages/tabs/AboutTab.vue'
 // import { routes } from 'vue-router/auto-routes'
 
 const routes = [
-  { path: '/', name: 'default', component: Home },
+  {
+    path: '/',
+    name: 'home',
+    component: Home,
+    children: [
+      {
+        path: '',
+        name: 'home-generator',
+        component: GeneratorTab
+      },
+      {
+        path: 'blog',
+        name: 'home-blog',
+        component: BlogTab
+      },
+      {
+        path: 'about',
+        name: 'home-about',
+        component: AboutTab
+      }
+    ]
+  },
   { path: '/blog/:id', name: 'BlogDetail', component: BlogDetail },
   { path: '/BCAddInstance', name: 'BCAddInstance', component: BCAddInstance },
   { path: '/BCAddNewUser', name: 'BCAddNewUser', component: BCAddNewUser },
