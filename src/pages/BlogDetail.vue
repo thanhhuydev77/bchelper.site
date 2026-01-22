@@ -34,6 +34,11 @@ export default {
         date: 'January 19, 2026',
         contentFile: '/blog/bc002.html',
       },
+      'BC-SOLUTIONS-003': {
+        title: 'Printing Attachment File(PDF) by Batch',
+        date: 'January 22, 2026',
+        contentFile: '/blog/bc003.html',
+      },
     }
     
     if (blogData[blogId]) {

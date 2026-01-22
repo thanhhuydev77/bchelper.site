@@ -202,6 +202,12 @@ export default {
           excerpt: 'Using Background Process to call parallel API and update result to Sales Order Realtime.',
           tags: ['CurrPage.EnqueueBackgroundTask','OnPageBackgroundTaskCompleted','OnPageBackgroundTaskError']
         },
+        {
+          id: 'BC-SOLUTIONS-003',
+          title: 'Printing Attachment File(PDF) by Batch',
+          excerpt: 'Print Multiple Sales Order Attachment File at the same time with specified Printer.',
+          tags: ["Report.Print", "OnAfterDocumentReady", "RecRef"]
+        },
       ],
       items: [
         {
