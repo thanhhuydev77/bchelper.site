@@ -83,7 +83,7 @@
                 <v-card-text class="pa-6">
                   <v-row>
                     <v-col
-                      v-for="post in blogPosts"
+                      v-for="post in blogPostsReversed"
                       :key="post.id"
                       cols="12"
                       md="6"
@@ -282,6 +282,12 @@ export default {
         },
       ],
     }
+  },
+  computed: {
+  blogPostsReversed() {
+    // Create a copy first, then reverse
+    return [...this.blogPosts].reverse();
+  }
   },
   methods: {
     navigateToBlog(blogId) {
