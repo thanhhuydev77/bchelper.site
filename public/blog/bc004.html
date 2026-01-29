@@ -22,7 +22,8 @@
             <h2><i class="ri-information-line"></i> Background</h2>
             <p>We are tracking changes on various Transaction tables such as <strong>Sales Orders, Purchase Orders, and
                     Sales Invoices</strong>. Standard Business Central support for tracking changes via
-                <code>Change Log Entry</code> is excellent and fits our needs perfectly.</p>
+                <code>Change Log Entry</code> is excellent and fits our needs perfectly.
+            </p>
 
             <div class="highlight-box">
                 <strong><i class="ri-alert-line"></i> The Problem</strong>
@@ -118,10 +119,14 @@
     }
 }</code></pre>
             </div>
-
             <h3>Step 3: Add Validation Trigger</h3>
             <p>Ensure that the number of rows is specified before the report starts.</p>
             <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
                 <pre><code>trigger OnQueryClosePage(CloseAction: Action): Boolean
         var
             EmptyNumberRowErr: Label 'You must specify Number of Rows.';
@@ -135,6 +140,11 @@
             <h3>Step 4 & 5: Initialize Default Dates</h3>
             <p>Calculate the 1-month safety margin and assign default values.</p>
             <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
                 <pre><code>trigger OnInitReport()
 begin
     gEarliestDateAllowed := CALCDATE('&lt;-1M&gt;', TODAY);
@@ -149,6 +159,11 @@ end;</code></pre>
             <h3>Step 6: Handle Background Execution</h3>
             <p>If the report runs via Job Queue and the date is blank, assign the default safety date.</p>
             <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
                 <pre><code>trigger OnPreReport()
 begin
     if gUntilDateParam = 0D then
@@ -159,6 +174,11 @@ end;</code></pre>
             <h3>Step 7: Find Record Range</h3>
             <p>Identify the specific chunk of records to delete using the <code>Next</code> function.</p>
             <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
                 <pre><code>local procedure FindFirstAndLastEntryNo(var FirstEntryNo: Integer; var LastEntryNo: Integer)
 var
     ChangeLogEntry: Record "Change Log Entry";
@@ -172,9 +192,13 @@ begin
     LastEntryNo := ChangeLogEntry."Entry No.";
 end;</code></pre>
             </div>
-
             <h3>Step 8: Execution Delete Function</h3>
             <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
                 <pre><code>local procedure DeleteEntryByRange(FirstEntryNo: Integer; LastEntryNo: Integer)
 var
     ChangeLogEntry: Record "Change Log Entry";
@@ -187,18 +211,23 @@ begin
     if GuiAllowed then
         Message('Deleted %1 rows.', NumberRecordDeleted);
 end;
-</code></pre></div>
-                <h3>Step 9: Add Functions to Trigger <code>OnPostReport</code></h3>
-                <div class="code-wrapper">
-                    <pre><code>
-trigger OnPostReport()
+</code></pre>
+            </div>
+            <h3>Step 9: Add Functions to Trigger <code>OnPostReport</code></h3>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>trigger OnPostReport()
 var
     FirstEntryNo, LastEntryNo: Integer;
 begin
     FindFirstAndLastEntryNo(FirstEntryNo, LastEntryNo);
     DeleteEntryByRange(FirstEntryNo, LastEntryNo);
 end;</code></pre>
-                </div>
+            </div>
         </section>
 
         <section>
@@ -217,14 +246,8 @@ end;</code></pre>
             <h2><i class="ri-flask-line"></i> Testing</h2>
             <div class="timeline">
                 <div class="timeline-item">
-                    <span class="timeline-title">Review the execution via video demo</span>
-                    <p>The following video demonstrates the report configuration and background execution via Job Queue.
+                    <span class="timeline-title">Let's try it out by yourself and you will love it.</span>
                     </p>
-                    <div class="video-container"
-                        style="background:#000; padding:50px; text-align:center; border-radius:8px; color:#fff;">
-                        <i class="ri-play-circle-line" style="font-size:48px"></i>
-                        <p>Video Demo Placeholder</p>
-                    </div>
                 </div>
             </div>
         </section>
