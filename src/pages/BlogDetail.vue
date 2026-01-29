@@ -39,6 +39,11 @@ export default {
         date: 'January 22, 2026',
         contentFile: '/blog/bc003.html',
       },
+      'BC-SOLUTIONS-004': {
+        title: 'Delete History Data by Batch',
+        date: 'January 29, 2026',
+        contentFile: '/blog/bc004.html',
+      },
     }
     
     if (blogData[blogId]) {

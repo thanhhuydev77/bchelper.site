@@ -78,6 +78,12 @@ export default {
           excerpt: 'Print Multiple Sales Order Attachment File at the same time with specified Printer.',
           tags: ["Report.Print", "OnAfterDocumentReady", "RecRef"]
         },
+        {
+          id: 'BC-SOLUTIONS-004',
+          title: 'Delete History Data by Batch',
+          excerpt: 'Delete Change Log Entry with specified number record',
+          tags: ["Job Queue Entry", "Record.Next", "Record.Truncate","ProcessingOnly"]
+        },
       ],
     }
   },

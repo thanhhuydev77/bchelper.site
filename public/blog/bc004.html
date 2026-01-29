@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Change Log Entry with specified number record</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="/blogAsset/style.css" rel="stylesheet">
+    <link href="/blogAsset/script.js" rel="Script">
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>BC_Solution_004: Delete Change Log Entry with Specified Number Record</h1>
+        </header>
+
+        <section>
+            <h2><i class="ri-information-line"></i> Background</h2>
+            <p>We are tracking changes on various Transaction tables such as <strong>Sales Orders, Purchase Orders, and
+                    Sales Invoices</strong>. Standard Business Central support for tracking changes via
+                <code>Change Log Entry</code> is excellent and fits our needs perfectly.</p>
+
+            <div class="highlight-box">
+                <strong><i class="ri-alert-line"></i> The Problem</strong>
+                Day by day, Change Log Entries increase dramatically. When we try to use the standard <em>Retention
+                    Policy</em> to delete old data, it takes an excessive amount of time and locks the table. Because we
+                have many integrations constantly pushing orders into the system, we cannot allow the Sales Order tables
+                to be locked for long periods.
+            </div>
+        </section>
+
+        <section>
+            <h2><i class="ri-checkbox-circle-line"></i> Requirement</h2>
+            <p>A new function is required to delete data with a <strong>specified number of records</strong> per run. To
+                ensure data safety, it should only delete records older than <strong>1 month</strong>. This function
+                will run as a background schedule once every hour.</p>
+        </section>
+
+        <section>
+            <h2><i class="ri-lightbulb-line"></i> Solution Overview</h2>
+            <p>Create a new <strong>Processing Only</strong> report to delete data in chunks based on user-defined
+                parameters. This report will be scheduled via the <strong>Job Queue</strong>.</p>
+            <ul>
+                <li><strong>User Input:</strong> Specify the maximum number of rows to delete per execution.</li>
+                <li><strong>Date Limit:</strong> Automatically calculate or manually input the cutoff date (must be
+                    older than 1 month).</li>
+                <li><strong>Efficiency:</strong> Use set-based deletion rather than looping through individual records
+                    to minimize performance impact.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
+            <div class="tags-container">
+                <span class="tag"><i class="ri-hashtag"></i> Job Queue Entry</span>
+                <span class="tag"><i class="ri-hashtag"></i> Record.Next</span>
+                <span class="tag"><i class="ri-hashtag"></i> Record.Truncate</span>
+                <span class="tag"><i class="ri-hashtag"></i> ProcessingOnly</span>
+            </div>
+
+            <h3>Step 1: Create New Report</h3>
+            <p>Define the report properties. We use <code>ProcessingOnly = true</code> since no print layout is
+                required.</p>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>report 70002 "ALE Delete Log Entry"
+{
+    Caption = 'Delete Log Entry';
+    ProcessingOnly = true;
+    UsageCategory = Administration;
+    ApplicationArea = All;
+}</code></pre>
+            </div>
+
+            <h3>Step 2: Define Request Page Parameters</h3>
+            <p>Set up the <code>Number of Rows to Delete</code> and <code>Before Date</code> fields with validation
+                logic.</p>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>layout
+{
+    area(content)
+    {
+        group(Options)
+        {
+            Caption = 'Options';
+            field("Number of Rows to Delete"; gNumberRow2DeleteParam)
+            {
+                MinValue = 0;
+                ApplicationArea = Suite;
+            }
+             field(BeforeDate; gUntilDateParam)
+            {
+                ApplicationArea = All;
+                Caption = 'Before Date';
+                ToolTip = 'Only rows with Posting Date on or before this date will be considered for deletion. Leave blank to use Today - 1 month.';
+                trigger OnValidate()
+                var
+                    InvalidDateInputErr: Label 'You cannot delete row in today -1 month';
+                begin
+                    if gUntilDateParam > gEarliestDateAllowed then
+                        Error(InvalidDateInputErr);
+                end;
+            }
+        }
+    }
+}</code></pre>
+            </div>
+
+            <h3>Step 3: Add Validation Trigger</h3>
+            <p>Ensure that the number of rows is specified before the report starts.</p>
+            <div class="code-wrapper">
+                <pre><code>trigger OnQueryClosePage(CloseAction: Action): Boolean
+        var
+            EmptyNumberRowErr: Label 'You must specify Number of Rows.';
+        begin
+            if CloseAction <> CloseAction::Cancel then
+                if gNumberRow2DeleteParam <= 0 then
+                    Error(EmptyNumberRowErr);
+        end;</code></pre>
+            </div>
+
+            <h3>Step 4 & 5: Initialize Default Dates</h3>
+            <p>Calculate the 1-month safety margin and assign default values.</p>
+            <div class="code-wrapper">
+                <pre><code>trigger OnInitReport()
+begin
+    gEarliestDateAllowed := CALCDATE('&lt;-1M&gt;', TODAY);
+end;
+
+trigger OnOpenPage()
+begin
+    gUntilDateParam := gEarliestDateAllowed;
+end;</code></pre>
+            </div>
+
+            <h3>Step 6: Handle Background Execution</h3>
+            <p>If the report runs via Job Queue and the date is blank, assign the default safety date.</p>
+            <div class="code-wrapper">
+                <pre><code>trigger OnPreReport()
+begin
+    if gUntilDateParam = 0D then
+        gUntilDateParam := CALCDATE('&lt;-1M&gt;', TODAY);
+end;</code></pre>
+            </div>
+
+            <h3>Step 7: Find Record Range</h3>
+            <p>Identify the specific chunk of records to delete using the <code>Next</code> function.</p>
+            <div class="code-wrapper">
+                <pre><code>local procedure FindFirstAndLastEntryNo(var FirstEntryNo: Integer; var LastEntryNo: Integer)
+var
+    ChangeLogEntry: Record "Change Log Entry";
+begin
+    ChangeLogEntry.SetRange(SystemCreatedAt, 0DT, CreateDateTime(gUntilDateParam, 0T) - 1);
+    ChangeLogEntry.FindSet();
+    FirstEntryNo := ChangeLogEntry."Entry No.";
+    
+    // Jump to the Nth record to find the end of the range
+    ChangeLogEntry.Next(gNumberRow2DeleteParam - 1);
+    LastEntryNo := ChangeLogEntry."Entry No.";
+end;</code></pre>
+            </div>
+
+            <h3>Step 8: Execution Delete Function</h3>
+            <div class="code-wrapper">
+                <pre><code>local procedure DeleteEntryByRange(FirstEntryNo: Integer; LastEntryNo: Integer)
+var
+    ChangeLogEntry: Record "Change Log Entry";
+    NumberRecordDeleted: Integer;
+begin
+    ChangeLogEntry.SetRange("Entry No.", FirstEntryNo, LastEntryNo);
+    NumberRecordDeleted := ChangeLogEntry.Count();
+    ChangeLogEntry.DeleteAll();
+
+    if GuiAllowed then
+        Message('Deleted %1 rows.', NumberRecordDeleted);
+end;
+</code></pre>
+                <h3>Step 9: Add Functions to Trigger <code>OnPostReport</code></h3>
+                <div class="code-wrapper">
+                    <pre><code>
+trigger OnPostReport()
+var
+    FirstEntryNo, LastEntryNo: Integer;
+begin
+    FindFirstAndLastEntryNo(FirstEntryNo, LastEntryNo);
+    DeleteEntryByRange(FirstEntryNo, LastEntryNo);
+end;</code></pre>
+                </div>
+        </section>
+
+        <section>
+            <h2><i class="ri-thumb-up-line"></i> Pros</h2>
+            <ul class="pro-list">
+                <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>High Performance:</strong>
+                    No record-by-record looping.</li>
+                <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Minimal Impact:</strong>
+                    Controlled chunk sizes reduce table locking.</li>
+                <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Set & Forget:</strong>
+                    Fully automated via Job Queue.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2><i class="ri-flask-line"></i> Testing</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-title">Review the execution via video demo</span>
+                    <p>The following video demonstrates the report configuration and background execution via Job Queue.
+                    </p>
+                    <div class="video-container"
+                        style="background:#000; padding:50px; text-align:center; border-radius:8px; color:#fff;">
+                        <i class="ri-play-circle-line" style="font-size:48px"></i>
+                        <p>Video Demo Placeholder</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+
+</html>
