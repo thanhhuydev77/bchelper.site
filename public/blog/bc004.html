@@ -137,8 +137,22 @@
         end;</code></pre>
             </div>
 
-            <h3>Step 4 & 5: Initialize Default Dates</h3>
-            <p>Calculate the 1-month safety margin and assign default values.</p>
+            <h3>Step 4: Assign Default Until Date</h3>
+            <p>Add the <code>OnOpenPage</code> trigger to automatically populate the default <code>Until Date</code>
+                when the user opens the request page.</p>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>trigger OnOpenPage()
+begin
+    gUntilDateParam := gEarliestDateAllowed;
+end;</code></pre>
+            </div>
+            <h3>Step 5: Add <code>OnInitReport</code> trigger to calculate the Earliest Until Date</h3>
+            <p>This report is intended for scheduled Job Queue execution. When creating a new JQ entry, users define initial parameters on the Request Page. If "Until Date" is omitted, the system will dynamically recalculate the date relative to the current execution date.</p>
             <div class="code-wrapper">
                 <div class="code-header">
                     <div class="dot red"></div>
@@ -148,11 +162,6 @@
                 <pre><code>trigger OnInitReport()
 begin
     gEarliestDateAllowed := CALCDATE('&lt;-1M&gt;', TODAY);
-end;
-
-trigger OnOpenPage()
-begin
-    gUntilDateParam := gEarliestDateAllowed;
 end;</code></pre>
             </div>
 
