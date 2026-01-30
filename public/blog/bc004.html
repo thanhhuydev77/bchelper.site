@@ -215,7 +215,7 @@ var
 begin
     ChangeLogEntry.SetRange("Entry No.", FirstEntryNo, LastEntryNo);
     NumberRecordDeleted := ChangeLogEntry.Count();
-    ChangeLogEntry.DeleteAll();
+    ChangeLogEntry.Truncate();
 
     if GuiAllowed then
         Message('Deleted %1 rows.', NumberRecordDeleted);
