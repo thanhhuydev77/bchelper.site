@@ -44,6 +44,11 @@ export default {
         date: 'January 29, 2026',
         contentFile: '/blog/bc004.html',
       },
+      'BC-SOLUTIONS-005': {
+        title: 'Performance vs. Maintainability: Why Dictionary of [JsonObject] is the Superior Choice in AL',
+        date: 'March 18, 2026',
+        contentFile: '/blog/bc005.html',
+      },
     }
     
     if (blogData[blogId]) {

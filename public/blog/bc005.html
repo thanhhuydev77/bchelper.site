@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance vs. Maintainability: Dictionary of [JsonObject] in AL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="/blogAsset/style.css" rel="stylesheet">
+    <link href="/blogAsset/script.js" rel="Script">
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Performance vs. Maintainability: Dictionary of [JsonObject] in AL</h1>
+        </header>
+
+        <section>
+            <h2><i class="ri-information-line"></i> Background</h2>
+            <p>In software development, we often face a tug-of-war between high performance and ease of maintenance.
+                When working with temporary data storage in AL (Business Central), three common approaches emerge:
+                <strong>Temporary Tables</strong>, <strong>Dictionaries</strong>, and <strong>Lists.</strong></p>
+        </section>
+
+        <section>
+            <h2><i class="ri-error-warning-line"></i> The Dilemma: Efficiency vs. Scalability</h2>
+            <p>Traditional Dictionaries offer exceptional $O(1) lookup time but are restricted to a single Key-Value
+                pair. When requirements change such as needing to store three values instead of one - a simple
+                Dictionary fails, forcing developers into "nested dictionaries" that are hard to maintain.</p>
+        </section>
+
+        <section>
+            <h2><i class="ri-error-warning-line"></i> The Pitfalls of Temporary Tables</h2>
+            <p>While Temp Tables are easy to scale by adding fields, they often lead to:</p>
+
+            <p><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>Semantic Mismatch:</strong> If a
+                specific field doesn't exist, developers often "borrow" unrelated fields (e.g., using "No. Series" to
+                store a "Bank Account No."), making code confusing.</p>
+            <p><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>Performance Overhead:</strong>
+                Inserting into tables with many fields is slower than simple memory structures.</p>
+            <p><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>Debugging Difficulty:</strong>
+                Inspecting large sets of temporary records can be less intuitive than a clear key-value structure.</p>
+        </section>
+
+        <section>
+            <h2><i class="ri-lightbulb-flash-line"></i> The Solution: Dictionary of [JsonObject]</h2>
+            <p>To bridge the gap between performance and flexibility, using a <strong>Dictionary of
+                    [JsonObject]</strong> is the most balanced approach.</p>
+            <div class="pro-list">
+                <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Flexibility:</strong>
+                    JsonObject doesn't require a predefined schema. You can add meaningful keys on the fly.</p>
+                <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Performance:</strong> It
+                    retains $O(1)$ search speed. While slightly slower than primitive dictionaries, it is significantly
+                    faster than Lists or complex Temp Tables.</p>
+                <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Readability:</strong>
+                    Retrieve values using actual names (e.g., <code>Object.Get('BankAccountNo')</code>) instead of
+                    guessing why unrelated fields were reused.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2><i class="ri-line-chart-line"></i> Real-World Benchmark</h2>
+            <p>I processed <strong>500,000+ Customer Ledger Entries</strong> to identify unique customers and store
+                metadata.</p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <span class="timeline-title">Test 1: Initial Requirement (Get Unique Customers)</span>
+                    <ul>
+                        <li><strong>Dictionary:</strong> Fastest (Pure memory $O(1)$).</li>
+                        <li><strong>Temp Record:</strong> Fast, but carries table overhead.</li>
+                        <li><strong>List:</strong> Slowest ($O(n)$ search time).</li>
+                    </ul>
+                </div>
+                  <h3><code>Temp Record </code></h3>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>procedure UseTempRecord(): text
+var
+    TempCustomer: Record Customer temporary;
+    CustLedEntry: Record "Cust. Ledger Entry";
+    BeginTime: Time;
+    EndTime: Time;
+begin
+    BeginTime := CurrentDateTime.Time;
+    if CustLedEntry.FindSet() then
+        repeat
+            if not TempCustomer.get(CustLedEntry."Customer No.") then begin
+                TempCustomer.Init();
+                TempCustomer."No." := CustLedEntry."Customer No.";
+                TempCustomer.Insert();
+            end;
+        until CustLedEntry.Next() = 0;
+    EndTime := CurrentDateTime.Time;
+
+    exit(StrSubstNo('Got %1 Customer in %2 miliseconds by TempRecord', TempCustomer.Count, EndTime - BeginTime));
+end;</code></pre>
+            </div>
+                  <h3><code>List of [Code[20]] </code></h3>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>procedure UseList(): Text
+var
+    CustLedEntry: Record "Cust. Ledger Entry";
+    TempCustomer: List of [Code[20]];
+    BeginTime: Time;
+    EndTime: Time;
+begin
+    BeginTime := CurrentDateTime.Time;
+    if CustLedEntry.FindSet() then
+        repeat
+            if not TempCustomer.Contains(CustLedEntry."Customer No.") then
+                TempCustomer.Add(CustLedEntry."Customer No.");
+        until CustLedEntry.Next() = 0;
+    EndTime := CurrentDateTime.Time;
+
+    exit(StrSubstNo('Got %1 Customer in %2 miliseconds by List', TempCustomer.Count, EndTime - BeginTime));
+end;</code></pre>
+            </div>
+                  <h3><code>Dictionary of [Code[20],Decimal] </code></h3>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>procedure UseDictionaryBasic(): text
+var
+    CustLedEntry: Record "Cust. Ledger Entry";
+    TempCustomer: Dictionary of [Code[20], Decimal];
+    BeginTime: Time;
+    EndTime: Time;
+begin
+    BeginTime := CurrentDateTime.Time;
+    if CustLedEntry.FindSet() then
+        repeat
+            if not TempCustomer.ContainsKey(CustLedEntry."Customer No.") then
+                TempCustomer.Add(CustLedEntry."Customer No.", 0);
+        until CustLedEntry.Next() = 0;
+    EndTime := CurrentDateTime.Time;
+
+    exit(StrSubstNo('Got %1 Customer in %2 miliseconds by Dictionary 1', TempCustomer.Count, EndTime - BeginTime));
+end;</code></pre>
+            </div>
+                  <h3><code>Dictionary of [Code[20],JsonObject] </code></h3>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>procedure UseDictionaryJsonObject(): text
+var
+    CustLedEntry: Record "Cust. Ledger Entry";
+    DicCustomer: Dictionary of [Code[20], JsonObject];
+    BeginTime: Time;
+    EndTime: Time;
+    JsonObject: JsonObject;
+begin
+    BeginTime := CurrentDateTime.Time;
+    if CustLedEntry.FindSet() then
+        repeat
+            if not DicCustomer.ContainsKey(CustLedEntry."Customer No.") then
+                DicCustomer.Add(CustLedEntry."Customer No.", JsonObject.Clone().AsObject());
+        until CustLedEntry.Next() = 0;
+    EndTime := CurrentDateTime.Time;
+
+    exit(StrSubstNo('Got %1 Customer in %2 miliseconds by Dictionary JsonObject', DicCustomer.Count, EndTime - BeginTime));
+end;</code></pre>
+            </div>
+                <div class="highlight-box">
+                    <strong>Performance Result Search and Insert (500k Entries):</strong>
+                </div>
+
+                <div class="img-container">
+                    <img src="/blogAsset/bc005/bc005-2.png" alt="Compare 4 types insert data" />
+                </div>
+               
+                <div class="timeline-item">
+                    <span class="timeline-title">Test 2: Evolving Requirements (Add "Name" & "Bank Account No.")</span>
+                    <p>When adding multiple values, Standard Dictionaries failed. The Temp Table approach required
+                        "dirty" field mapping. In contrast, the <strong>Dictionary of JsonObject</strong> remained
+                        clean.</p>
+                <h3><code>Temp Record </code></h3>
+                <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>procedure UseTempRecord2(): text
+var
+    TempCustomer: Record Customer temporary;
+    CustLedEntry: Record "Cust. Ledger Entry";
+    BeginTime: Time;
+    index: Integer;
+    EndTime: Time;
+    Name: Text;
+    RecipientBankAccount: Text;
+begin
+    if CustLedEntry.FindSet() then
+        repeat
+            if not TempCustomer.get(CustLedEntry."Customer No.") then begin
+                TempCustomer.Init();
+                TempCustomer."No." := CustLedEntry."Customer No.";
+                TempCustomer."Name" := CustLedEntry."Customer Name";
+                TempCustomer."No. Series" := CustLedEntry."Recipient Bank Account"; //Recipient Bank Account
+                TempCustomer.Insert();
+            end;
+        until CustLedEntry.Next() = 0;
+
+    BeginTime := CurrentDateTime.Time;
+    for index := 1 to 1000 do begin
+        TempCustomer.Get('CUST' + Format(index));
+        Name := TempCustomer."Name";
+        RecipientBankAccount := TempCustomer."No. Series";
+    end;
+    EndTime := CurrentDateTime.Time;
+
+    exit(StrSubstNo('Got %1 Customer in %2 miliseconds by TempRecord', TempCustomer.Count, EndTime - BeginTime));
+end;</code></pre></div>
+                <h3><code>Dictionary of [Code[20], JsonObject] </code></h3>
+                <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                </div>
+                <pre><code>procedure UseDictionaryJsonObject2(): text
+var
+    CustLedEntry: Record "Cust. Ledger Entry";
+    DicCustomer: Dictionary of [Code[20], JsonObject];
+    BeginTime: Time;
+    EndTime: Time;
+    JsonObject: JsonObject;
+    Name: Text;
+    RecipientBankAccount: Text;
+    index: Integer;
+begin
+    if CustLedEntry.FindSet() then
+        repeat
+            if not DicCustomer.ContainsKey(CustLedEntry."Customer No.") then begin
+                DicCustomer.Add(CustLedEntry."Customer No.", JsonObject.Clone().AsObject());
+                DicCustomer.Get(CustLedEntry."Customer No.").Add('Name', CustLedEntry."Customer Name");
+                DicCustomer.Get(CustLedEntry."Customer No.").Add('RecipientBankAccount', CustLedEntry."Recipient Bank Account");
+            end;
+        until CustLedEntry.Next() = 0;
+
+    BeginTime := CurrentDateTime.Time;
+    for index := 1 to 1000 do begin
+        Name := DicCustomer.Get('CUST' + Format(index)).GetText('Name');
+        RecipientBankAccount := DicCustomer.Get('CUST' + Format(index)).GetText('RecipientBankAccount');
+    end;
+    EndTime := CurrentDateTime.Time;
+
+    exit(StrSubstNo('Got %1 Customer in %2 miliseconds by Dictionary JsonObject', DicCustomer.Count, EndTime - BeginTime));
+end;</code></pre>
+            </div>
+                    <div class="highlight-box">
+                        <strong>Performance Result (Retrieving 1,005 records):</strong>
+                    </div>
+                    <div class="img-container">
+                        <img src="/blogAsset/bc005/bc005-1.png"
+                            alt="Compare Temp record and Dictionary of JsonObject retrieve data" />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2><i class="ri-medal-line"></i> Conclusion</h2>
+            <p>While Temp Tables are a standard tool, they can lead to "code debt". The <strong>Dictionary of
+                    JsonObject</strong> provides:</p>
+            <ul class="pro-list">
+                <li><i class="ri-flashlight-line"></i> <strong>High Speed:</strong> Near-native dictionary performance.
+                </li>
+                <li><i class="ri-quill-pen-line"></i> <strong>Clean Code:</strong> Fields are named according to their
+                    purpose.</li>
+                <li><i class="ri-shield-check-line"></i> <strong>Future-Proofing:</strong> New data points don't require
+                    architectural changes.</li>
+            </ul>
+            <p>For complex logic where speed is critical but requirements evolve, this is the superior choice.</p>
+        </section>
+    </div>
+</body>
+</html>

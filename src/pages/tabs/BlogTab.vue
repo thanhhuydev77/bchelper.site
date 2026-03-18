@@ -84,6 +84,12 @@ export default {
           excerpt: 'Delete Change Log Entry with specified number record',
           tags: ["Job Queue Entry", "Record.Next", "Record.Truncate","ProcessingOnly"]
         },
+        {
+          id: 'BC-SOLUTIONS-005',
+          title: 'Performance vs. Maintainability: Why Dictionary of [JsonObject] is the Best.',
+          excerpt: 'Learn when to use Dictionary of [Text, Text] vs JsonObject for optimal performance and scalability.',
+          tags: ['Data Structures', 'Performance', 'JsonObject', 'Dictionary']
+        },
       ],
     }
   },

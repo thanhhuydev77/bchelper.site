@@ -9,6 +9,7 @@
             --code-bg: #1e1e1e;
             --code-text: #d4d4d4;
             --success-color: #107c10;
+            --fail-color: red;
             --timeline-line: #e1dfdd;
             --tag-bg: #f3f2f1;
             --highlight-bg: #eff6fc;
@@ -33,6 +34,8 @@
             --primary-color: #4dabf7;
             --primary-dark: #2196f3;
             --success-color: #4caf50;
+            --fail-color: #f44336;
+        
         }
 
         body {
@@ -246,6 +249,7 @@
         .pro-list li {
             background-color: var(--pro-list-bg);
             border-left: 3px solid var(--success-color);
+            border-left: 3px solid var(--fail-color);
             padding: 10px 15px;
             margin-bottom: 10px;
             border-radius: 0 4px 4px 0;
