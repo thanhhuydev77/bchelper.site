@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Report Sorting: Synchronizing Page Views with Reports in AL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="/blogAsset/style.css" rel="stylesheet">
+    <link href="/blogAsset/script.js" rel="Script">
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Dynamic Report Sorting: Synchronizing Page Views with Reports</h1>
+    </header>
+
+    <section>
+        <h2><i class="ri-information-line"></i> Background</h2>
+        <p>In Business Central, users often perform heavy data analysis directly on List Pages. They apply complex filters and specific sort orders (e.g., sorting by a custom FlowField or a specific Posting Date). However, when they run a standard report, those UI-level customizations are lost, forcing them to re-apply filters on the Report Request Page—which often doesn't even support the same sorting flexibility.</p>
+        
+        <div class="highlight-box">
+            <strong><i class="ri-error-warning-line"></i> The Problem</strong>
+            Standard Report Request Pages are frequently limited to sorting by Primary Keys or specific keys defined in the Report Dataset. This creates a "manual gap" where the user's on-screen analysis cannot be easily exported into a professional report format.
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-checkbox-circle-line"></i>Requirement</h2>
+        <p>The goal is to create a seamless "Print what I see" experience. If a user has filtered a list to show "Overdue Invoices" and sorted them by "Remaining Amount," the report should inherit that exact state with zero manual intervention.</p>
+    </section>
+
+    <section>
+        <h2><i class="ri-lightbulb-flash-line"></i>Solution Overview</h2>
+        <p>Instead of hardcoding sorting logic into the report or creating multiple report versions, we use a <strong>bridge pattern</strong>. We capture the <code>View</code> of the current Page and "inject" it into the Report's data engine before it fires.</p>
+        <ul>
+            <li><strong>Inherit Filters:</strong> Carry over all Quick Filters and Filter Pane criteria.</li>
+            <li><strong>Inherit Sorting:</strong> Respect the column-click sorting active in the Web Client.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
+        <div class="tags-container">
+            <span class="tag"><i class="ri-hashtag"></i> Record.GetView</span>
+            <span class="tag"><i class="ri-hashtag"></i> Record.SetView</span>
+            <span class="tag"><i class="ri-hashtag"></i> Report.SetTableView</span>
+        </div>
+
+        <h3>The General Implementation Pattern</h3>
+        <p>This logic can be placed in any Page or Page Extension action. Replace <code>YourRecord</code> and <code>YourReport</code> with your specific objects.In this case I use Customer List and Report Customer Sales Statistics.</p>
+
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">CustomerListExt.al</div>
+            </div>
+<pre><code>action(ALECustomerSales)
+{
+    Image = Sales;
+    Caption = 'ALE Sales Statistics';
+    ApplicationArea = all;
+    ToolTip = 'Executes the ALE Sales Statistics action.';
+    trigger OnAction()
+    var
+        customer: Record Customer;
+        CustomerSalesStatistics: Report "Customer Sales Statistics";
+    begin
+        customer.SetView(Rec.GetView());
+        CustomerSalesStatistics.SetTableView(customer);
+        CustomerSalesStatistics.Run();
+    end;
+            }</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-thumb-up-line"></i> Pros</h2>
+        <ul class="pro-list">
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Maximize Standard Features:</strong> No need to create custom versions of complex standard reports.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Minimal Customization:</strong> Reduces the extension footprint, making future BC upgrades much easier.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Intuitive UI:</strong> Users get exactly what they expect based on their current screen view.</li>
+        </ul>
+        </ul>
+    </section>
+
+    <section>
+        <h2><i class="ri-movie-line"></i> Test</h2>
+        <p>
+            In this scenario,firstly I am trying print report sales Statistics(standard) with customer balance ascending but it can not. After that, i use new Action ALE Sales Statistics (still this report not any customization) and it shows list customer by my sorting.
+        </p>
+        <br>
+      
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/UloHFu1p8O0?si=75_-Ky5RoHCpbWEK" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <br
+        <p> Github Link:  <a href="https://github.com/thanhhuydev77/FileAttachmentCustomize/blob/main/Source/BC006/ALECustomerList.PageExt.al"> Link</a>
+</p>
+    </section>
+</div>
+
+</body>
+</html>

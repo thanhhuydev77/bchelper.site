@@ -49,6 +49,11 @@ export default {
         date: 'March 18, 2026',
         contentFile: '/blog/bc005.html',
       },
+      'BC-SOLUTIONS-006': {
+        title: 'Dynamic Report Sorting: Synchronizing Page Views with Reports',
+        date: 'March 30, 2026',
+        contentFile: '/blog/bc006.html',
+      },
     }
     
     if (blogData[blogId]) {

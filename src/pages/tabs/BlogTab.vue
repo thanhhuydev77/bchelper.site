@@ -90,6 +90,12 @@ export default {
           excerpt: 'Learn when to use Dictionary of [Text, Text] vs JsonObject for optimal performance and scalability.',
           tags: ['Data Structures', 'Performance', 'JsonObject', 'Dictionary']
         },
+        {
+          id: 'BC-SOLUTIONS-006',
+          title: 'Dynamic Report Sorting: Synchronizing Page Views with Reports',
+          excerpt: 'Copy customer sorting, filter from page to report.',
+          tags: ['#Record.GetView', '#Record.SetView', '#Report.SetTableView']
+        },
       ],
     }
   },
