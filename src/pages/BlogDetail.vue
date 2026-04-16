@@ -54,6 +54,11 @@ export default {
         date: 'March 30, 2026',
         contentFile: '/blog/bc006.html',
       },
+      'BC-SOLUTIONS-007': {
+        title: 'Mastering RDLC: Creating a Smart 2-Column Report for Warehouse Labels',
+        date: 'April 7, 2026',
+        contentFile: '/blog/bc007.html',
+      },
     }
     
     if (blogData[blogId]) {

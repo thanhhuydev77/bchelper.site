@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering RDLC: Creating a Smart 2-Column Report for Warehouse Labels</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="/blogAsset/style.css" rel="stylesheet">
+    <link href="/blogAsset/script.js" rel="Script">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Mastering RDLC: Creating a Smart 2-Column Report for Warehouse Labels</h1>
+    </header>
+
+    <section>
+        <h2><i class="ri-information-line"></i> Background</h2>
+        <p>In warehouse operations, efficiency is everything. Managers generate reports linking Container Nos. to their respective Warehouse Shipments, typically printed on <strong>4x6 inch paper</strong>—the logistics standard. These labels are critical for staff to execute loading tasks accurately.</p>
+        
+        <div class="highlight-box">
+            <strong><i class="ri-error-warning-line"></i> The Problem: Vertical Overflow</strong>
+            A single container can hold up to 10 shipments. Using a standard single-column RDLC layout on a small 4x6 label quickly leads to space issues. The list becomes too long, forcing unnecessary page breaks or cutting off vital information, which wastes paper and confuses the staff.
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-code-line"></i> Current Design</h2>
+        <div class="timeline-item">
+            <span class="timeline-title">AL Source Code</span>
+            <div class="code-wrapper">
+                <div class="code-header">
+                    <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                    <div class="code-title">ALELoadWarehouseShpmtOrgn.Report.al</div>
+                </div>
+                <pre><code>report 70003 "ALE Load Warehouse Shpmt Orgn"
+{
+    Caption = 'Load Warehouse Shipment';
+    UsageCategory = Administration;
+    ApplicationArea = All;
+    DefaultRenderingLayout = Layout;
+
+    dataset
+    {
+        dataitem("Warehouse Shipment"; "Warehouse Shipment Header")
+        {
+            column(No_; "No.") { }
+            column(External_Document_No_; "External Document No.") { }
+            column(ExtDocNoBarCode; EncodeBarcode128("External Document No.")) { }
+        }
+    }
+    rendering
+    {
+        layout(Layout)
+        {
+            Type = RDLC;
+            LayoutFile = '.\Layout\ALELoadWarehouseShipment.rdlc';
+        }
+    }
+    trigger OnInitReport()
+    begin
+        gBarcodeFontProvider := Enum::"Barcode Font Provider"::IDAutomation1D;
+    end;
+
+    local procedure EncodeBarcode128(gBarcodeText: Text): Text
+    begin
+        if gBarcodeText <> '' then
+            exit(gBarcodeFontProvider.EncodeFont(gBarcodeText, "Barcode Symbology"::Code128));
+    end;
+
+    var
+        gBarcodeFontProvider: Interface "Barcode Font Provider";
+}</code></pre>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <span class="timeline-title">SSRS Design</span>
+            <div class="img-container">
+                <img src="/blogAsset/bc007/bc007-1.png" alt="Original SSRS Design"/>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <span class="timeline-title">Real life Example</span>
+            <div class="img-container">
+                <img src="/blogAsset/bc007/bc007-2.png" alt="Real life Example"/>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-lightbulb-flash-line"></i> New Solution: Dynamic 2-Column Split</h2>
+        <p>To maximize the 4x6 real estate, we implement a dual-column layout. When shipments exceed a defined limit (e.g., 5 rows), the list automatically "overflows" into a second column on the same page. This keeps all data on a single label.</p>
+    </section>
+
+    <section>
+        <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
+        <div class="tags-container">
+            <span class="tag"><i class="ri-hashtag"></i> RDLC</span>
+            <span class="tag"><i class="ri-hashtag"></i> SSRS</span>
+            <span class="tag"><i class="ri-hashtag"></i> AL Dictionary</span>
+            <span class="tag"><i class="ri-hashtag"></i> Warehouse Logistics</span>
+        </div>
+
+        <h3>Step 1: Generate a Dynamic Index in AL</h3>
+        <p>To split the data in RDLC, we need to "rank" each shipment within its container. Using an <strong>AL Dictionary</strong> ensures $O(1)$ performance for tracking and incrementing indexes on the fly.</p>
+
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">IndexLogic.al</div>
+            </div>
+<pre><code>report 70004 "ALE Load Whse Shipment New"
+{
+    Caption = 'Load Warehouse Shipment New';
+    UsageCategory = Administration;
+    ApplicationArea = All;
+    DefaultRenderingLayout = Layout;
+
+    dataset
+    {
+        dataitem("Warehouse Shipment"; "Warehouse Shipment Header")
+        {
+            column(No_; "No.") { }
+            column(External_Document_No_; "External Document No.") { }
+            column(ExtDocNoBarCode; EncodeBarcode128("External Document No.")) { }
+            column(Index; GetIndexByExternalDocumentNo("External Document No.", "No.")) { }
+        }
+    }
+    rendering
+    {
+        layout(Layout)
+        {
+            Type = RDLC;
+            LayoutFile = '.\Layout\ALELoadWarehouseShipment2.rdlc';
+        }
+    }
+    trigger OnInitReport()
+    begin
+        gBarcodeFontProvider := Enum::"Barcode Font Provider"::IDAutomation1D;
+    end;
+
+    local procedure EncodeBarcode128(gBarcodeText: Text): Text
+    begin
+        if gBarcodeText <> '' then
+            exit(gBarcodeFontProvider.EncodeFont(gBarcodeText, "Barcode Symbology"::Code128));
+    end;
+
+    procedure GetIndexByExternalDocumentNo(RootKey: Code[35]; Value: code[20]): Integer
+    begin
+        if not gContainterWSH.Add(RootKey, 1) then
+            gContainterWSH.Set(RootKey, gContainterWSH.Get(RootKey) + 1);
+
+        exit(gContainterWSH.Get(RootKey));
+    end;
+
+    var
+        gBarcodeFontProvider: Interface "Barcode Font Provider";
+        gContainterWSH: Dictionary of [Code[35], Integer];
+}</code></pre>
+        </div>
+
+        <h3>Step 2: Structure the RDLC Layout</h3>
+        <p>Instead of a standard Row Group (vertical growth), we use two identical table objects placed horizontally within a main container cell.</p>
+        <div class="img-container" style="background: #f1f1f1; padding: 20px; text-align: center; border-radius: 8px;">
+            <i class="ri-layout-column-line" style="font-size: 40px; color: #0078d4;"></i>
+            <div class="img-container">
+                <img src="/blogAsset/bc007/bc007-3.png" alt="Modify Layout for 2 Columns"/>
+            </div>
+        </div>
+
+        <h3>Step 3: Side-by-Side Filtering</h3>
+        <p>Since RDLC doesn't support "newspaper-style" columns natively, we apply filters to the two child tables:</p>
+        <ul>
+            <li><strong>Left Table:</strong> Set Filter property to <code>Index <= 5</code>.</li>
+            <li><strong>Right Table:</strong> Set Filter property to <code>Index > 5</code>.</li>
+            <div class="img-container">
+                <img src="/blogAsset/bc007/bc007-4.png" alt="Modify Layout for 2 Columns"/>
+            </div>
+        </ul>
+        <p>If a container has only 4 shipments, the right table remains empty, keeping the label clean and professional.</p>
+    </section>
+
+    <section>
+        <h2><i class="ri-thumb-up-line"></i> Pros and Cons</h2>
+        <div class="pro-list">
+            <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Space Efficiency:</strong> Maximizes the 4x6 label width, doubling the data capacity.</p>
+            <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Better UX:</strong> Staff see the entire loading list at a glance without flipping through multiple labels.</p>
+            <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>High Performance:</strong> The Dictionary approach in AL ensures fast execution even with large datasets.</p>
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-flask-line"></i> Testing</h2>
+         <p>New Report With Adjusted Layout</p>
+          <div class="img-container">
+                <img src="/blogAsset/bc007/bc007-5.png" alt="Modify Layout for 2 Columns"/>
+            </div>
+    </section>
+</div>
+</body>
+</html>

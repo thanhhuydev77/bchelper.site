@@ -96,6 +96,12 @@ export default {
           excerpt: 'Copy customer sorting, filter from page to report.',
           tags: ['#Record.GetView', '#Record.SetView', '#Report.SetTableView']
         },
+        {
+          id: 'BC-SOLUTIONS-007',
+          title: 'Mastering RDLC: Creating a Smart 2-Column Report for Warehouse Labels',
+          excerpt: 'Implement a dynamic 2-column RDLC layout for warehouse labels using AL Dictionary indexing and SSRS filtering to maximize 4x6 label space.',
+          tags: ['RDLC', 'SSRS', 'AL Dictionary', 'Warehouse Logistics']
+        },
       ],
     }
   },
