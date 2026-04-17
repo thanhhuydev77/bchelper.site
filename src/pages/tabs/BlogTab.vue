@@ -102,6 +102,12 @@ export default {
           excerpt: 'Implement a dynamic 2-column RDLC layout for warehouse labels using AL Dictionary indexing and SSRS filtering to maximize 4x6 label space.',
           tags: ['RDLC', 'SSRS', 'AL Dictionary', 'Warehouse Logistics']
         },
+        {
+          id: 'BC-SOLUTIONS-008',
+          title: 'Visual Branding: Adding Logos to Shipping Agents & Exporting to Excel',
+          excerpt: 'Add logo support to Shipping Agents using the Media type, display them via a FactBox, and stream images into Excel/PDF SSRS reports.',
+          tags: ['Media', 'InStream', 'FactBox', 'SSRS']
+        },
       ],
     }
   },

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Branding: Adding Logos to Shipping Agents & Exporting to Excel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="/blogAsset/style.css" rel="stylesheet">
+    <link href="/blogAsset/script.js" rel="Script">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Visual Branding: Adding Logos to Shipping Agents & Exporting to Excel</h1>
+    </header>
+
+    <section>
+        <h2><i class="ri-information-line"></i> Background</h2>
+        <p>In a manufacturing environment, logistics involves managing numerous shipping partners. However, the default Business Central interface for <strong>Shipping Agents</strong> is strictly text-based, which can be inefficient for quick identification during high-pressure warehouse operations.</p>
+        
+        <div class="highlight-box">
+            <strong><i class="ri-error-warning-line"></i> The Problem</strong>
+            The standard Shipping Agent page lacks visual cues, making it "boring" and prone to selection errors. Furthermore, warehouse teams often require Excel exports that include these logos to help external drivers and coordinators identify the correct carriers at a glance.
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-lightbulb-flash-line"></i> The Solution</h2>
+        <p>To modernize the shipping management experience, we implement a three-tier solution:</p>
+        <ul>
+            <li><strong>Schema Update:</strong> Add a "Logo" field using the <code>Media</code> data type for better performance.</li>
+            <li><strong>UI Enhancement:</strong> Implement a <strong>FactBox</strong> to manage and display images.</li>
+            <li><strong>Reporting:</strong> Create an SSRS Report that streams these images into professional Excel or PDF exports.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
+        <div class="tags-container">
+            <span class="tag"><i class="ri-hashtag"></i> Media</span>
+            <span class="tag"><i class="ri-hashtag"></i> InStream</span>
+            <span class="tag"><i class="ri-hashtag"></i> FactBox</span>
+            <span class="tag"><i class="ri-hashtag"></i> SSRS</span>
+        </div>
+
+        <h3>Step 1: Create Table Extension</h3>
+        <p>We use the <code>Media</code> type instead of <code>Blob</code>. This is the modern standard for BC Cloud, as it handles scaling and performance more efficiently. We also add a <code>fieldgroup</code> for <strong>Brick</strong> view to enable tile visualization.</p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">ShippingAgentExt.Table.al</div>
+            </div>
+<pre><code>tableextension 70000 "ALE Shipping Agent" extends "Shipping Agent"
+{
+    fields
+    {
+        field(70000; "ALE Logo"; Media)
+        {
+            Caption = 'Picture';
+        }
+    }
+    fieldgroups
+    {
+        addlast(Brick; Code, Name, "ALE Logo") { }
+    }
+}</code></pre>
+        </div>
+
+        <h3>Step 2: Create Page CardPart for the Logo</h3>
+        <p>This part acts as the container for the image and provides actions to <strong>Import</strong>, <strong>Export</strong>, or <strong>Delete</strong> the logo using the <code>Media</code> management methods.</p>
+<div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">ALEShippingAgentLogo.Page.al</div>
+            </div>
+<pre><code>page 70000 "ALE Shipping Agent Logo"
+{
+    Caption = 'Shipping Agent Logo';
+    PageType = CardPart;
+    SourceTable = "Shipping Agent";
+
+    layout
+    {
+        area(content)
+        {
+            field(Picture; Rec."ALE Logo")
+            {
+                ApplicationArea = All;
+                ShowCaption = false;
+                ToolTip = 'Specifies the picture that has been inserted for the item.';
+            }
+        }
+    }
+
+    actions
+    {
+        area(processing)
+        {
+            fileuploadaction(ImportPicture)
+            {
+                ApplicationArea = All;
+                AllowMultipleFiles = false;
+                AllowedFileExtensions = '.jpg', '.jpeg', '.png';
+                Caption = 'Import';
+                Image = Import;
+                ToolTip = 'Import a picture file.';
+
+                trigger OnAction(Files: List of [FileUpload])
+                var
+                    Instream: InStream;
+                begin
+                    if Files.Count = 0 then exit;
+                    Files.Get(1).CreateInStream(Instream);
+                    Rec."ALE Logo".ImportStream(Instream, Files.Get(1).FileName);
+                    Rec.Modify();
+                end;
+            }
+            action(ExportFile)
+            {
+                ApplicationArea = All;
+                Caption = 'Export';
+                Image = Export;
+                ToolTip = 'Export the picture to a file.';
+                Enabled = HadContent;
+                trigger OnAction()
+                var
+                    TenantMedia: Record "Tenant Media";
+                    Instream: Instream;
+                    FileName: Text;
+                begin
+                    Rec.TestField(Code);
+
+                    TenantMedia.Get(Rec."ALE Logo".MediaId);
+                    TenantMedia.CalcFields(Content);
+                    TenantMedia.Content.CreateInStream(Instream);
+                    FileName := TenantMedia.Description;
+                    DownloadFromStream(Instream, '', '', '', FileName);
+                end;
+            }
+            action(DeletePicture)
+            {
+                ApplicationArea = All;
+                Caption = 'Delete';
+                Image = Delete;
+                ToolTip = 'Delete the record.';
+                Enabled = HadContent;
+                trigger OnAction()
+                begin
+                    DeleteItemPicture();
+                end;
+            }
+        }
+    }
+
+    trigger OnAfterGetRecord()
+    begin
+        HadContent := Rec."ALE Logo".HasValue();
+    end;
+
+    procedure DeleteItemPicture()
+    var
+        DeleteImageQst: Label 'Are you sure you want to delete the picture?';
+    begin
+        Rec.TestField(Code);
+
+        if not Confirm(DeleteImageQst) then
+            exit;
+
+        Clear(Rec."ALE Logo");
+        Rec.Modify(true);
+    end;
+
+    var
+        HadContent: Boolean;
+}</code></pre>
+        </div>
+        <h3>Step 3: Extend Shipping Agent Page (FactBox)</h3>
+        <p>Inject the CardPart into the FactBox area so users can see the logo immediately upon selecting a record in the list.</p>
+        <div class="code-wrapper">
+<pre><code>pageextension 70005 "ALE Shipping Agents" extends "Shipping Agents"
+{
+    layout
+    {
+        addlast(factboxes)
+        {
+            part(Image; "ALE Shipping Agent Logo")
+            {
+                ApplicationArea = All;
+                SubPageLink = Code = field(Code);
+            }
+        }
+    }
+}</code></pre>
+        </div>
+
+        <h3>Step 4: SSRS Report Development</h3>
+        <p>To show the logo in an Excel/PDF report, you must use <code>InStream</code> to pass the media data to the layout. In the RDLC layout, set the image source to <strong>Database</strong> and the MIME type to <code>image/png</code> or <code>image/jpeg</code>.</p>
+         <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">ALEShippingAgents.Report.al</div>
+            </div>
+<pre><code>report 70005 "ALEShipping Agents"
+{
+    ApplicationArea = All;
+    Caption = 'Shipping Agents';
+    UsageCategory = ReportsAndAnalysis;
+    DefaultRenderingLayout = RDLC;
+
+    dataset
+    {
+        dataitem(ShippingAgent; "Shipping Agent")
+        {
+            column("Code"; "Code") { }
+            column(Name; Name) { }
+            column(AccountNo; "Account No.") { }
+            column(Picture; gTenantMedia.Content) { }
+            trigger OnAfterGetRecord()
+            begin
+                Clear(gTenantMedia);
+                if not ShippingAgent."ALE Logo".HasValue() then
+                    exit;
+
+                gTenantMedia.Get(ShippingAgent."ALE Logo".MediaId);
+                gTenantMedia.CalcFields(Content);
+            end;
+        }
+    }
+    rendering
+    {
+        layout(RDLC)
+        {
+            Type = RDLC;
+            LayoutFile = '.\Layout\ALEShippingAgents.rdlc';
+        }
+    }
+
+    var
+        gTenantMedia: Record "Tenant Media";
+}</code></pre>
+        </div>
+        <div class="img-container">
+            <img src="/blogAsset/bc008/bc008-1.png" alt="Layout for Export"/>
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-thumb-up-line"></i> Pros & Benefits</h2>
+        <ul class="pro-list">
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Cloud Compatibility:</strong> Works seamlessly on SaaS and On-Premise environments.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Improved Identification:</strong> Visual logos allow for split-second recognition, reducing human error.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>FactBox Utility:</strong> Keeps the main list clean while providing high-value data in the side pane.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2><i class="ri-flask-line"></i> Testing Scenarios</h2>
+         <p>Page Shipping Agent Modified with New Factbox. On Factbox, we can view and import/export logo directly. By added <code>fieldgroup: Brick</code> , you can change view type to Tile/Tall Tiles to view the Logo.</p>
+         <div class="img-container">
+             <img src="/blogAsset/bc008/bc008-2.png" alt="Page Modified"/>
+        </div>
+    
+        <p>Report Exported to Excel</p>
+        <div class="img-container">
+            <img src="/blogAsset/bc008/bc008-3.png" alt="Layout Exported by Excel"/>
+        </div>
+
+    </section>
+</div>
+
+</body>
+</html>

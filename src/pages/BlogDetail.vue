@@ -59,6 +59,11 @@ export default {
         date: 'April 7, 2026',
         contentFile: '/blog/bc007.html',
       },
+      'BC-SOLUTIONS-008': {
+        title: 'Visual Branding: Adding Logos to Shipping Agents & Exporting to Excel',
+        date: 'April 17, 2026',
+        contentFile: '/blog/bc008.html',
+      },
     }
     
     if (blogData[blogId]) {
