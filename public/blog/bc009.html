@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Localization Setup: Installing US and W1 Versions on the Same Server</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="/blogAsset/style.css" rel="stylesheet">
+    <link href="/blogAsset/script.js" rel="Script">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Multi-Localization Setup: Installing Different BC Versions on One Server</h1>
+    </header>
+
+    <section>
+        <h2><i class="ri-information-line"></i> Background</h2>
+        <p>In the world of Business Central On-Premise (v27x), you may often need to jump between different localizations. For example, while your primary environment is <strong>W1</strong>, a new customer might require the <strong>US version</strong>, which contains specific local features and tax logic. To work efficiently across multiple projects, you need to host both versions on your local machine simultaneously.</p>
+        
+        <div class="highlight-box">
+            <strong><i class="ri-settings-line"></i> The Strategy</strong>
+            Instead of multiple virtual machines, we will create side-by-side SQL databases and independent BC Service Instances. This allows you to switch between W1 and US localizations simply by changing the URL or Port.
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-list-check"></i> Overall Steps</h2>
+        <ol>
+            <li>Download the specific Localization (US) from Microsoft.</li>
+            <li>Restore the localized Demo Database via SSMS.</li>
+            <li>Create and configure a new BC Instance using PowerShell.</li>
+        </ol>
+    </section>
+
+    <section>
+        <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
+        <div class="tags-container">
+            <span class="tag"><i class="ri-hashtag"></i> BC On-Prem</span>
+            <span class="tag"><i class="ri-hashtag"></i> PowerShell</span>
+            <span class="tag"><i class="ri-hashtag"></i> SQL Server</span>
+            <span class="tag"><i class="ri-hashtag"></i> IIS</span>
+        </div>
+
+        <h3>Step 1: Download & Extract</h3>
+        <p>Navigate to the Microsoft Support page to download the specific build (e.g., BC27.5 US). Once downloaded, extract the ZIP file to access the installation media.</p>
+
+        <h3>Step 2: Restore the Localized Database</h3>
+        <p>Open <strong>SQL Server Management Studio (SSMS)</strong> and follow these sub-steps:</p>
+        <ul>
+            <li>Right-click <strong>Databases</strong> -> <strong>Restore Database</strong>.</li>
+            <li>Locate the <code>.bak</code> file within the extracted installation folder (usually under <code>ProductDVD\SQL Demo Database</code>).</li>
+            <li>Rename the destination database to something distinct, such as <strong>BC270US</strong>, to avoid conflicts with your W1 database.</li>
+        </ul>
+
+        <h3>Step 3: Create New BC Instance via PowerShell</h3>
+        <p>To simplify this, we can use the generator at <strong>BCHelper.Site</strong> to create the setup script.</p>
+        
+        <div class="highlight-box" style="background: #f0f7ff; border-left: 5px solid #0078d4;">
+            <strong>Configuration Parameters:</strong>
+            <ul>
+                <li><strong>Instance Name:</strong> BC270US (Visible in Windows Services).</li>
+                <li><strong>Web Instance:</strong> BC270US (Visible in IIS).</li>
+                <li><strong>Auth Type:</strong> Windows.</li>
+                <li><strong>Database Server/Name:</strong> localhost / BC270US.</li>
+            </ul>
+        </div>
+
+        <h3>Step 4: Port Management</h3>
+        <p>Ensure you select ports that are not already in use by your W1 instance or Windows services. For example:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+            <tr style="background: #edf2f7; text-align: left;">
+                <th style="padding: 10px; border: 1px solid #cbd5e0;">Service</th>
+                <th style="padding: 10px; border: 1px solid #cbd5e0;">Recommended Port</th>
+            </tr>
+            <tr><td style="padding: 10px; border: 1px solid #cbd5e0;">Management</td><td style="padding: 10px; border: 1px solid #cbd5e0;">12045</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid #cbd5e0;">Client</td><td style="padding: 10px; border: 1px solid #cbd5e0;">8046</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid #cbd5e0;">SOAP / OData</td><td style="padding: 10px; border: 1px solid #cbd5e0;">8047 / 8048</td></tr>
+            <tr><td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Development</strong></td><td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>8049</strong> (Used in launch.json)</td></tr>
+        </table>
+    </section>
+
+    <section>
+        <h2><i class="ri-terminal-box-line"></i> Execution</h2>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+                <div class="code-title">PowerShell (Admin Mode)</div>
+            </div>
+<pre><code># Example snippet generated from BCHelper.Site
+New-NAVServerInstance -ServerInstance "BC270US" -ManagementServicesPort 12045 -ClientServicesPort 8046 ...
+Set-NAVServerConfiguration -ServerInstance "BC270US" -KeyName "DatabaseName" -KeyValue "BC270US"
+# Run F5 to execute the full script</code></pre>
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-checkbox-circle-line"></i> Verify Results</h2>
+        <div class="pro-list">
+            <p><i class="ri-check-line" style="color:var(--
