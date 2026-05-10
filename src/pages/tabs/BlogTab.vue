@@ -108,6 +108,12 @@ export default {
           excerpt: 'Add logo support to Shipping Agents using the Media type, display them via a FactBox, and stream images into Excel/PDF SSRS reports.',
           tags: ['Media', 'InStream', 'FactBox', 'SSRS']
         },
+        {
+          id: 'BC-SOLUTIONS-009',
+          title: 'Multi-Localization Setup: Installing US and W1 Versions on the Same Server',
+          excerpt: 'Install Multiple Business Central Instance in same Server.',
+          tags: ['BC On-Prem', 'PowerShell', 'SQL Server', 'IIS']
+        },
       ],
     }
   },

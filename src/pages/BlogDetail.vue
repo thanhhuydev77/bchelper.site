@@ -64,6 +64,11 @@ export default {
         date: 'April 17, 2026',
         contentFile: '/blog/bc008.html',
       },
+      'BC-SOLUTIONS-009': {
+        title: 'Multi-Localization Setup: Installing US and W1 Versions on the Same Server',
+        date: 'May 10, 2026',
+        contentFile: '/blog/bc009.html',
+      },
     }
     
     if (blogData[blogId]) {
