@@ -12,6 +12,7 @@ import { registerPlugins } from '@/plugins'
 // Components
 import App from './App.vue'
 import router from './router'
+import SpeedInsights from "@vercel/speed-insights/next"
 
 // Styles
 import 'unfonts.css'
