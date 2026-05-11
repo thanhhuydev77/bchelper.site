@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Localization Setup: Installing US and W1 Versions on the Same Server</title>
+    <title>Multi-Localization Setup: Installing Different BC Versions on One Server</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
     <link href="/blogAsset/style.css" rel="stylesheet">
@@ -19,20 +19,29 @@
     <section>
         <h2><i class="ri-information-line"></i> Background</h2>
         <p>In the world of Business Central On-Premise, you may often need to jump between different localizations. For example, while your primary environment is <strong>W1</strong>, a new customer might require the <strong>US version</strong>, which contains specific local features and tax logic. To work efficiently across multiple projects, you need to host both versions on your local machine simultaneously.</p>
-        
+
         <div class="highlight-box">
             <strong><i class="ri-settings-line"></i> The Strategy</strong>
-            Instead of multiple virtual machines, we will create side-by-side SQL databases and independent BC Service Instances. This allows you to switch between W1 and US localizations simply by changing the URL or Port.
+            Instead of spinning up multiple virtual machines, we create side-by-side SQL databases and independent BC Service Instances. This lets you switch between W1 and US localizations simply by changing the URL or port.
         </div>
     </section>
 
     <section>
         <h2><i class="ri-list-check"></i> Overall Steps</h2>
-        <p>
-            <b>1.</b> Download the specific Localization (US) from Microsoft.<br>
-            <b>2.</b> Restore the localized Demo Database via SSMS.<br>
-            <b>3</b> Create and configure a new BC Instance using PowerShell. <br>
-        </p>
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-title">Step 1 — Download</span>
+                <p>Download the specific localization (e.g., US) from Microsoft.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-title">Step 2 — Restore Database</span>
+                <p>Restore the localized Demo Database via SSMS.</p>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-title">Step 3 — Create BC Instance</span>
+                <p>Create and configure a new BC Service Instance using PowerShell.</p>
+            </div>
+        </div>
     </section>
 
     <section>
@@ -44,92 +53,132 @@
             <span class="tag"><i class="ri-hashtag"></i> IIS</span>
         </div>
 
-        <h3>Step 1: Download & Extract</h3>
+        <h3>Step 1: Download &amp; Extract</h3>
         <p>Navigate to the Microsoft Support page to download the specific build (e.g., BC27.5 US). Once downloaded, extract the ZIP file to access the installation media.</p>
         <div class="img-container">
-             <img src="/blogAsset/bc009/bc009-1.png" alt="Download page"/>
+            <img src="/blogAsset/bc009/bc009-1.png" alt="Download page"/>
         </div>
         <div class="img-container">
-             <img src="/blogAsset/bc009/bc009-2.png" alt="ZIP file"/>
+            <img src="/blogAsset/bc009/bc009-2.png" alt="ZIP file"/>
         </div>
         <div class="img-container">
-             <img src="/blogAsset/bc009/bc009-3.png" alt="Zip extracted"/>
+            <img src="/blogAsset/bc009/bc009-3.png" alt="ZIP extracted"/>
         </div>
 
         <h3>Step 2: Restore the Localized Database</h3>
         <p>Open <strong>SQL Server Management Studio (SSMS)</strong> and follow these sub-steps:</p>
         <ul>
-            <li>Right-click <strong>Databases</strong> -> <strong>Restore Database</strong>.</li>
-            </div>
-        <div class="img-container">
-             <img src="/blogAsset/bc009/bc009-4.png" alt="DB Restore"/>
-        </div>
-            <li>Locate the <code>.bak</code> file within the extracted installation folder (usually under <code>ProductDVD\SQL Demo Database</code>).</li>
-            <div class="img-container">
-                <img src="/blogAsset/bc009/bc009-5.png" alt="bak file selection"/>
-            </div>
-            <li>Rename the destination database to something distinct, such as <strong>BC270US</strong>, to avoid conflicts with your W1 database.</li>
-            <div class="img-container">
-                <img src="/blogAsset/bc009/bc009-6.png" alt="bak file selection"/>
-            </div>
+            <li>Right-click <strong>Databases</strong> → <strong>Restore Database</strong>.</li>
         </ul>
+        <div class="img-container">
+            <img src="/blogAsset/bc009/bc009-4.png" alt="DB Restore"/>
+        </div>
+        <ul>
+            <li>Locate the <code>.bak</code> file within the extracted installation folder (usually under <code>ProductDVD\SQL Demo Database</code>).</li>
+        </ul>
+        <div class="img-container">
+            <img src="/blogAsset/bc009/bc009-5.png" alt=".bak file selection"/>
+        </div>
+        <ul>
+            <li>Rename the destination database to something distinct, such as <strong>BC270US</strong>, to avoid conflicts with your existing W1 database.</li>
+        </ul>
+        <div class="img-container">
+            <img src="/blogAsset/bc009/bc009-6.png" alt="Rename database"/>
+        </div>
 
         <h3>Step 3: Create New BC Instance via PowerShell</h3>
-        <p>To simplify this, we can use the generator at <strong>BCHelper.Site</strong> to create the setup script.</p>
-        <p>1. At tab, Navigate Action <b>Add BC Instance</b> </p>
-        <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-7.png" alt="open website"/>
+        <p>To simplify this, use the generator at <strong>BCHelper.Site</strong> to build the setup script automatically.</p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-title">1. Open the Add BC Instance tab</span>
+                <div class="img-container">
+                    <img src="/blogAsset/bc009/bc009-7.png" alt="Open website"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">2. Fill in the new instance configuration</span>
+                <ul>
+                    <li><strong>Platform Version:</strong> 270 — using BC275, so the main platform version is 270.</li>
+                    <li><strong>Instance Name:</strong> BC270US — distinct from the existing BC270 (W1) instance.</li>
+                    <li><strong>Auth Type:</strong> Windows — default for SSO.</li>
+                    <li><strong>Web Server Instance:</strong> BC270US — visible in IIS after creation.</li>
+                    <li><strong>Database Server:</strong> localhost — DB hosted on the same machine.</li>
+                    <li><strong>Database Name:</strong> BC270US — the restored database name.</li>
+                    <li><strong>Management Services Port:</strong> 12045</li>
+                    <li><strong>Client Services Port:</strong> 8046</li>
+                    <li><strong>SOAP Services Port:</strong> 8047</li>
+                    <li><strong>OData Service Port:</strong> 8048</li>
+                    <li><strong>Dev Service Port:</strong> 8049 — note this port when configuring <code>launch.json</code>.</li>
+                </ul>
+                <div class="highlight-box" style="margin-top: 12px; border-left-color: #718096; background: #f7fafc;">
+                    <strong><i class="ri-error-warning-line"></i> Note:</strong> Choose ports not already reserved by Windows or other running instances to avoid conflicts.
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">3. Generate &amp; copy the script</span>
+                <div class="img-container">
+                    <img src="/blogAsset/bc009/bc009-8.png" alt="Generated script"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">4. Open PowerShell ISE as Administrator</span>
+                <div class="img-container">
+                    <img src="/blogAsset/bc009/bc009-9.png" alt="Open PowerShell ISE"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">5. Paste the script and run (F5)</span>
+                <div class="img-container">
+                    <img src="/blogAsset/bc009/bc009-10.png" alt="Run PowerShell script"/>
+                </div>
+                <p>Wait approximately 3–5 minutes for Windows to create the new instance.</p>
+            </div>
         </div>
-        <p>2. Input New Instance configuration</p>
-        <p>
-            <ul>
-                <li>Platform version: 270 - Im using BC275, so Main Platform version is 270 </li>
-                <li>Instance Name: BC270US - Im having BC270 running, new instance for US version is 270US </li>
-                <li>Auth Type: Windows - using Default for SSO</li>
-                <li>Web Server Instance: BC270US - this is the name of web instance for new BC, you can see it at IIS after creation</li>
-                <li>Database Server: localhost (db hosted in same pc)</li>
-                <li>Database Name: BC270US (new db restored name)</li>
-                <li>Management Services Port: 12045 (choose port not reserved by windows or other instance)</li>
-                <li>Client Services Port: 8046 (choose port not reserved by windows or other instance)</li>
-                <li>SOAP Services Port: 8047 (choose port not reserved by windows or other instance)</li>
-                <li>Odata Service Port: 8048 (choose port not reserved by windows or other instance)</li>
-                <li>Dev Service Port: 8049 (choose port not reserved by windows or other instance, noted this port when input file launch)</li>
-            </ul>
-        </p>
-        <p>3. Generate Script and Copy Script       </p>
-        <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-8.png" alt="open website"/>
-        </div>
-        <p>3. Open PowerShell ISE (admin right) </p>
-        <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-9.png" alt="open PS"/>
-        </div>
-        <p>3. Paste Script and Run(F5) </p>
-        <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-10.png" alt="run PS"/>
-        </div>
-       <p> Wait about 3-5 minutes for window create new instance.</p>
     </section>
+
     <section>
-        <h2><i class="ri-information-line"></i> Check Result</h2>
-        <p>Check Services page (whether new Service added)</p>
-        <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-11.png" alt="run PS"/>
+        <h2><i class="ri-checkbox-circle-line"></i> Verify the Result</h2>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-title">Check Services</span>
+                <p>Open the Windows Services panel and confirm the new BC service has been added.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc009/bc009-11.png" alt="Windows Services"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">Check IIS</span>
+                <p>Open IIS Manager and confirm the new web instance (BC270US) appears under Sites.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc009/bc009-12.png" alt="IIS Manager"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">Launch &amp; Compare</span>
+                <p>Open both instances side by side to confirm the US localization is running independently from W1.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc009/bc009-13.png" alt="W1 instance"/>
+                </div>
+                <div class="img-container">
+                    <img src="/blogAsset/bc009/bc009-14.png" alt="US instance"/>
+                </div>
+            </div>
         </div>
-        <p>Check IIS page (whether new web instance added)</p>
-        <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-12.png" alt="run PS"/>
+
+        <div class="highlight-box" style="margin-top: 16px;">
+            <strong><i class="ri-check-line"></i> Done!</strong>
+            You now have two independent BC instances running on the same server — one W1 and one US — each with its own database, service, and web endpoint. Switch between them by simply changing the port in your browser or <code>launch.json</code>.
         </div>
-        <p>launch new instance and compare</p>
-<div class="img-container">
-            <img src="/blogAsset/bc009/bc009-13.png" alt="run PS"/>
-        </div>
-<div class="img-container">
-            <img src="/blogAsset/bc009/bc009-14.png" alt="run PS"/>
-        </div>
-        <p>Good Luck</p>
     </section>
+</div>
 
 </body>
-
-
+</html>
