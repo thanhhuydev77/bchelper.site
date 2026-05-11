@@ -20,6 +20,7 @@
       </v-tooltip>
     </v-btn>
   </v-app>
+  <SpeedInsights />
 </template>
 
 <script>
