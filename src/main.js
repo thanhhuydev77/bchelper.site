@@ -9,7 +9,7 @@ import { createApp } from 'vue'
 
 // Plugins
 import { registerPlugins } from '@/plugins'
-import { SpeedInsights} from "@vercel/speed-insights/next"
+
 // Components
 import App from './App.vue'
 import router from './router'
