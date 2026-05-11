@@ -24,7 +24,12 @@
 </template>
 
 <script>
+import { SpeedInsights } from '@vercel/speed-insights/vue'
+
 export default {
+  components: {
+    SpeedInsights,
+  },
   data() {
     return {
       isDark: false,
