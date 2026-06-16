@@ -1,14 +1,35 @@
 <template>
   <div class="blog-detail-container">
-      <v-divider />
-      <v-card-text class="blog-body">
-        <div v-html="blog.content" />
-      </v-card-text>
+    <v-divider />
+    <v-card-text class="blog-body">
+      <!-- Loading Skeleton State -->
+      <v-container v-if="loading" class="container pa-6">
+        <v-skeleton-loader
+          type="article, image, paragraph, paragraph"
+          class="bg-transparent"
+        ></v-skeleton-loader>
+      </v-container>
+      
+      <!-- Error / Fallback State -->
+      <v-container v-else-if="error" class="container text-center py-12">
+        <v-icon size="64" color="error" class="mb-4">mdi-alert-circle</v-icon>
+        <h3 class="text-h5 mb-2">Error Loading Blog Content</h3>
+        <p class="text-body-1 text-medium-emphasis mb-6">{{ error }}</p>
+        <v-btn color="primary" @click="goBack">Back to Home</v-btn>
+      </v-container>
+
+      <!-- Blog HTML Content -->
+      <div v-else v-html="blog.content" />
+    </v-card-text>
   </div>
 </template>
 
 <script>
+import { blogDataMap } from '@/data/blogs'
+import { useBlog } from '@/composables/useBlog'
+
 export default {
+  name: 'BlogDetail',
   data() {
     return {
       blog: {
@@ -19,73 +40,26 @@ export default {
       },
     }
   },
+  setup() {
+    const { getBlogContent, loading, error } = useBlog()
+    return { getBlogContent, loading, error }
+  },
   async mounted() {
     const blogId = this.$route.params.id
     
-    // Blog data mapping
-    const blogData = {
-      'BC-SOLUTIONS-001': {
-        title: 'View Attachment File Related to Sales Order on Archived Sales Order',
-        date: 'January 18, 2026',
-        contentFile: '/blog/bc001.html',
-      },
-      'BC-SOLUTIONS-002': {
-        title: 'Handling Slow API Calls with Page Background Tasks',
-        date: 'January 19, 2026',
-        contentFile: '/blog/bc002.html',
-      },
-      'BC-SOLUTIONS-003': {
-        title: 'Printing Attachment File(PDF) by Batch',
-        date: 'January 22, 2026',
-        contentFile: '/blog/bc003.html',
-      },
-      'BC-SOLUTIONS-004': {
-        title: 'Delete History Data by Batch',
-        date: 'January 29, 2026',
-        contentFile: '/blog/bc004.html',
-      },
-      'BC-SOLUTIONS-005': {
-        title: 'Performance vs. Maintainability: Why Dictionary of [JsonObject] is the Superior Choice in AL',
-        date: 'March 18, 2026',
-        contentFile: '/blog/bc005.html',
-      },
-      'BC-SOLUTIONS-006': {
-        title: 'Dynamic Report Sorting: Synchronizing Page Views with Reports',
-        date: 'March 30, 2026',
-        contentFile: '/blog/bc006.html',
-      },
-      'BC-SOLUTIONS-007': {
-        title: 'Mastering RDLC: Creating a Smart 2-Column Report for Warehouse Labels',
-        date: 'April 7, 2026',
-        contentFile: '/blog/bc007.html',
-      },
-      'BC-SOLUTIONS-008': {
-        title: 'Visual Branding: Adding Logos to Shipping Agents & Exporting to Excel',
-        date: 'April 17, 2026',
-        contentFile: '/blog/bc008.html',
-      },
-      'BC-SOLUTIONS-009': {
-        title: 'Multi-Localization Setup: Installing US and W1 Versions on the Same Server',
-        date: 'May 10, 2026',
-        contentFile: '/blog/bc009.html',
-      },
-    }
-    
-    if (blogData[blogId]) {
-      this.blog.id = blogId
-      this.blog.title = blogData[blogId].title
-      this.blog.date = blogData[blogId].date
+    if (blogDataMap[blogId]) {
+      const post = blogDataMap[blogId]
+      this.blog.id = post.id
+      this.blog.title = post.title
+      this.blog.date = post.date
       
-      // Load HTML content from file
       try {
-        const response = await fetch(blogData[blogId].contentFile)
-        this.blog.content = await response.text()
-      } catch (error) {
-        console.error('Error loading blog content:', error)
-        this.blog.content = '<p>Error loading blog content</p>'
+        this.blog.content = await this.getBlogContent(post.id, post.contentFile)
+      } catch (err) {
+        // Handled by loading/error ref in setup()
       }
     } else {
-      this.blog.content = '<p>Blog post not found</p>'
+      this.blog.content = '<div class="container"><p>Blog post not found</p></div>'
     }
   },
   methods: {
@@ -96,7 +70,10 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss">
+// Import isolated styles for the blog post layout
+@import '@/styles/blog.scss';
+
 .blog-detail-container {
   background-color: var(--bg-primary);
   min-height: 100vh;
@@ -104,35 +81,6 @@ export default {
   flex-direction: column;
   padding: 0;
   margin: 0;
-}
-
-
-.blog-card-fullscreen {
-  background-color: var(--bg-secondary);
-  border-radius: 0;
-  box-shadow: none;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  padding: 20px 40px 40px 40px;
-  max-width: 100%;
-  width: 100%;
-}
-
-.blog-card-fullscreen :deep(.v-card-item) {
-  padding: 0;
-}
-
-.blog-card-fullscreen :deep(.v-card-title) {
-  color: var(--text-primary);
-  word-break: break-word;
-  padding: 0;
-}
-
-.blog-card-fullscreen :deep(.v-card-subtitle) {
-  color: var(--text-secondary);
-  padding: 0;
 }
 
 .blog-body {
@@ -143,46 +91,10 @@ export default {
   overflow-y: auto;
 }
 
-.blog-body h3 {
-  font-size: 20px;
-  font-weight: 600;
-  margin-top: 24px;
-  margin-bottom: 12px;
-  color: var(--text-primary);
-}
-
-.blog-body h4 {
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 16px;
-  margin-bottom: 8px;
-  color: var(--text-primary);
-}
-
-.blog-body p {
-  margin-bottom: 12px;
-  color: var(--text-primary);
-}
-
-.blog-body ul,
-.blog-body ol {
-  margin-left: 24px;
-  margin-bottom: 12px;
-}
-
-.blog-body li {
-  margin-bottom: 8px;
-  color: var(--text-primary);
-}
-
 @media (max-width: 600px) {
-  .blog-card-fullscreen {
-    padding: 60px 16px 16px 16px;
-  }
-
-  .back-btn {
-    top: 8px;
-    left: 8px;
+  .blog-detail-container {
+    padding: 0;
   }
 }
 </style>
+

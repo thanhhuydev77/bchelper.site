@@ -1,20 +1,21 @@
 import { createRouter, createWebHistory } from 'vue-router/auto'
-import BCAddInstance from '../pages/BCAddInstance.vue'
-import BCAddNewUser from '../pages/BCAddNewUser.vue'
-import BCBuildApiUrl from '../pages/BCBuildApiUrl.vue'
-import BCChangeAuthType from '../pages/BCChangeAuthType.vue'
-import BCCreateDocker from '../pages/BCCreateDocker.vue'
-import BCDatabaseBackup from '../pages/BCDatabaseBackup.vue'
-import BCEnableDevMode from '../pages/BCEnableDevMode.vue'
-import BCEnableIntegration from '../pages/BCEnableIntegration.vue'
-import BCImportLicense from '../pages/BCImportLicense.vue'
-import BCManageApp from '../pages/BCManageApp.vue'
-import BlogDetail from '../pages/BlogDetail.vue'
 import Home from '../pages/index.vue'
-// Tab components
 import GeneratorTab from '../pages/tabs/GeneratorTab.vue'
-import BlogTab from '../pages/tabs/BlogTab.vue'
-import AboutTab from '../pages/tabs/AboutTab.vue'
+
+// Lazy load other views to optimize initial bundle size
+const BlogTab = () => import('../pages/tabs/BlogTab.vue')
+const AboutTab = () => import('../pages/tabs/AboutTab.vue')
+const BlogDetail = () => import('../pages/BlogDetail.vue')
+const BCAddInstance = () => import('../pages/BCAddInstance.vue')
+const BCAddNewUser = () => import('../pages/BCAddNewUser.vue')
+const BCBuildApiUrl = () => import('../pages/BCBuildApiUrl.vue')
+const BCChangeAuthType = () => import('../pages/BCChangeAuthType.vue')
+const BCCreateDocker = () => import('../pages/BCCreateDocker.vue')
+const BCDatabaseBackup = () => import('../pages/BCDatabaseBackup.vue')
+const BCEnableDevMode = () => import('../pages/BCEnableDevMode.vue')
+const BCEnableIntegration = () => import('../pages/BCEnableIntegration.vue')
+const BCImportLicense = () => import('../pages/BCImportLicense.vue')
+const BCManageApp = () => import('../pages/BCManageApp.vue')
 // import { routes } from 'vue-router/auto-routes'
 
 const routes = [

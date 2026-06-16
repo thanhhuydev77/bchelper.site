@@ -13,6 +13,8 @@
             class="blog-post-card"
             hover
             @click="navigateToBlog(post.id)"
+            @mouseenter="prefetchBlog(post)"
+            @touchstart="prefetchBlog(post)"
           >
             <v-card-item class="pb-2">
               <v-card-title class="blog-title">{{ post.title }}</v-card-title>
@@ -55,67 +57,19 @@
 </template>
 
 <script>
+import { blogPosts } from '@/data/blogs'
+import { useBlog } from '@/composables/useBlog'
+
 export default {
   name: 'BlogTab',
   data() {
     return {
-      blogPosts: [
-        {
-          id: 'BC-SOLUTIONS-001',
-          title: 'View Attachment File Related to Sales Order on Archived Sales Order',
-          excerpt: 'Create a Dynamics Link Factbox to view Attachment File base on complex condition.',
-          tags: ['Factboxes','SetTableView','Page.Update']
-        },
-        {
-          id: 'BC-SOLUTIONS-002',
-          title: 'Handling Slow API Calls with Page Background Tasks',
-          excerpt: 'Using Background Process to call parallel API and update result to Sales Order Realtime.',
-          tags: ['CurrPage.EnqueueBackgroundTask','OnPageBackgroundTaskCompleted','OnPageBackgroundTaskError']
-        },
-        {
-          id: 'BC-SOLUTIONS-003',
-          title: 'Printing Attachment File(PDF) by Batch',
-          excerpt: 'Print Multiple Sales Order Attachment File at the same time with specified Printer.',
-          tags: ["Report.Print", "OnAfterDocumentReady", "RecRef"]
-        },
-        {
-          id: 'BC-SOLUTIONS-004',
-          title: 'Delete History Data by Batch',
-          excerpt: 'Delete Change Log Entry with specified number record',
-          tags: ["Job Queue Entry", "Record.Next", "Record.Truncate","ProcessingOnly"]
-        },
-        {
-          id: 'BC-SOLUTIONS-005',
-          title: 'Performance vs. Maintainability: Why Dictionary of [JsonObject] is the Best.',
-          excerpt: 'Learn when to use Dictionary of [Text, Text] vs JsonObject for optimal performance and scalability.',
-          tags: ['Data Structures', 'Performance', 'JsonObject', 'Dictionary']
-        },
-        {
-          id: 'BC-SOLUTIONS-006',
-          title: 'Dynamic Report Sorting: Synchronizing Page Views with Reports',
-          excerpt: 'Copy customer sorting, filter from page to report.',
-          tags: ['#Record.GetView', '#Record.SetView', '#Report.SetTableView']
-        },
-        {
-          id: 'BC-SOLUTIONS-007',
-          title: 'Mastering RDLC: Creating a Smart 2-Column Report for Warehouse Labels',
-          excerpt: 'Implement a dynamic 2-column RDLC layout for warehouse labels using AL Dictionary indexing and SSRS filtering to maximize 4x6 label space.',
-          tags: ['RDLC', 'SSRS', 'AL Dictionary', 'Warehouse Logistics']
-        },
-        {
-          id: 'BC-SOLUTIONS-008',
-          title: 'Visual Branding: Adding Logos to Shipping Agents & Exporting to Excel',
-          excerpt: 'Add logo support to Shipping Agents using the Media type, display them via a FactBox, and stream images into Excel/PDF SSRS reports.',
-          tags: ['Media', 'InStream', 'FactBox', 'SSRS']
-        },
-        {
-          id: 'BC-SOLUTIONS-009',
-          title: 'Multi-Localization Setup: Installing US and W1 Versions on the Same Server',
-          excerpt: 'Install Multiple Business Central Instance in same Server.',
-          tags: ['BC On-Prem', 'PowerShell', 'SQL Server', 'IIS']
-        },
-      ],
+      blogPosts
     }
+  },
+  setup() {
+    const { prefetchBlogContent } = useBlog()
+    return { prefetchBlogContent }
   },
   computed: {
     blogPostsReversed() {
@@ -123,10 +77,35 @@ export default {
       return [...this.blogPosts].reverse();
     }
   },
+  mounted() {
+    // Prefetch all blog contents in background on idle
+    if (typeof window !== 'undefined') {
+      const queue = [...this.blogPostsReversed]
+      const runPrefetchQueue = () => {
+        if (queue.length === 0) return
+        const nextPost = queue.shift()
+        this.prefetchBlogContent(nextPost.id, nextPost.contentFile).then(() => {
+          // Schedule next prefetch with a gap to prevent blocking CPU
+          setTimeout(runPrefetchQueue, 300)
+        })
+      }
+
+      if ('requestIdleCallback' in window) {
+        window.requestIdleCallback(() => {
+          setTimeout(runPrefetchQueue, 1000) // start prefetching 1s after idle
+        })
+      } else {
+        setTimeout(runPrefetchQueue, 2000)
+      }
+    }
+  },
   methods: {
     navigateToBlog(blogId) {
       this.$router.push(`/blog/${blogId}`)
     },
+    prefetchBlog(post) {
+      this.prefetchBlogContent(post.id, post.contentFile)
+    }
   },
 }
 </script>

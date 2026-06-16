@@ -56,13 +56,13 @@
         <h3>Step 1: Download &amp; Extract</h3>
         <p>Navigate to the Microsoft Support page to download the specific build (e.g., BC27.5 US). Once downloaded, extract the ZIP file to access the installation media.</p>
         <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-1.png" alt="Download page"/>
+            <img src="/blogAsset/bc009/bc009-1.webp" alt="Download page"/>
         </div>
         <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-2.png" alt="ZIP file"/>
+            <img src="/blogAsset/bc009/bc009-2.webp" alt="ZIP file"/>
         </div>
         <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-3.png" alt="ZIP extracted"/>
+            <img src="/blogAsset/bc009/bc009-3.webp" alt="ZIP extracted"/>
         </div>
 
         <h3>Step 2: Restore the Localized Database</h3>
@@ -71,19 +71,19 @@
             <li>Right-click <strong>Databases</strong> → <strong>Restore Database</strong>.</li>
         </ul>
         <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-4.png" alt="DB Restore"/>
+            <img src="/blogAsset/bc009/bc009-4.webp" alt="DB Restore"/>
         </div>
         <ul>
             <li>Locate the <code>.bak</code> file within the extracted installation folder (usually under <code>ProductDVD\SQL Demo Database</code>).</li>
         </ul>
         <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-5.png" alt=".bak file selection"/>
+            <img src="/blogAsset/bc009/bc009-5.webp" alt=".bak file selection"/>
         </div>
         <ul>
             <li>Rename the destination database to something distinct, such as <strong>BC270US</strong>, to avoid conflicts with your existing W1 database.</li>
         </ul>
         <div class="img-container">
-            <img src="/blogAsset/bc009/bc009-6.png" alt="Rename database"/>
+            <img src="/blogAsset/bc009/bc009-6.webp" alt="Rename database"/>
         </div>
 
         <h3>Step 3: Create New BC Instance via PowerShell</h3>
@@ -93,7 +93,7 @@
             <div class="timeline-item">
                 <span class="timeline-title">1. Open the Add BC Instance tab</span>
                 <div class="img-container">
-                    <img src="/blogAsset/bc009/bc009-7.png" alt="Open website"/>
+                    <img src="/blogAsset/bc009/bc009-7.webp" alt="Open website"/>
                 </div>
             </div>
 
@@ -120,21 +120,21 @@
             <div class="timeline-item">
                 <span class="timeline-title">3. Generate &amp; copy the script</span>
                 <div class="img-container">
-                    <img src="/blogAsset/bc009/bc009-8.png" alt="Generated script"/>
+                    <img src="/blogAsset/bc009/bc009-8.webp" alt="Generated script"/>
                 </div>
             </div>
 
             <div class="timeline-item">
                 <span class="timeline-title">4. Open PowerShell ISE as Administrator</span>
                 <div class="img-container">
-                    <img src="/blogAsset/bc009/bc009-9.png" alt="Open PowerShell ISE"/>
+                    <img src="/blogAsset/bc009/bc009-9.webp" alt="Open PowerShell ISE"/>
                 </div>
             </div>
 
             <div class="timeline-item">
                 <span class="timeline-title">5. Paste the script and run (F5)</span>
                 <div class="img-container">
-                    <img src="/blogAsset/bc009/bc009-10.png" alt="Run PowerShell script"/>
+                    <img src="/blogAsset/bc009/bc009-10.webp" alt="Run PowerShell script"/>
                 </div>
                 <p>Wait approximately 3–5 minutes for Windows to create the new instance.</p>
             </div>
@@ -149,7 +149,7 @@
                 <span class="timeline-title">Check Services</span>
                 <p>Open the Windows Services panel and confirm the new BC service has been added.</p>
                 <div class="img-container">
-                    <img src="/blogAsset/bc009/bc009-11.png" alt="Windows Services"/>
+                    <img src="/blogAsset/bc009/bc009-11.webp" alt="Windows Services"/>
                 </div>
             </div>
 
@@ -157,7 +157,7 @@
                 <span class="timeline-title">Check IIS</span>
                 <p>Open IIS Manager and confirm the new web instance (BC270US) appears under Sites.</p>
                 <div class="img-container">
-                    <img src="/blogAsset/bc009/bc009-12.png" alt="IIS Manager"/>
+                    <img src="/blogAsset/bc009/bc009-12.webp" alt="IIS Manager"/>
                 </div>
             </div>
 
@@ -165,10 +165,10 @@
                 <span class="timeline-title">Launch &amp; Compare</span>
                 <p>Open both instances side by side to confirm the US localization is running independently from W1.</p>
                 <div class="img-container">
-                    <img src="/blogAsset/bc009/bc009-13.png" alt="W1 instance"/>
+                    <img src="/blogAsset/bc009/bc009-13.webp" alt="W1 instance"/>
                 </div>
                 <div class="img-container">
-                    <img src="/blogAsset/bc009/bc009-14.png" alt="US instance"/>
+                    <img src="/blogAsset/bc009/bc009-14.webp" alt="US instance"/>
                 </div>
             </div>
         </div>

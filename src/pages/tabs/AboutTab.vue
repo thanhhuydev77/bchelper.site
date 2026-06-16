@@ -40,7 +40,7 @@ export default {
   name: 'AboutTab',
   data() {
     return {
-      profileImage: '/avatar.jpg',
+      profileImage: '/avatar.webp',
       socialLinks: {
         linkedin: 'https://www.linkedin.com/in/alexha77/',
         facebook: 'https://www.facebook.com/thanhhuydev',
