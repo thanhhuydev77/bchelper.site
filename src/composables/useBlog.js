@@ -30,7 +30,7 @@ export function useBlog() {
         img.setAttribute('loading', 'lazy')
       })
 
-      const cleanedContent = container.innerHTML
+      const cleanedContent = container.outerHTML
       blogCache[blogId] = cleanedContent
       return cleanedContent
     } catch (err) {
@@ -57,7 +57,7 @@ export function useBlog() {
           img.setAttribute('loading', 'lazy')
         })
         
-        blogCache[blogId] = container.innerHTML
+        blogCache[blogId] = container.outerHTML
       }
     } catch (err) {
       console.warn(`Error prefetching blog content for ${blogId}:`, err)
