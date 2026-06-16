@@ -19,7 +19,7 @@
       </v-container>
 
       <!-- Blog HTML Content -->
-      <div v-else v-html="blog.content" />
+      <div v-else v-html="blog.content" @click="handleContentClick" />
     </v-card-text>
   </div>
 </template>
@@ -66,6 +66,29 @@ export default {
     goBack() {
       this.$router.push('/')
     },
+    handleContentClick(event) {
+      const copyBtn = event.target.closest('.copy-code-btn')
+      if (!copyBtn) return
+
+      const wrapper = copyBtn.closest('.code-wrapper')
+      if (!wrapper) return
+
+      const codeEl = wrapper.querySelector('pre code')
+      if (!codeEl) return
+
+      const codeText = codeEl.innerText
+
+      navigator.clipboard.writeText(codeText).then(() => {
+        copyBtn.innerHTML = '<i class="ri-checkbox-circle-line"></i> Copied!'
+        copyBtn.classList.add('copied')
+        setTimeout(() => {
+          copyBtn.innerHTML = '<i class="ri-file-copy-line"></i> Copy'
+          copyBtn.classList.remove('copied')
+        }, 2000)
+      }).catch(err => {
+        console.error('Failed to copy text: ', err)
+      })
+    }
   },
 }
 </script>

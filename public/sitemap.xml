@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Core pages -->
+  <url>
+    <loc>https://bchelper.site/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://bchelper.site/blog</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://bchelper.site/about</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Script Generators -->
+  <url><loc>https://bchelper.site/BCAddInstance</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCAddNewUser</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCBuildApiUrl</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCChangeAuthType</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCEnableDevMode</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCEnableIntegration</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCImportLicense</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCManageApp</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCDatabaseBackup</loc><priority>0.7</priority></url>
+  <url><loc>https://bchelper.site/BCCreateDocker</loc><priority>0.7</priority></url>
+
+  <!-- Blog posts -->
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-001</loc><priority>0.8</priority></url>
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-002</loc><priority>0.8</priority></url>
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-003</loc><priority>0.8</priority></url>
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-004</loc><priority>0.8</priority></url>
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-005</loc><priority>0.8</priority></url>
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-006</loc><priority>0.8</priority></url>
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-007</loc><priority>0.8</priority></url>
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-008</loc><priority>0.8</priority></url>
+  <url><loc>https://bchelper.site/blog/BC-SOLUTIONS-009</loc><priority>0.8</priority></url>
+</urlset>

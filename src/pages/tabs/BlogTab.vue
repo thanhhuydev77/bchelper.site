@@ -17,7 +17,7 @@
             @touchstart="prefetchBlog(post)"
           >
             <v-card-item class="pb-2">
-              <v-card-title class="blog-title">{{ post.title }}</v-card-title>
+              <v-card-title class="blog-title" tag="h2">{{ post.title }}</v-card-title>
             </v-card-item>
 
             <v-card-text class="pt-0">

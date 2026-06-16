@@ -92,11 +92,6 @@ export default {
       return this.$route.path === '/'
     },
   },
-  methods: {
-    goToHome() {
-      this.$router.push('/')
-    },
-  },
   mounted() {
     // Set theme based on system preference
     this.setSystemTheme()

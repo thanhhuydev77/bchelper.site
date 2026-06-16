@@ -30,6 +30,18 @@ export function useBlog() {
         img.setAttribute('loading', 'lazy')
       })
 
+      // Inject copy buttons to code blocks
+      container.querySelectorAll('.code-wrapper').forEach(wrapper => {
+        const header = wrapper.querySelector('.code-header')
+        if (header && !header.querySelector('.copy-code-btn')) {
+          const copyBtn = doc.createElement('button')
+          copyBtn.className = 'copy-code-btn'
+          copyBtn.type = 'button'
+          copyBtn.innerHTML = '<i class="ri-file-copy-line"></i> Copy'
+          header.appendChild(copyBtn)
+        }
+      })
+
       const cleanedContent = container.outerHTML
       blogCache[blogId] = cleanedContent
       return cleanedContent
@@ -55,6 +67,17 @@ export function useBlog() {
         
         container.querySelectorAll('img').forEach(img => {
           img.setAttribute('loading', 'lazy')
+        })
+
+        container.querySelectorAll('.code-wrapper').forEach(wrapper => {
+          const header = wrapper.querySelector('.code-header')
+          if (header && !header.querySelector('.copy-code-btn')) {
+            const copyBtn = doc.createElement('button')
+            copyBtn.className = 'copy-code-btn'
+            copyBtn.type = 'button'
+            copyBtn.innerHTML = '<i class="ri-file-copy-line"></i> Copy'
+            header.appendChild(copyBtn)
+          }
         })
         
         blogCache[blogId] = container.outerHTML

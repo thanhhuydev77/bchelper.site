@@ -9,7 +9,7 @@
               <img src="/bclogo.svg" alt="BC Logo" class="bc-logo" />
             </v-col>
             <v-col cols="auto">
-              <h5 class="text-h2 font-weight-bold" style="color: #0C74A1;">Alex & BC</h5>
+              <h1 class="text-h2 font-weight-bold" style="color: #0C74A1;">Alex & BC</h1>
             </v-col>
           </v-row>
         </v-col>
