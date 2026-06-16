@@ -17,7 +17,7 @@
   --img-container-bg: #fff;
 
   // Adapt to Vue app's dark mode class on html tag
-  :global(html.dark-mode) & {
+  html.dark-mode & {
     --bg-color: #121212;
     --card-bg: #1e1e1e;
     --text-main: #ffffff;
