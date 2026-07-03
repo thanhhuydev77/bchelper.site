@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastering RDLC: Fixing Report Layouts Without Using Footers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="/blogAsset/style.css" rel="stylesheet">
+    <link href="/blogAsset/script.js" rel="Script">
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Mastering RDLC: Fixing Report Layouts Without Using Footers</h1>
+    </header>
+
+    <section>
+        <h2><i class="ri-information-line"></i> Background</h2>
+        <p>In our previous post (the 2-Column Report layout), we successfully optimized a warehouse shipment report to split data across parallel columns. While the layout looked great to the warehouse staff, real-world deployment brought a new operational layout challenge.</p>
+
+        <div class="highlight-box">
+            <strong><i class="ri-alert-line"></i> The Problem</strong>
+            The warehouse team requires the <strong>Notes section</strong> to be anchored strictly at the bottom of the printed page. If the table data is short, standard body elements shrink upward, misaligning the notes and breaking layout uniformity on predefined paperwork.
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-git-commit-line"></i> Evaluation of Solutions</h2>
+        <p>To fix the layout height dynamically, we weighed three possible approaches:</p>
+
+        <ul>
+            <li><strong>Option 1: Use Report Footer (Rejected)</strong><br>Report footers are designed for static global data. If requirements evolve and we need to pass data-driven dynamic notes from specific Warehouse Shipment headers, forcing dataset values into a footer requires dangerous workarounds.</li>
+            <li><strong>Option 2: Create Empty Rows in AL (Rejected)</strong><br>Generating fake spacer lines in the dataset bloats memory usage and forces unnecessary rendering loops. This introduces severe technical debt and harms system performance.</li>
+            <li><strong>Option 3: Embedded Lists inside a Fixed Rectangle (Selected)</strong><br>By embedding our structural list into an explicitly sized, non-growing <strong>Rectangle container</strong> inside the row group, we achieve a locked body size natively. No dataset bloat, no rigid footer restrictions.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
+        <div class="tags-container">
+            <span class="tag"><i class="ri-hashtag"></i> SSRS</span>
+            <span class="tag"><i class="ri-hashtag"></i> RDLC</span>
+            <span class="tag"><i class="ri-hashtag"></i> Report</span>
+            <span class="tag"><i class="ri-hashtag"></i> Rectangle</span>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-title">Step 1: Create New RDLC Layout</span>
+                <p>In the <strong>Rendering</strong> section of your report, add a new layout with type RDLC. Clone the old layout file, rename it, and open it in SSRS Report Designer.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-3.png" alt="Create new RDLC layout"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">Step 2: Add a New Row</span>
+                <p>Insert a clean blank row directly below your current <strong>Detail Row</strong> group. This row will host the Rectangle container.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-4.png" alt="Add new row below detail row"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">Step 3: Insert the Rectangle Container</span>
+                <p>Resize the newly created row to the desired height, then insert a <strong>Rectangle</strong> component spanning across both left and right columns.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-5.png" alt="Insert Rectangle container"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">Step 4: Re-anchor the List Control</span>
+                <p><strong>Cut</strong> your existing tabular data List control and <strong>Paste</strong> it inside the Rectangle container. Drag and align it to the exact top-left corner of the container.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-6.png" alt="Re-anchor list inside rectangle"/>
+                </div>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-7.png" alt="Re-anchor list inside rectangle"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">Step 5: Cleanup</span>
+                <p>Safely delete the old, uncontainerized table row structure from the design tree to keep the layout clean.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-8.png" alt="Delete old row structure"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">Step 6: Math-Driven Height Calculations</span>
+                <p>To lock the canvas at a strict maximum of 10 rows without vertical growth, configure the following in the Properties window:</p>
+                <ul>
+                    <li>Set the internal <strong>Row Height</strong> to <code>0.3 inches</code>.</li>
+                    <li>Set the <strong>Rectangle Height</strong> to <code>3.0 inches</code> (10 rows × 0.3 in).</li>
+                </ul>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-9.png" alt="Set fixed height on rectangle and rows"/>
+                </div>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-10.png" alt="Compile and deploy the extension"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">Step 7: Compile and Deploy</span>
+                <p>Save your updated RDLC file and compile the AL extension to publish the changes to your environment.</p>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2><i class="ri-flask-line"></i> Testing</h2>
+        <p>This structural change keeps the document canvas size consistent regardless of data volume.</p>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-title">Before: Unanchored Dynamic Growth</span>
+                <p>Short datasets pull the entire layout upward, dragging the notes section out of its intended position.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-1.png" alt="Old layout — dynamic height issue"/>
+                </div>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">After: Fixed Rectangle Constraint</span>
+                <p>The Rectangle container enforces a fixed-height block, guaranteeing the notes section stays anchored at the bottom regardless of row count.</p>
+                <div class="img-container">
+                    <img src="/blogAsset/bc010/bc010-2.png" alt="New layout — fixed height with rectangle"/>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+</body>
+</html>

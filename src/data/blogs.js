@@ -70,6 +70,14 @@ export const blogPosts = [
     excerpt: 'Install Multiple Business Central Instance in same Server.',
     tags: ['BC On-Prem', 'PowerShell', 'SQL Server', 'IIS'],
     contentFile: '/blog/bc009.html'
+  },
+  {
+    id: 'BC-SOLUTIONS-010',
+    title: 'Mastering RDLC: Fixing Report Layouts Without Using Footers',
+    date: 'May 20, 2026',
+    excerpt: 'Fix dynamic height issues in RDLC reports by embedding list controls inside a fixed Rectangle container instead of relying on footers or dataset spacers.',
+    tags: ['SSRS', 'RDLC', 'Report', 'Rectangle'],
+    contentFile: '/blog/bc010.html'
   }
 ]
 
