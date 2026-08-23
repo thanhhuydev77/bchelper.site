@@ -78,6 +78,14 @@ export const blogPosts = [
     excerpt: 'Fix dynamic height issues in RDLC reports by embedding list controls inside a fixed Rectangle container instead of relying on footers or dataset spacers.',
     tags: ['SSRS', 'RDLC', 'Report', 'Rectangle'],
     contentFile: '/blog/bc010.html'
+  },
+  {
+    id: 'BC-SOLUTIONS-011',
+    title: 'How IsolatedStorage Saved Me from Spamming APIs for Access Tokens',
+    date: 'August 23, 2026',
+    excerpt: 'Optimize Business Central API calls and avoid HTTP 429 rate limits by caching OAuth 2.0 Access Tokens in IsolatedStorage across background sessions.',
+    tags: ['API', 'IsolatedStorage', 'Token Cache', 'OAuth 2.0', 'AL Programming'],
+    contentFile: '/blog/bc011.html'
   }
 ]
 
