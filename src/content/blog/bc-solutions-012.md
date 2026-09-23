@@ -10,7 +10,6 @@ tags:
 draft: false
 ---
 
-    <section>
         <h2><i class="ri-information-line"></i> Background</h2>
         <p>Recently, the database storage in our Microsoft Dynamics 365 Business Central environment was increasing
             rapidly due to user attachment files (invoices, receipts, PDF reports, etc.). To reduce storage
@@ -25,7 +24,6 @@ draft: false
             thousands of token requests in minutes. This triggered Google's rate limiter, causing requests to fail
             with random <em>"Cannot get token"</em> and <em>"Too Many Requests (HTTP 429)"</em> exceptions.
         </div>
-    </section>
 
     <section>
         <h2><i class="ri-scales-3-line"></i> Evaluation of Solutions</h2>
