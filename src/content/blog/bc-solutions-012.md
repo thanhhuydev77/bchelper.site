@@ -1,6 +1,6 @@
 ---
 id: BC-SOLUTIONS-012
-title: Use Page CMS to optimize posting flow
+title: "Use Page CMS to optimize posting flow "
 date: 2026-09-23
 excerpt: posting easier with page CMS
 tags:
@@ -9,93 +9,7 @@ tags:
   - UX
 draft: false
 ---
-
-        <h2><i class="ri-information-line"></i> Background</h2>
-        <p>Recently, the database storage in our Microsoft Dynamics 365 Business Central environment was increasing
-            rapidly due to user attachment files (invoices, receipts, PDF reports, etc.). To reduce storage
-            footprint and optimize operational costs, I built a background synchronization service to automatically
-            offload and store attachment files from Business Central directly into Google Drive.</p>
-
-        <div class="highlight-box">
-            <strong><i class="ri-alert-line"></i> The Issue: Too Many Requests Call API AccessToken</strong>
-            In the initial design, each file upload triggered a fresh Google OAuth 2.0 API call requesting an Access
-            Token using the Client ID, Client Secret, and Refresh Token. During historical migration with 6
-            parallel background threads syncing months of data simultaneously, the system blasted
-            thousands of token requests in minutes. This triggered Google's rate limiter, causing requests to fail
-            with random <em>"Cannot get token"</em> and <em>"Too Many Requests (HTTP 429)"</em> exceptions.
-        </div>
-
-    <section>
-        <h2><i class="ri-scales-3-line"></i> Evaluation of Solutions</h2>
-        <p>A Google OAuth access token remains valid for <strong>1 hour (3,600 seconds)</strong>. Instead of
-            requesting a new token for every file upload, we should cache the active token alongside its expiration
-            timestamp and reuse it across sessions.</p>
-
-        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-            <thead>
-                <tr style="background: #edf2f7; text-align: left;">
-                    <th style="padding: 12px; border: 1px solid #cbd5e0;">Approach</th>
-                    <th style="padding: 12px; border: 1px solid #cbd5e0;">Technical Consideration</th>
-                    <th style="padding: 12px; border: 1px solid #cbd5e0;">Verdict</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Option 1: New Custom
-                            Table</strong></td>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0;">Consumes a licensed Table ID, requires
-                        permission set setup, and adds database I/O overhead.</td>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0; color: #e53e3e;">Too Expensive</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Option 2: SingleInstance
-                            Codeunit</strong></td>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0;">Global variables are isolated to the
-                        active session. Six background threads would still fetch 6 separate tokens without
-                        cross-session caching.</td>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0; color: #e53e3e;">Session-Isolated</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Option 3: Setup Table
-                            Fields</strong></td>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0;">Writing token state across multiple
-                        high-concurrency threads causes severe database record locks (Table Locking).</td>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0; color: #e53e3e;">Locking Risk</td>
-                </tr>
-                <tr style="background: #f0fff4;">
-                    <td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Option 4: IsolatedStorage</strong>
-                    </td>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0;">Fast in-memory key-value store, accessible
-                        across background sessions via <code>DataScope::Company</code>, encrypted by default, zero
-                        table locks, and zero licensed table IDs consumed.</td>
-                    <td style="padding: 10px; border: 1px solid #cbd5e0; color: #38a169;"><strong>Selected
-                            Choice</strong></td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-
-    <section>
-        <h2><i class="ri-code-s-slash-line"></i> Technical Implementation</h2>
-        <div class="tags-container">
-            <span class="tag"><i class="ri-hashtag"></i> API</span>
-            <span class="tag"><i class="ri-hashtag"></i> IsolatedStorage</span>
-            <span class="tag"><i class="ri-hashtag"></i> Token Cache</span>
-            <span class="tag"><i class="ri-hashtag"></i> OAuth 2.0</span>
-            <span class="tag"><i class="ri-hashtag"></i> AL Programming</span>
-        </div>
-
-        <p>To avoid token expiration mid-transfer on large payloads, a <strong>10-minute safety buffer</strong> is
-            applied, setting the cache window to 50 minutes instead of the full 60 minutes.</p>
-
-        <div class="code-wrapper">
-            <div class="code-header">
-                <div class="dot red"></div>
-                <div class="dot yellow"></div>
-                <div class="dot green"></div>
-                <div class="code-title">TokenCacheManagement.al</div>
-            </div>
-            <pre><code>/// &lt;summary&gt;
+<h2>Background</h2><p>Recently, the database storage in our Microsoft Dynamics 365 Business Central environment was increasing rapidly due to user attachment files (invoices, receipts, PDF reports, etc.). To reduce storage footprint and optimize operational costs, I built a background synchronization service to automatically offload and store attachment files from Business Central directly into Google Drive.</p><p><strong> The Issue: Too Many Requests Call API AccessToken</strong> In the initial design, each file upload triggered a fresh Google OAuth 2.0 API call requesting an Access Token using the Client ID, Client Secret, and Refresh Token. During historical migration with 6 parallel background threads syncing months of data simultaneously, the system blasted thousands of token requests in minutes. This triggered Google's rate limiter, causing requests to fail with random <em>"Cannot get token"</em> and <em>"Too Many Requests (HTTP 429)"</em> exceptions.</p><h2>Evaluation of Solutions</h2><p>A Google OAuth access token remains valid for <strong>1 hour (3,600 seconds)</strong>. Instead of requesting a new token for every file upload, we should cache the active token alongside its expiration timestamp and reuse it across sessions.</p><table style="min-width: 75px;"><colgroup><col style="min-width: 25px;"><col style="min-width: 25px;"><col style="min-width: 25px;"></colgroup><tbody><tr><th colspan="1" rowspan="1"><p>Approach</p></th><th colspan="1" rowspan="1"><p>Technical Consideration</p></th><th colspan="1" rowspan="1"><p>Verdict</p></th></tr><tr><td colspan="1" rowspan="1"><p><strong>Option 1: New Custom Table</strong></p></td><td colspan="1" rowspan="1"><p>Consumes a licensed Table ID, requires permission set setup, and adds database I/O overhead.</p></td><td colspan="1" rowspan="1"><p>Too Expensive</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Option 2: SingleInstance Codeunit</strong></p></td><td colspan="1" rowspan="1"><p>Global variables are isolated to the active session. Six background threads would still fetch 6 separate tokens without cross-session caching.</p></td><td colspan="1" rowspan="1"><p>Session-Isolated</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Option 3: Setup Table Fields</strong></p></td><td colspan="1" rowspan="1"><p>Writing token state across multiple high-concurrency threads causes severe database record locks (Table Locking).</p></td><td colspan="1" rowspan="1"><p>Locking Risk</p></td></tr><tr><td colspan="1" rowspan="1"><p><strong>Option 4: IsolatedStorage</strong></p></td><td colspan="1" rowspan="1"><p>Fast in-memory key-value store, accessible across background sessions via <code>DataScope::Company</code>, encrypted by default, zero table locks, and zero licensed table IDs consumed.</p></td><td colspan="1" rowspan="1"><p><strong>Selected Choice</strong></p></td></tr></tbody></table><h2>Technical Implementation</h2><p> API IsolatedStorage Token Cache OAuth 2.0 AL Programming</p><p>To avoid token expiration mid-transfer on large payloads, a <strong>10-minute safety buffer</strong> is applied, setting the cache window to 50 minutes instead of the full 60 minutes.</p><p>TokenCacheManagement.al</p><pre><code>/// &lt;summary&gt;
 ```
 
 /// Retrieves the cached Access Token from IsolatedStorage or requests a new one if expired.
@@ -169,40 +83,4 @@ IsolatedStorage.Set('GG_DRIVE_TOKEN', NewToken, TokenScope);
 IsolatedStorage.Set('GG_DRIVE_TOKEN_EXP', Format(ExpireTime, 0, 9), TokenScope);
             
         
-    <section>
-        <h2><i class="ri-flask-line"></i> Testing & Verification</h2>
-        <div class="timeline">
-            <div class="timeline-item">
-                <span class="timeline-title">1. Before Optimization</span>
-                <p>Error when get AccessToken</p>
-                <div class="img-container">
-                    <img src="/blogAsset/bc011/bc011-1.webp" alt="6 background threads running concurrently"
-                        style="width:100%; border-radius:8px; border:1px solid #e2e8f0;" />
-                </div>
-            </div>
-
-            <div class="timeline-item">
-                <span class="timeline-title">2. After Optimization</span>
-                <p>Successfully get AccessToken without any Error</p>
-                <div class="img-container">
-                    <img src="/blogAsset/bc011/bc011-2.webp"
-                        style="width:100%; border-radius:8px; border:1px solid #e2e8f0;" />
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <h2><i class="ri-thumb-up-line"></i> Key Takeaways</h2>
-        <ul class="pro-list">
-            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Zero Database
-                    Locking:</strong> Reading and writing to <code>IsolatedStorage</code> does not lock SQL tables.
-            </li>
-            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Cross-Session
-                    Sharing:</strong> DataScope::Company allows multiple background workers
-                to share the same cached token.</li>
-            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Built-in
-                    Encryption:</strong> Secure storage without having to manually manage encryption keys or custom
-                license objects.</li>
-        </ul>
-    </section>
+    </code></pre><h2><code> Testing &amp; Verification</code></h2><p><code>1. Before Optimization<br>                </code></p><p><code>Error when get AccessToken</code></p><img src="/blogAsset/bc011/bc011-1.webp" alt="6 background threads running concurrently"><p><code>2. After Optimization<br>                </code></p><p><code>Successfully get AccessToken without any Error</code></p><img src="/blogAsset/bc011/bc011-2.webp"><h2><code> Key Takeaways</code></h2><ul><li><p><code>Zero Database<br>                    Locking: Reading and writing to IsolatedStorage does not lock SQL tables.<br>            </code></p></li><li><p><code>Cross-Session<br>                    Sharing: DataScope::Company allows multiple background workers<br>                to share the same cached token.</code></p></li><li><p><code>Built-in<br>                    Encryption: Secure storage without having to manually manage encryption keys or custom<br>                license objects.</code></p></li></ul><p></p>
