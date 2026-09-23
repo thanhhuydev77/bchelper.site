@@ -9,7 +9,6 @@ tags:
   - UX
 draft: false
 ---
-```
 <div class="container">
     <header>
         <h1>How IsolatedStorage Saved Me from Spamming APIs for Access Tokens</h1>
@@ -219,5 +218,3 @@ end;&nbsp;
         </ul>
     </section>
 </div>
-```
-
