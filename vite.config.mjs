@@ -8,10 +8,13 @@ import VueRouter from 'unplugin-vue-router/vite'
 // Utilities
 import { defineConfig } from 'vite'
 import Vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
+import blogMarkdown from './build/blog-markdown.js'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    // Markdown blog posts managed with Pages CMS (see .pages.yml)
+    blogMarkdown(),
     VueRouter(),
     Vue({
       template: { transformAssetUrls },

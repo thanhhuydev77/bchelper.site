@@ -1,0 +1,56 @@
+# Pages CMS configuration — https://app.pagescms.org
+# Posts are saved as Markdown in src/content/blog and built into /blog/<file>.html
+# by build/blog-markdown.js. Old hand-written posts stay in public/blog.
+media:
+  input: public/blogAsset
+  output: /blogAsset
+  categories: [image]
+  rename: safe
+
+content:
+  - name: blog
+    label: Blog posts
+    type: collection
+    path: src/content/blog
+    filename: "{fields.id}.md"
+    format: yaml-frontmatter
+    exclude: [README.md]
+    view:
+      primary: title
+      fields: [title, date, draft]
+      sort: date
+      order: desc
+    fields:
+      - name: id
+        label: Post ID
+        type: string
+        required: true
+        description: "Unique ID used in the URL (/blog/<id>) and the file name, e.g. BC-SOLUTIONS-012. Don't change it after publishing."
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: date
+        label: Publish date
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+      - name: excerpt
+        label: Excerpt
+        type: text
+        description: Short summary shown on the blog list and in search results.
+      - name: tags
+        label: Tags
+        type: string
+        list: true
+      - name: draft
+        label: Draft
+        type: boolean
+        default: false
+        description: Drafts are saved to GitHub but not published on the site.
+      - name: body
+        label: Content
+        type: rich-text
+        options:
+          format: markdown

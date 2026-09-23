@@ -267,6 +267,34 @@
     display: block;
   }
 
+  /* Tables (Markdown posts) */
+  .table-wrapper {
+    overflow-x: auto;
+    margin: 20px 0;
+  }
+
+  .table-wrapper table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-wrapper th,
+  .table-wrapper td {
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .table-wrapper th {
+    background-color: var(--highlight-bg);
+    color: var(--text-main);
+  }
+
+  .highlight-box p:last-child {
+    margin-bottom: 0;
+  }
+
   /* Pro List */
   .pro-list {
     list-style: none;

@@ -1,4 +1,8 @@
-export const blogPosts = [
+// Hand-written HTML posts in public/blog. New posts are written in Pages CMS
+// (Markdown in src/content/blog) and merged in below.
+import markdownPosts from 'virtual:blog-posts'
+
+const htmlPosts = [
   {
     id: 'BC-SOLUTIONS-001',
     title: 'View Attachment File Related to Sales Order on Archived Sales Order',
@@ -88,6 +92,10 @@ export const blogPosts = [
     contentFile: '/blog/bc011.html'
   }
 ]
+
+// Oldest first; BlogTab reverses it for display
+export const blogPosts = [...htmlPosts, ...markdownPosts]
+  .sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
 
 export const blogDataMap = blogPosts.reduce((acc, post) => {
   acc[post.id] = post
