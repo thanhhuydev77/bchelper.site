@@ -43,42 +43,42 @@
 
             <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
                 <thead>
-                    <tr style="background: #edf2f7; text-align: left;">
-                        <th style="padding: 12px; border: 1px solid #cbd5e0;">Approach</th>
-                        <th style="padding: 12px; border: 1px solid #cbd5e0;">Technical Consideration</th>
-                        <th style="padding: 12px; border: 1px solid #cbd5e0;">Verdict</th>
+                    <tr style="background: var(--tag-bg); text-align: left;">
+                        <th style="padding: 12px; border: 1px solid var(--border-color);">Approach</th>
+                        <th style="padding: 12px; border: 1px solid var(--border-color);">Technical Consideration</th>
+                        <th style="padding: 12px; border: 1px solid var(--border-color);">Verdict</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Option 1: New Custom
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><strong>Option 1: New Custom
                                 Table</strong></td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0;">Consumes a licensed Table ID, requires
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">Consumes a licensed Table ID, requires
                             permission set setup, and adds database I/O overhead.</td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0; color: #e53e3e;">Too Expensive</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); color: var(--fail-color);">Too Expensive</td>
                     </tr>
                     <tr>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Option 2: SingleInstance
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><strong>Option 2: SingleInstance
                                 Codeunit</strong></td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0;">Global variables are isolated to the
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">Global variables are isolated to the
                             active session. Six background threads would still fetch 6 separate tokens without
                             cross-session caching.</td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0; color: #e53e3e;">Session-Isolated</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); color: var(--fail-color);">Session-Isolated</td>
                     </tr>
                     <tr>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Option 3: Setup Table
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><strong>Option 3: Setup Table
                                 Fields</strong></td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0;">Writing token state across multiple
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">Writing token state across multiple
                             high-concurrency threads causes severe database record locks (Table Locking).</td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0; color: #e53e3e;">Locking Risk</td>
+                        <td style="padding: 10px; border: 1px solid var(--border-color); color: var(--fail-color);">Locking Risk</td>
                     </tr>
-                    <tr style="background: #f0fff4;">
-                        <td style="padding: 10px; border: 1px solid #cbd5e0;"><strong>Option 4: IsolatedStorage</strong>
+                    <tr style="background: rgba(76, 175, 80, 0.12);">
+                        <td style="padding: 10px; border: 1px solid var(--border-color);"><strong>Option 4: IsolatedStorage</strong>
                         </td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0;">Fast in-memory key-value store, accessible
+                        <td style="padding: 10px; border: 1px solid var(--border-color);">Fast in-memory key-value store, accessible
                             across background sessions via <code>DataScope::Company</code>, encrypted by default, zero
                             table locks, and zero licensed table IDs consumed.</td>
-                        <td style="padding: 10px; border: 1px solid #cbd5e0; color: #38a169;"><strong>Selected
+                        <td style="padding: 10px; border: 1px solid var(--border-color); color: var(--success-color);"><strong>Selected
                                 Choice</strong></td>
                     </tr>
                 </tbody>
