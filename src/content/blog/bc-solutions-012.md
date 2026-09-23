@@ -9,7 +9,6 @@ tags:
   - UX
 draft: false
 ---
-
         <header>
             <h1>How IsolatedStorage Saved Me from Spamming APIs for Access Tokens</h1>
         </header>
