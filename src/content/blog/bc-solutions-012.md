@@ -9,10 +9,6 @@ tags:
   - UX
 draft: false
 ---
-<div class="container">
-    <header>
-        <h1>How IsolatedStorage Saved Me from Spamming APIs for Access Tokens</h1>
-    </header>
 
     <section>
         <h2><i class="ri-information-line"></i> Background</h2>
@@ -173,13 +169,8 @@ if IsolatedStorage.Contains('GG_DRIVE_TOKEN_EXP', TokenScope) then
 
 IsolatedStorage.Set('GG_DRIVE_TOKEN', NewToken, TokenScope);
 IsolatedStorage.Set('GG_DRIVE_TOKEN_EXP', Format(ExpireTime, 0, 9), TokenScope);
-```
-
-end;&nbsp;
             
         
-
-```
     <section>
         <h2><i class="ri-flask-line"></i> Testing & Verification</h2>
         <div class="timeline">
@@ -217,4 +208,3 @@ end;&nbsp;
                 license objects.</li>
         </ul>
     </section>
-</div>
