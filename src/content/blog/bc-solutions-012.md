@@ -1,6 +1,6 @@
 ---
 id: BC-SOLUTIONS-012
-title: "Use Page CMS to optimize posting flow "
+title: Use Page CMS to optimize posting flow
 date: 2026-09-23
 excerpt: posting easier with page CMS
 tags:
@@ -9,11 +9,12 @@ tags:
   - UX
 draft: false
 ---
+
 ## Background
 
 Recently, the database storage in our Microsoft Dynamics 365 Business Central environment was increasing rapidly due to user attachment files (invoices, receipts, PDF reports, etc.). To reduce storage footprint and optimize operational costs, I built a background synchronization service to automatically offload and store attachment files from Business Central directly into Google Drive.
 
-**The Issue: Too Many Access Token Requests** In the initial design, each file upload triggered a fresh Google OAuth 2.0 API call requesting an Access Token using the Client ID, Client Secret, and Refresh Token. During historical migration with 6 parallel background threads syncing months of data simultaneously, the system sent thousands of token requests in minutes. This triggered Google's rate limiter, causing requests to fail with random *"Cannot get token"* and *"Too Many Requests (HTTP 429)"* exceptions.
+**The Issue: Too Many Access Token Requests** In the initial design, each file upload triggered a fresh Google OAuth 2.0 API call requesting an Access Token using the Client ID, Client Secret, and Refresh Token. During historical migration with 6 parallel background threads syncing months of data simultaneously, the system sent thousands of token requests in minutes. This triggered Google's rate limiter, causing requests to fail with random _"Cannot get token"_ and _"Too Many Requests (HTTP 429)"_ exceptions.
 
 ## Evaluation of Solutions
 
@@ -195,13 +196,13 @@ When the cached token expires, each thread that misses the cache fetches a new t
 
 ## Testing & Verification
 
-1\. Before Optimization
+1. Before Optimization
 
 Errors when requesting the access token
 
 ![Token request errors from 6 background threads running concurrently](/blogAsset/bc011/bc011-1.webp)
 
-2\. After Optimization
+2. After Optimization
 
 Access token retrieved successfully, with no errors
 
