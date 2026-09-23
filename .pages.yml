@@ -53,4 +53,4 @@ content:
         label: Content
         type: rich-text
         options:
-          format: md
+          format: html
