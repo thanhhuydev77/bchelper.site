@@ -13,7 +13,7 @@ content:
     type: collection
     path: src/content/blog
     filename: "{fields.id}.md"
-    format: yaml-frontmatter
+    format: html
     exclude: [README.md]
     view:
       primary: title
