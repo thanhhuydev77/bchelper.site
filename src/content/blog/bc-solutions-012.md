@@ -10,7 +10,6 @@ tags:
 draft: false
 ---
 
-    <div class="container">
         <header>
             <h1>How IsolatedStorage Saved Me from Spamming APIs for Access Tokens</h1>
         </header>
@@ -206,4 +205,3 @@ end;</code></pre>
                     license objects.</li>
             </ul>
         </section>
-    </div>
