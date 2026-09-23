@@ -1,10 +1,11 @@
-// Vite plugin: turns Markdown posts in src/content/blog (written with Pages CMS)
+// Vite plugin: turns Markdown posts in src/content/blog (written with Sveltia CMS)
 // into the same /blog/<slug>.html files the hand-written posts use, exposes their
 // metadata as `virtual:blog-posts`, and appends their URLs to sitemap.xml.
 import fs from 'node:fs'
 import path from 'node:path'
 import matter from 'gray-matter'
 import MarkdownIt from 'markdown-it'
+import container from 'markdown-it-container'
 
 const VIRTUAL_ID = 'virtual:blog-posts'
 const RESOLVED_VIRTUAL_ID = '\0' + VIRTUAL_ID
@@ -48,7 +49,56 @@ function createRenderer() {
   md.renderer.rules.paragraph_close = (tokens, idx, options, env, self) =>
     isImageOnly(tokens[idx - 1]) ? '</div>\n' : self.renderToken(tokens, idx, options)
 
+  // **File.al** alone on the line above a code block -> code window title
+  md.core.ruler.push('code_title', state => {
+    const t = state.tokens
+    for (let i = 3; i < t.length; i++) {
+      if (t[i].type !== 'fence' || /\s/.test(t[i].info.trim())) continue
+      const [open, inline, close] = t.slice(i - 3, i)
+      const kids = (inline.children ?? []).filter(c => c.type !== 'text' || c.content.trim())
+      const isTitle = open.type === 'paragraph_open' && close.type === 'paragraph_close'
+        && open.level === t[i].level && kids.length === 3
+        && kids[0].type === 'strong_open' && kids[1].type === 'text' && kids[2].type === 'strong_close'
+      if (!isTitle) continue
+      t[i].info = `${t[i].info.trim() || 'code'} ${kids[1].content}`
+      t.splice(i - 3, 3)
+      i -= 3
+    }
+  })
+
+  // ::: step Title ... :::  -> timeline item (Sveltia "Timeline step" component)
+  md.use(container, 'step', {
+    render: (tokens, idx) => {
+      if (tokens[idx].nesting === -1) return '</div></div>\n'
+      const title = tokens[idx].info.trim().replace(/^step\s*/, '')
+      const titleHtml = title ? `<span class="timeline-title">${md.renderInline(title)}</span>\n` : ''
+      return `<div class="timeline"><div class="timeline-item">\n${titleHtml}`
+    },
+  })
+
+  // ::: pros + bullet list + :::  -> pro-list with check icons (Sveltia "Pros list" component)
+  md.use(container, 'pros', {
+    render: (tokens, idx) => {
+      const list = tokens[idx + 1]
+      if (tokens[idx].nesting === 1 && list?.type === 'bullet_list_open') {
+        list.attrJoin('class', 'pro-list')
+        for (let i = idx + 2; i < tokens.length && tokens[i].level > list.level; i++) {
+          if (tokens[i].type === 'list_item_open' && tokens[i].level === list.level + 1) tokens[i].meta = { pro: true }
+        }
+      }
+      return ''
+    },
+  })
+  md.renderer.rules.list_item_open = (tokens, idx, options, env, self) =>
+    self.renderToken(tokens, idx, options) + (tokens[idx].meta?.pro ? '<i class="ri-check-line"></i> ' : '')
+
   return md
+}
+
+function renderMarkdown(md, body) {
+  // Consecutive timeline steps share one .timeline so the connecting line is drawn
+  return md.render(body)
+    .replace(/<\/div><\/div>\s*<div class="timeline"><div class="timeline-item">/g, '</div>\n<div class="timeline-item">')
 }
 
 // Group content into <section> blocks, one per "## Heading", like the hand-written posts
@@ -186,7 +236,7 @@ export default function blogMarkdown({ contentDir = 'src/content/blog', legacyDi
         }
         if (!post) return next()
         res.setHeader('Content-Type', 'text/html; charset=utf-8')
-        res.end(renderPage(post, md.render(post.body)))
+        res.end(renderPage(post, renderMarkdown(md, post.body)))
       })
     },
 
@@ -195,7 +245,7 @@ export default function blogMarkdown({ contentDir = 'src/content/blog', legacyDi
         this.emitFile({
           type: 'asset',
           fileName: `blog/${post.slug}.html`,
-          source: renderPage(post, md.render(post.body)),
+          source: renderPage(post, renderMarkdown(md, post.body)),
         })
       }
     },

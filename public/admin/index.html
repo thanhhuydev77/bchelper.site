@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Blog Admin</title>
+</head>
+
+<body>
+    <!-- Sveltia CMS — https://github.com/sveltia/sveltia-cms (config: ./config.yml) -->
+    <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js" type="module"></script>
+
+    <!-- Custom editor blocks. Their Markdown is turned into the legacy post markup
+         (.timeline / .pro-list) by build/blog-markdown.js. Must be a module so it
+         runs after the CMS script above. -->
+    <script type="module">
+        const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
+
+        // ::: step Title
+        // Markdown content
+        // :::
+        CMS.registerEditorComponent({
+            id: 'timeline-step',
+            label: 'Timeline step',
+            fields: [
+                { name: 'title', label: 'Title', widget: 'string' },
+                { name: 'body', label: 'Content (Markdown)', widget: 'text', required: false },
+            ],
+            pattern: /^::: step(?: (.*))?\n([\s\S]*?)\n:::$/m,
+            fromBlock: m => ({ title: m[1] ?? '', body: m[2] ?? '' }),
+            toBlock: ({ title = '', body = '' }) => `::: step ${title}\n${body}\n:::`,
+            toPreview: ({ title, body }) => `<p><strong>● ${esc(title)}</strong></p><p>${esc(body)}</p>`,
+        })
+
+        // ::: pros
+        // - item
+        // :::
+        CMS.registerEditorComponent({
+            id: 'pros-list',
+            label: 'Pros list',
+            fields: [
+                { name: 'items', label: 'Items (one per line, Markdown allowed)', widget: 'text' },
+            ],
+            pattern: /^::: pros\n([\s\S]*?)\n:::$/m,
+            fromBlock: m => ({ items: m[1].split('\n').map(l => l.replace(/^\s*[-*]\s+/, '')).join('\n') }),
+            toBlock: ({ items = '' }) => {
+                const lines = items.split('\n').map(l => l.trim()).filter(Boolean)
+                return `::: pros\n${lines.map(l => `- ${l}`).join('\n')}\n:::`
+            },
+            toPreview: ({ items = '' }) =>
+                `<ul>${items.split('\n').filter(l => l.trim()).map(l => `<li>✔ ${esc(l)}</li>`).join('')}</ul>`,
+        })
+    </script>
+</body>
+
+</html>

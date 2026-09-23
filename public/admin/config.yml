@@ -1,0 +1,73 @@
+# Sveltia CMS configuration — https://github.com/sveltia/sveltia-cms
+# Open /admin/ on the site. Posts are saved as Markdown in src/content/blog and
+# built into /blog/<file>.html by build/blog-markdown.js. Old hand-written posts
+# stay in public/blog.
+#
+# Signing in:
+#   - Locally (npm run dev, Chrome/Edge): "Work with Local Repository", pick this repo folder.
+#   - On the live site: "Sign In Using Access Token" with a GitHub fine-grained token
+#     (this repo only, Contents: read & write). For a "Sign In with GitHub" button, deploy
+#     https://github.com/sveltia/sveltia-cms-auth and set base_url below.
+backend:
+  name: github
+  repo: thanhhuydev77/bchelper.site
+  branch: main
+  # base_url: https://sveltia-cms-auth.<your-subdomain>.workers.dev
+
+site_url: https://alexxbc.site
+display_url: https://alexxbc.site
+
+media_folder: public/blogAsset
+public_folder: /blogAsset
+
+collections:
+  - name: blog
+    label: Blog posts
+    label_singular: Blog post
+    folder: src/content/blog
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    slug: "{{id}}"
+    summary: "{{title}} · {{date}}{{draft | ternary(' · DRAFT', '')}}"
+    sortable_fields:
+      fields: [date, title]
+      default:
+        field: date
+        direction: descending
+    fields:
+      - name: id
+        label: Post ID
+        widget: string
+        pattern: ['^[A-Za-z0-9-]+$', 'Letters, numbers and dashes only']
+        hint: "Unique ID used in the URL (/blog/<id>) and the file name, e.g. BC-SOLUTIONS-013. Don't change it after publishing."
+      - name: title
+        label: Title
+        widget: string
+      - name: date
+        label: Publish date
+        widget: datetime
+        time_format: false
+        format: YYYY-MM-DD
+      - name: excerpt
+        label: Excerpt
+        widget: text
+        required: false
+        hint: Short summary shown on the blog list and in search results.
+      - name: tags
+        label: Tags
+        widget: list
+        required: false
+      - name: draft
+        label: Draft
+        widget: boolean
+        default: false
+        required: false
+        hint: Drafts are saved to GitHub but not published on the site.
+      - name: body
+        label: Content
+        widget: markdown
+        hint: >-
+          "## Heading" starts a new section. Quote = highlight box. A bold-only line
+          right above a code block becomes its file name. Use the + menu for
+          Timeline step and Pros list.
