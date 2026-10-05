@@ -18,11 +18,7 @@ resourceExposurePolicy is a configuration block within app.json that defines how
 By default, if left unspecified in app.json, Business Central enforces the most restrictive settings:
 
 `"resourceExposurePolicy": {`
-
 `    "allowDebugging": false,`
-
 `    "allowDownloadingSource": false,`
-
 `    "includeSourceInSymbolFile": false`
-
 `}`
