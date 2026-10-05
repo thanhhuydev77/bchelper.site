@@ -19,7 +19,7 @@ format: html
         
         <div class="highlight-box">
             <strong><i class="ri-cloud-line"></i> Scope Note: Cloud vs. On-Premises</strong>
-            According to official Microsoft Learn documentation, the <code>resourceExposurePolicy</code> is primarily enforced in <strong>Business Central Cloud (SaaS)</strong> environments. For On-Premises installations, server administrators with direct SQL and file system access can still inspect compiled assemblies regardless of these flags.
+            According to official Microsoft Learn documentation, the <code>resourceExposurePolicy</code> is primarily enforced in <b>Business Central Cloud (SaaS)</b> environments. For On-Premises installations, server administrators with direct SQL and file system access can still inspect compiled assemblies regardless of these flags.
         </div>
     </section>
 
