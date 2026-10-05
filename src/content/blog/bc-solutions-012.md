@@ -144,9 +144,9 @@ format: html
     <section>
         <h2><i class="ri-medal-line"></i> Summary</h2>
         <ul class="pro-list">
-            <li><i class="ri-flashlight-line"></i> <strong>For PTE:</strong> Enable all three core flags (<code>true</code>) to prevent lost code repositories and streamline handovers[cite: 1, 2].</li>
-            <li><i class="ri-shield-user-line"></i> <strong>For ISVs:</strong> Disable source downloads and combine debugging permissions with <code>[NonDebuggable]</code> to safeguard core algorithms.</li>
-            <li><i class="ri-tools-line"></i> <strong>applyToDevExtension:</strong> Leave this set to <code>false</code> during day-to-day development so F5 sandbox deployments remain unrestricted.</li>
+            <li><i class="ri-flashlight-line"></i> <strong>For PTE:</strong> Enable all three core flags (true) to prevent lost code repositories and streamline handovers.</li>
+            <li><i class="ri-shield-user-line"></i> <strong>For ISVs:</strong> Disable source downloads and combine debugging permissions with [NonDebuggable] to safeguard core algorithms.</li>
+            <li><i class="ri-tools-line"></i> <strong>applyToDevExtension:</strong> Leave this set to false during day-to-day development so F5 sandbox deployments remain unrestricted.</li>
         </ul>
     </section>
 </div>
