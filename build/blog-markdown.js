@@ -136,7 +136,7 @@ function renderPage(post, bodyHtml) {
             <h1>${escapeHtml(post.title)}</h1>
         </header>
 
-${wrapSections(bodyHtml)}
+${post.format === 'html' ? bodyHtml : wrapSections(bodyHtml)}
     </div>
 </body>
 
@@ -186,13 +186,16 @@ export default function blogMarkdown({ contentDir = 'src/content/blog', legacyDi
         tags: Array.isArray(data.tags) ? data.tags.map(String).filter(Boolean) : [],
         contentFile: `/blog/${slug}.html`,
         draft: Boolean(data.draft),
+        format: data.format === 'html' ? 'html' : 'markdown',
         body: content,
       })
     }
     return posts
   }
 
-  const toMeta = ({ body, slug, ...meta }) => meta
+  const toMeta = ({ body, slug, format, ...meta }) => meta
+  // HTML posts are used as-is; Markdown posts go through markdown-it
+  const renderBody = post => post.format === 'html' ? post.body : renderMarkdown(md, post.body)
 
   return {
     name: 'blog-markdown',
@@ -236,7 +239,7 @@ export default function blogMarkdown({ contentDir = 'src/content/blog', legacyDi
         }
         if (!post) return next()
         res.setHeader('Content-Type', 'text/html; charset=utf-8')
-        res.end(renderPage(post, renderMarkdown(md, post.body)))
+        res.end(renderPage(post, renderBody(post)))
       })
     },
 
@@ -245,7 +248,7 @@ export default function blogMarkdown({ contentDir = 'src/content/blog', legacyDi
         this.emitFile({
           type: 'asset',
           fileName: `blog/${post.slug}.html`,
-          source: renderPage(post, renderMarkdown(md, post.body)),
+          source: renderPage(post, renderBody(post)),
         })
       }
     },

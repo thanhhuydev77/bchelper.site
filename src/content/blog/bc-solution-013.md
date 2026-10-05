@@ -9,6 +9,7 @@ tags:
   - source code
   - configuration
 draft: false
+format: markdown
 ---
 
 # 1. What is **resourceExposurePolicy**?

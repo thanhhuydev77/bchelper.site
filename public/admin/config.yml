@@ -27,6 +27,7 @@ collections:
     folder: src/content/blog
     extension: md
     format: yaml-frontmatter
+    filter: { field: format, value: markdown }
     create: true
     slug: "{{id}}"
     summary: "{{title}} · {{date}}{{draft | ternary(' · DRAFT', '')}}"
@@ -64,6 +65,7 @@ collections:
         default: false
         required: false
         hint: Drafts are saved to GitHub but not published on the site.
+      - { name: format, widget: hidden, default: markdown }
       - name: body
         label: Content
         widget: markdown
@@ -71,3 +73,41 @@ collections:
           "## Heading" starts a new section. Quote = highlight box. A bold-only line
           right above a code block becomes its file name. Use the + menu for
           Timeline step and Pros list.
+
+  # Same folder, but the content is raw HTML that is used as-is (no Markdown).
+  - name: blog-html
+    label: Blog posts (HTML)
+    label_singular: HTML blog post
+    folder: src/content/blog
+    extension: md
+    format: yaml-frontmatter
+    filter: { field: format, value: html }
+    create: true
+    slug: "{{id}}"
+    summary: "{{title}} · {{date}}{{draft | ternary(' · DRAFT', '')}}"
+    sortable_fields:
+      fields: [date, title]
+      default:
+        field: date
+        direction: descending
+    fields:
+      - name: id
+        label: Post ID
+        widget: string
+        pattern: ['^[A-Za-z0-9-]+$', 'Letters, numbers and dashes only']
+        hint: "Unique ID used in the URL (/blog/<id>) and the file name. Don't change it after publishing."
+      - { name: title, label: Title, widget: string }
+      - { name: date, label: Publish date, widget: datetime, time_format: false, format: YYYY-MM-DD }
+      - { name: excerpt, label: Excerpt, widget: text, required: false }
+      - { name: tags, label: Tags, widget: list, required: false }
+      - { name: draft, label: Draft, widget: boolean, default: false, required: false }
+      - { name: format, widget: hidden, default: html }
+      - name: body
+        label: Content (HTML)
+        widget: code
+        default_language: html
+        allow_language_selection: false
+        output_code_only: true
+        hint: >-
+          Raw HTML for the post body, used exactly as written. Wrap each part in
+          <section><h2>…</h2>…</section> like the existing posts.
