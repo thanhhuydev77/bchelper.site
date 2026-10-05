@@ -14,12 +14,17 @@ format: html
 <div class="container">
     <section>
         <h2><i class="ri-information-line"></i> Background</h2>
-        <p>When building apps in Business Central, developers often face a dilemma: <strong>protecting proprietary code/logic</strong> versus <strong>opening it up for partners and clients to debug and integrate</strong>. All of these permissions are controlled directly via the <strong><code>resourceExposurePolicy</code></strong> setting in the <code>app.json</code> file.</p>
+        <p>When developing extensions for Microsoft Dynamics 365 Business Central, developers constantly balance two priorities: <strong>protecting proprietary intellectual property (IP)</strong> versus <strong>empowering partners or clients to troubleshoot and integrate</strong>. All access boundaries are governed directly through the <strong><code>resourceExposurePolicy</code></strong> setting in your <code>app.json</code> file.</p>
+        
+        <div class="highlight-box">
+            <strong><i class="ri-cloud-line"></i> Scope Note: Cloud vs. On-Premises</strong>
+            According to official Microsoft Learn documentation, the <code>resourceExposurePolicy</code> is primarily enforced in <strong>Business Central Cloud (SaaS)</strong> environments. For On-Premises installations, server administrators with direct SQL and file system access can still inspect compiled assemblies regardless of these flags.
+        </div>
     </section>
 
     <section>
-        <h2><i class="ri-error-warning-line"></i> Heads Up: BC Locks Everything by Default</h2>
-        <p>If you forget to declare this block in your <code>app.json</code>, Business Central defaults every single property to <code>false</code>. That means no debugging, no source downloading, and no F12 code inspection:</p>
+        <h2><i class="ri-error-warning-line"></i> Default Lockdown: Zero Access</h2>
+        <p>If you omit this block from your <code>app.json</code>, Business Central defaults every single property to <code>false</code>. That means no debugging, no raw source code downloads, and no F12 code inspection for external developers:</p>
 
         <div class="code-wrapper">
             <div class="code-header">
@@ -30,50 +35,60 @@ format: html
             <pre><code>"resourceExposurePolicy": {
     "allowDebugging": false,
     "allowDownloadingSource": false,
-    "includeSourceInSymbolFile": false
+    "includeSourceInSymbolFile": false,
+    "applyToDevExtension": false
 }</code></pre>
         </div>
     </section>
 
     <section>
-        <h2><i class="ri-equalizer-line"></i> Quick Breakdown of the 3 Key Flags</h2>
-        <p>Each flag handles a specific access permission when other developers work with your app:</p>
+        <h2><i class="ri-equalizer-line"></i> Breakdown of Core Properties</h2>
+        <p>Each parameter handles a specific security and access layer across deployment, debugging, and dependency referencing:</p>
 
         <div class="timeline">
             <div class="timeline-item">
                 <span class="timeline-title">1. allowDebugging</span>
-                <p>Determines whether developers can attach the VS Code debugger to your app in Sandbox environments.</p>
+                <p>Controls whether external developers can attach a VS Code debugger or run <strong>Snapshot Debugging</strong> sessions on your extension in Sandbox environments.</p>
                 <ul class="pro-list">
-                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Other devs can set breakpoints, inspect variable values, and step through code line by line to track down bugs.</li>
-                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> The debugger skips over your app entirely, keeping everything inside hidden.</li>
+                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Developers can set breakpoints, step through procedures, and inspect runtime variable values.</li>
+                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> The debugger completely steps over your objects, treating your code as an opaque black box.</li>
                 </ul>
             </div>
 
             <div class="timeline-item">
                 <span class="timeline-title">2. allowDownloadingSource</span>
-                <p>Controls whether users can export the raw source code (the <code>.zip</code> file) directly from the <em>Extension Management</em> page in the Web Client.</p>
+                <p>Determines whether administrators can download the original AL source code archive (the <code>.zip</code> file) directly from the <em>Extension Management</em> page in the Web Client.</p>
                 <ul class="pro-list">
-                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Anyone with admin permissions can download the original source code locally.</li>
-                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> Only the compiled <code>.app</code> package is deployed; no one can extract the original AL source files back out.</li>
+                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Anyone with management permissions can export the complete source code project.</li>
+                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> Only the compiled <code>.app</code> package remains deployed; raw source files cannot be retrieved via the client.</li>
                 </ul>
             </div>
 
             <div class="timeline-item">
                 <span class="timeline-title">3. includeSourceInSymbolFile</span>
-                <p>Embeds AL code into the symbol package (<code>.app</code>) so other extensions can reference it as a dependency.</p>
+                <p>Controls whether actual AL source code is embedded within the symbol package (<code>.app</code>) downloaded by dependent extensions.</p>
                 <ul class="pro-list">
-                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> When external developers call your events or APIs, hitting <strong>F12 (Go to Definition)</strong> lets them see the actual logic inside.</li>
-                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> Hitting F12 only displays method signatures and parameters; the implementation details stay hidden.</li>
+                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Third-party developers referencing your app can press <strong>F12 (Go to Definition)</strong> in VS Code to view full implementation details and event handlers.</li>
+                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> F12 only generates metadata declarations (signatures, fields, parameters); the implementation logic remains completely hidden.</li>
+                </ul>
+            </div>
+
+            <div class="timeline-item">
+                <span class="timeline-title">4. applyToDevExtension</span>
+                <p>Controls whether the restrictions defined above apply to extensions published directly from Visual Studio Code using the development endpoint (pressing <strong>F5 / Ctrl+F5</strong>).</p>
+                <ul class="pro-list">
+                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>false (Default &amp; Recommended):</strong> Restrictions only take effect when the package is formally published (e.g., via PowerShell or Admin Center). Direct F5 deployments to sandboxes remain fully debuggable for rapid development.</li>
+                    <li><i class="ri-error-warning-line" style="color:var(--primary-color)"></i> <strong>true:</strong> Enforces all exposure policies immediately, even during local F5 deployment. Use this setting when you need to simulate exactly what third-party developers will see before releasing the app.</li>
                 </ul>
             </div>
         </div>
     </section>
 
     <section>
-        <h2><i class="ri-shield-keyhole-line"></i> Best Practices for Real-World Scenarios</h2>
+        <h2><i class="ri-shield-keyhole-line"></i> Best Practices by Scenario</h2>
 
-        <h3><code>1. In-House Apps / Per-Tenant Extensions (PTE)</code></h3>
-        <p>The client pays for the custom app and owns the code. Set everything to true to make future maintenance, handovers, or bug fixing with external partners as frictionless as possible:</p>
+        <h3><code>1. In-House Apps &amp; Per-Tenant Extensions (PTE)</code></h3>
+        <p>The client owns the customization. The primary goal is effortless lifecycle management, future maintenance, and seamless team handovers:</p>
         <div class="code-wrapper">
             <div class="code-header">
                 <div class="dot red"></div>
@@ -83,12 +98,13 @@ format: html
             <pre><code>"resourceExposurePolicy": {
     "allowDebugging": true,
     "allowDownloadingSource": true,
-    "includeSourceInSymbolFile": true
+    "includeSourceInSymbolFile": true,
+    "applyToDevExtension": false
 }</code></pre>
         </div>
 
-        <h3><code>2. Commercial Products / AppSource (ISV Apps)</code></h3>
-        <p>You need to protect your core business logic and algorithms from being copied or extracted:</p>
+        <h3><code>2. Commercial Products &amp; AppSource (ISV Solutions)</code></h3>
+        <p>Focuses on safeguarding proprietary algorithms, IP assets, and core business calculations against reverse engineering:</p>
         <div class="code-wrapper">
             <div class="code-header">
                 <div class="dot red"></div>
@@ -98,16 +114,17 @@ format: html
             <pre><code>"resourceExposurePolicy": {
     "allowDebugging": false,
     "allowDownloadingSource": false,
-    "includeSourceInSymbolFile": false
+    "includeSourceInSymbolFile": false,
+    "applyToDevExtension": false
 }</code></pre>
         </div>
         <div class="highlight-box">
-            <strong>Pro Tip for Devs:</strong>
-            If you want to let partners debug general execution flows while hiding passwords, API keys, or sensitive calculation logic, keep <code>allowDebugging: true</code> and add the <code>[NonDebuggable]</code> attribute directly onto those specific procedures or variables.
+            <strong><i class="ri-lightbulb-flash-line"></i> Pro Tip: Granular Protection with [NonDebuggable]</strong>
+            If you want external partners to debug general workflow integration without exposing sensitive credentials, tokens, or proprietary logic, leave <code>allowDebugging: true</code> and decorate those specific procedures or variables with the <code>[NonDebuggable]</code> attribute.
         </div>
 
-        <h3><code>3. Base Apps / Shared Libraries for Integrations</code></h3>
-        <p>Other developers need to consume your APIs, subscribe to your events, and troubleshoot integration errors on their own—without you distributing the entire raw repository:</p>
+        <h3><code>3. Shared Frameworks &amp; Integration Libraries</code></h3>
+        <p>Enables downstream developers to consume APIs, bind to integration events, and self-troubleshoot runtime errors without distributing the raw repository:</p>
         <div class="code-wrapper">
             <div class="code-header">
                 <div class="dot red"></div>
@@ -117,18 +134,18 @@ format: html
             <pre><code>"resourceExposurePolicy": {
     "allowDebugging": true,
     "allowDownloadingSource": false,
-    "includeSourceInSymbolFile": true
+    "includeSourceInSymbolFile": true,
+    "applyToDevExtension": false
 }</code></pre>
         </div>
     </section>
 
     <section>
-        <h2><i class="ri-medal-line"></i> Takeaways</h2>
-        <p>Set your flags right from day one depending on your app type:</p>
+        <h2><i class="ri-medal-line"></i> Summary</h2>
         <ul class="pro-list">
-            <li><i class="ri-flashlight-line"></i> <strong>For PTE:</strong> Set all three to <code>true</code> to avoid the hassle of emailing zip files back and forth during handovers.</li>
-            <li><i class="ri-shield-check-line"></i> <strong>For ISV:</strong> Disable source downloading, and consider using <code>[NonDebuggable]</code> instead of locking down the entire app.</li>
-            <li><i class="ri-git-repository-line"></i> <strong>For Base/Core Apps:</strong> Allow F12 code navigation and debugging so third-party developers can self-diagnose integration issues easily.</li>
+            <li><i class="ri-flashlight-line"></i> <strong>For PTE:</strong> Enable all three core flags (<code>true</code>) to prevent lost code repositories and streamline handovers[cite: 1, 2].</li>
+            <li><i class="ri-shield-user-line"></i> <strong>For ISVs:</strong> Disable source downloads and combine debugging permissions with <code>[NonDebuggable]</code> to safeguard core algorithms.</li>
+            <li><i class="ri-tools-line"></i> <strong>applyToDevExtension:</strong> Leave this set to <code>false</code> during day-to-day development so F5 sandbox deployments remain unrestricted.</li>
         </ul>
     </section>
 </div>
