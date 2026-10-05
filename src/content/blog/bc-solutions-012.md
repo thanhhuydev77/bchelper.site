@@ -21,9 +21,9 @@ format: html
   <!-- Section 1 -->
   <section>
     <h2>1. General: What is <code>resourceExposurePolicy</code>?</h2>
-    <p>
+  
       <code>resourceExposurePolicy</code> is a configuration block within <code>app.json</code> that defines how exposed your AL source code and debugging capabilities will be once your extension is packaged and deployed.
-    </p>
+
     <p>
       By default, if left unspecified in <code>app.json</code>, Business Central enforces the most restrictive settings:
     </p>
