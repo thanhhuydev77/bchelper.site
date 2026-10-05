@@ -61,7 +61,7 @@ format: html
                 <p>Determines whether administrators can download the original AL source code archive (the <code>.zip</code> file) directly from the <em>Extension Management</em> page in the Web Client.</p>
                 <ul class="pro-list">
                     <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Anyone with management permissions can export the complete source code project.</li>
-                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> Only the compiled <code>.app</code> package remains deployed; raw source files cannot be retrieved via the client.</li>
+                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> Only the compiled <i>.app</i> package remains deployed; raw source files cannot be retrieved via the client.</li>
                 </ul>
             </div>
 
@@ -69,7 +69,7 @@ format: html
                 <span class="timeline-title">3. includeSourceInSymbolFile</span>
                 <p>Controls whether actual AL source code is embedded within the symbol package (<code>.app</code>) downloaded by dependent extensions.</p>
                 <ul class="pro-list">
-                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Third-party developers referencing your app can press <strong>F12 (Go to Definition)</strong> in VS Code to view full implementation details and event handlers.</li>
+                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Third-party developers referencing your app can press <bold>F12 (Go to Definition)</bold> in VS Code to view full implementation details and event handlers.</li>
                     <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> F12 only generates metadata declarations (signatures, fields, parameters); the implementation logic remains completely hidden.</li>
                 </ul>
             </div>
@@ -78,7 +78,7 @@ format: html
                 <span class="timeline-title">4. applyToDevExtension</span>
                 <p>Controls whether the restrictions defined above apply to extensions published directly from Visual Studio Code using the development endpoint (pressing <strong>F5 / Ctrl+F5</strong>).</p>
                 <ul class="pro-list">
-                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>false (Default &amp; Recommended):</strong> Restrictions only take effect when the package is formally published (e.g., via PowerShell or Admin Center). Direct F5 deployments to sandboxes remain fully debuggable for rapid development.</li>
+                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>false:</strong> Restrictions only take effect when the package is formally published (e.g., via PowerShell or Admin Center). Direct F5 deployments to sandboxes remain fully debuggable for rapid development.</li>
                     <li><i class="ri-error-warning-line" style="color:var(--primary-color)"></i> <strong>true:</strong> Enforces all exposure policies immediately, even during local F5 deployment. Use this setting when you need to simulate exactly what third-party developers will see before releasing the app.</li>
                 </ul>
             </div>
