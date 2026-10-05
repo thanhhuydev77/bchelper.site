@@ -61,7 +61,7 @@ format: html
                 <p>Determines whether administrators can download the original AL source code archive (the <code>.zip</code> file) directly from the <em>Extension Management</em> page in the Web Client.</p>
                 <ul class="pro-list">
                     <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Anyone with management permissions can export the complete source code project.</li>
-                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> Only the compiled <bold>.app</bold> package remains deployed; raw source files cannot be retrieved via the client.</li>
+                    <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> Only the compiled .app package remains deployed; raw source files cannot be retrieved via the client.</li>
                 </ul>
             </div>
 
@@ -69,7 +69,7 @@ format: html
                 <span class="timeline-title">3. includeSourceInSymbolFile</span>
                 <p>Controls whether actual AL source code is embedded within the symbol package (<code>.app</code>) downloaded by dependent extensions.</p>
                 <ul class="pro-list">
-                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Third-party developers referencing your app can press <b>F12 (Go to Definition)</b> in VS Code to view full implementation details and event handlers.</li>
+                    <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>true:</strong> Third-party developers referencing your app can press F12 (Go to Definition) in VS Code to view full implementation details and event handlers.</li>
                     <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>false:</strong> F12 only generates metadata declarations (signatures, fields, parameters); the implementation logic remains completely hidden.</li>
                 </ul>
             </div>
