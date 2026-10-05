@@ -11,4 +11,18 @@ tags:
 draft: false
 ---
 
-# `1. General: What is resourceExposurePolicy?`
+# 1. What is **resourceExposurePolicy**?
+
+resourceExposurePolicy is a configuration block within app.json that defines how exposed your AL source code and debugging capabilities will be once your extension is packaged and deployed.
+
+By default, if left unspecified in app.json, Business Central enforces the most restrictive settings:
+
+`"resourceExposurePolicy": {`
+
+`    "allowDebugging": false,`
+
+`    "allowDownloadingSource": false,`
+
+`    "includeSourceInSymbolFile": false`
+
+`}`
