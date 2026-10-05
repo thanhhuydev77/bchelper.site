@@ -1,11 +1,166 @@
 ---
 id: BC-SOLUTIONS-012
-title: aaa
+title: 'Protecting Your IP vs. Maintainability: resourceExposurePolicy'
 date: 2026-10-05
-excerpt: aa
-tags: []
+excerpt: 'A practical guide to mastering resourceExposurePolicy in Business Central: protecting your IP without sacrificing debugging and integration.'
+tags:
+  - App.json
+  - Debugging
+  - Configuration
 draft: false
 format: html
 ---
 
-<div class="container"> <header> <h1>Protecting Your IP vs. Maintainability: resourceExposurePolicy in app.json</h1> </header> <section> <h2><i class="ri-information-line"></i> Background</h2> <p>When developing extensions for <strong>Microsoft Dynamics 365 Business Central</strong>, architects face a classic trade-off: protecting proprietary intellectual property (IP) versus offering supportability and integration ease for partners. The primary mechanism controlling this balance is the <strong><code>resourceExposurePolicy</code></strong> setting in <code>app.json</code>.</p> </section> <section> <h2><i class="ri-error-warning-line"></i> The Dilemma: Default Lockdown</h2> <p>If omitted from your <code>app.json</code> configuration, Business Central strictly applies a full lockdown policy by default. Understanding the three individual flags ensures you do not inadvertently lock out troubleshooting tools or expose sensitive proprietary code.</p> <div class="code-wrapper"> <div class="code-header"> <div class="dot red"></div> <div class="dot yellow"></div> <div class="dot green"></div> </div> <pre><code>"resourceExposurePolicy": { "allowDebugging": false, "allowDownloadingSource": false, "includeSourceInSymbolFile": false }</code></pre> </div> </section> <section> <h2><i class="ri-equalizer-line"></i> The Three Core Properties</h2> <p>Each parameter governs a distinct access boundary across development, deployment, and runtime:</p> <div class="timeline"> <div class="timeline-item"> <span class="timeline-title">1. allowDebugging</span> <p>Dictates whether an external developer can attach a VS Code debugger to your extension code inside Sandbox environments.</p> <ul class="pro-list"> <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Enabled (true):</strong> Developers can step through execution flows, inspect variables, and set breakpoints.</li> <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>Disabled (false):</strong> The debugger steps over your objects entirely, keeping runtime logic black-boxed.</li> </ul> </div> <div class="timeline-item"> <span class="timeline-title">2. allowDownloadingSource</span> <p>Controls whether users or administrators can download the raw source archive (<code>.zip</code>) directly from the Business Central Web Client via the <em>Extension Management</em> page.</p> <ul class="pro-list"> <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Enabled (true):</strong> Full transparency; lets owners extract original source trees.</li> <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>Disabled (false):</strong> Protects code from physical extraction, delivering only compiled packages.</li> </ul> </div> <div class="timeline-item"> <span class="timeline-title">3. includeSourceInSymbolFile</span> <p>Embeds AL source code into the compiled symbol package (<code>.app</code>) consumed by dependent extensions.</p> <ul class="pro-list"> <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Enabled (true):</strong> Allows downstream developers to use <strong>Go to Definition (F12)</strong> in VS Code to examine events, signatures, and procedures.</li> <li><i class="ri-close-fill" style="color:var(--fail-color)"></i> <strong>Disabled (false):</strong> Only metadata definitions are visible; method implementations remain hidden.</li> </ul> </div> </div> </section> <section> <h2><i class="ri-shield-keyhole-line"></i> Best Practices by Scenario</h2> <h3><code>1. In-House Customizations & Per-Tenant Extensions (PTE)</code></h3> <p>Prioritizes zero-friction maintenance and immediate troubleshooting across internal teams or partner handovers:</p> <div class="code-wrapper"> <div class="code-header"> <div class="dot red"></div> <div class="dot yellow"></div> <div class="dot green"></div> </div> <pre><code>"resourceExposurePolicy": { "allowDebugging": true, "allowDownloadingSource": true, "includeSourceInSymbolFile": true }</code></pre> </div> <h3><code>2. Commercial ISV & AppSource Applications</code></h3> <p>Focuses on IP protection, licensing control, and algorithm confidentiality:</p> <div class="code-wrapper"> <div class="code-header"> <div class="dot red"></div> <div class="dot yellow"></div> <div class="dot green"></div> </div> <pre><code>"resourceExposurePolicy": { "allowDebugging": false, "allowDownloadingSource": false, "includeSourceInSymbolFile": false }</code></pre> </div> <div class="highlight-box"> <strong>Pro Tip: Selective Protection with NonDebuggable</strong> If you wish to allow debugging on general flow while concealing credentials or proprietary math, keep <code>allowDebugging: true</code> and mark specific procedures or variables with the <code>[NonDebuggable]</code> attribute. </div> <h3><code>3. Shared Frameworks & API Libraries</code></h3> <p>Balances integration transparency with IP custody:</p> <div class="code-wrapper"> <div class="code-header"> <div class="dot red"></div> <div class="dot yellow"></div> <div class="dot green"></div> </div> <pre><code>"resourceExposurePolicy": { "allowDebugging": true, "allowDownloadingSource": false, "includeSourceInSymbolFile": true }</code></pre> </div> </section> <section> <h2><i class="ri-medal-line"></i> Conclusion</h2> <p>Selecting the appropriate policy depends entirely on whether your code is an operational asset or commercial IP[cite: 1, 2]:</p> <ul class="pro-list"> <li><i class="ri-flashlight-line"></i> <strong>For PTE:</strong> Keep everything open (<code>true</code> / <code>true</code> / <code>true</code>) to simplify future operations.</li> <li><i class="ri-shield-check-line"></i> <strong>For ISV:</strong> Restrict source distribution while leveraging <code>includeSourceInSymbolFile</code> or <code>[NonDebuggable]</code> for targeted extensibility.</li> <li><i class="ri-git-repository-line"></i> <strong>For Core Frameworks:</strong> Enable symbol source inclusion so integrators can read event contracts effortlessly without leaking standalone project files.</li> </ul> </section> </div>
+<div class="container">
+    <section>
+        <h2><i class="ri-information-line"></i> Background</h2>
+        <p>
+            When developing extensions for <strong>Microsoft Dynamics 365 Business Central</strong>, architects face a
+            classic trade-off: protecting proprietary intellectual property (IP) versus offering supportability and
+            integration ease for partners. The primary mechanism controlling this balance is the
+            <strong><code>resourceExposurePolicy</code></strong> setting in <code>app.json</code>.
+        </p>
+    </section>
+    <section>
+        <h2><i class="ri-error-warning-line"></i> The Dilemma: Default Lockdown</h2>
+        <p>
+            If omitted from your <code>app.json</code> configuration, Business Central strictly applies a full lockdown
+            policy by default. Understanding the three individual flags ensures you do not inadvertently lock out
+            troubleshooting tools or expose sensitive proprietary code.
+        </p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <pre><code>"resourceExposurePolicy": { "allowDebugging": false, "allowDownloadingSource": false, "includeSourceInSymbolFile": false }</code></pre>
+        </div>
+    </section>
+    <section>
+        <h2><i class="ri-equalizer-line"></i> The Three Core Properties</h2>
+        <p>Each parameter governs a distinct access boundary across development, deployment, and runtime:</p>
+        <div class="timeline">
+            <div class="timeline-item">
+                <span class="timeline-title">1. allowDebugging</span>
+                <p>
+                    Dictates whether an external developer can attach a VS Code debugger to your extension code inside
+                    Sandbox environments.
+                </p>
+                <ul class="pro-list">
+                    <li>
+                        <i class="ri-check-line" style="color: var(--success-color)"></i>
+                        <strong>Enabled (true):</strong> Developers can step through execution flows, inspect variables,
+                        and set breakpoints.
+                    </li>
+                    <li>
+                        <i class="ri-close-fill" style="color: var(--fail-color)"></i>
+                        <strong>Disabled (false):</strong> The debugger steps over your objects entirely, keeping
+                        runtime logic black-boxed.
+                    </li>
+                </ul>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-title">2. allowDownloadingSource</span>
+                <p>
+                    Controls whether users or administrators can download the raw source archive (<code>.zip</code>)
+                    directly from the Business Central Web Client via the <em>Extension Management</em> page.
+                </p>
+                <ul class="pro-list">
+                    <li>
+                        <i class="ri-check-line" style="color: var(--success-color)"></i>
+                        <strong>Enabled (true):</strong> Full transparency; lets owners extract original source trees.
+                    </li>
+                    <li>
+                        <i class="ri-close-fill" style="color: var(--fail-color)"></i>
+                        <strong>Disabled (false):</strong> Protects code from physical extraction, delivering only
+                        compiled packages.
+                    </li>
+                </ul>
+            </div>
+            <div class="timeline-item">
+                <span class="timeline-title">3. includeSourceInSymbolFile</span>
+                <p>
+                    Embeds AL source code into the compiled symbol package (<code>.app</code>) consumed by dependent
+                    extensions.
+                </p>
+                <ul class="pro-list">
+                    <li>
+                        <i class="ri-check-line" style="color: var(--success-color)"></i>
+                        <strong>Enabled (true):</strong> Allows downstream developers to use
+                        <strong>Go to Definition (F12)</strong> in VS Code to examine events, signatures, and
+                        procedures.
+                    </li>
+                    <li>
+                        <i class="ri-close-fill" style="color: var(--fail-color)"></i>
+                        <strong>Disabled (false):</strong> Only metadata definitions are visible; method implementations
+                        remain hidden.
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h2><i class="ri-shield-keyhole-line"></i> Best Practices by Scenario</h2>
+        <h3><code>1. In-House Customizations & Per-Tenant Extensions (PTE)</code></h3>
+        <p>
+            Prioritizes zero-friction maintenance and immediate troubleshooting across internal teams or partner
+            handovers:
+        </p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <pre><code>"resourceExposurePolicy": { "allowDebugging": true, "allowDownloadingSource": true, "includeSourceInSymbolFile": true }</code></pre>
+        </div>
+        <h3><code>2. Commercial ISV & AppSource Applications</code></h3>
+        <p>Focuses on IP protection, licensing control, and algorithm confidentiality:</p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <pre><code>"resourceExposurePolicy": { "allowDebugging": false, "allowDownloadingSource": false, "includeSourceInSymbolFile": false }</code></pre>
+        </div>
+        <div class="highlight-box">
+            <strong>Pro Tip: Selective Protection with NonDebuggable</strong> If you wish to allow debugging on general
+            flow while concealing credentials or proprietary math, keep <code>allowDebugging: true</code> and mark
+            specific procedures or variables with the <code>[NonDebuggable]</code> attribute.
+        </div>
+        <h3><code>3. Shared Frameworks & API Libraries</code></h3>
+        <p>Balances integration transparency with IP custody:</p>
+        <div class="code-wrapper">
+            <div class="code-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <pre><code>"resourceExposurePolicy": { "allowDebugging": true, "allowDownloadingSource": false, "includeSourceInSymbolFile": true }</code></pre>
+        </div>
+    </section>
+    <section>
+        <h2><i class="ri-medal-line"></i> Conclusion</h2>
+        <p>
+            Selecting the appropriate policy depends entirely on whether your code is an operational asset or commercial
+            IP[cite: 1, 2]:
+        </p>
+        <ul class="pro-list">
+            <li>
+                <i class="ri-flashlight-line"></i> <strong>For PTE:</strong> Keep everything open (<code>true</code> /
+                <code>true</code> / <code>true</code>) to simplify future operations.
+            </li>
+            <li>
+                <i class="ri-shield-check-line"></i> <strong>For ISV:</strong> Restrict source distribution while
+                leveraging <code>includeSourceInSymbolFile</code> or <code>[NonDebuggable]</code> for targeted
+                extensibility.
+            </li>
+            <li>
+                <i class="ri-git-repository-line"></i> <strong>For Core Frameworks:</strong> Enable symbol source
+                inclusion so integrators can read event contracts effortlessly without leaking standalone project files.
+            </li>
+        </ul>
+    </section>
+</div>
