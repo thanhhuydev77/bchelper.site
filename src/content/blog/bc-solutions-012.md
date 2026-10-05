@@ -1,6 +1,6 @@
 ---
 id: BC-SOLUTIONS-012
-title: 'Protecting Your IP vs. Maintainability: resourceExposurePolicy'
+title: 'resourceExposurePolicy: Hide Source Code or Allow Debugging?'
 date: 2026-10-05
 excerpt: 'A practical guide to mastering resourceExposurePolicy in Business Central: protecting your IP without sacrificing debugging and integration.'
 tags:
@@ -12,10 +12,6 @@ format: html
 ---
 
 <div class="container">
-    <header>
-        <h1>resourceExposurePolicy: Hide Source Code or Allow Debugging?</h1>
-    </header>
-
     <section>
         <h2><i class="ri-information-line"></i> Background</h2>
         <p>When building apps in Business Central, developers often face a dilemma: <strong>protecting proprietary code/logic</strong> versus <strong>opening it up for partners and clients to debug and integrate</strong>. All of these permissions are controlled directly via the <strong><code>resourceExposurePolicy</code></strong> setting in the <code>app.json</code> file.</p>
