@@ -134,10 +134,10 @@ end;</code></pre>
     <section>
         <h2><i class="ri-thumb-up-line"></i> Pros and Cons</h2>
         <div class="pro-list">
-            <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Early Feature Adoption:</strong> Test cutting-edge platform methods in Sandbox without blocking Production deployments.</p>
-            <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Zero Code Debt:</strong> Eliminates manual comparison workarounds that often remain permanently in codebases.</p>
-            <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Single Unified Branch:</strong> Prevents Git branch fragmentation across development and release pipelines.</p>
-            <p><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Frictionless Cutover:</strong> Flip the symbol in <code>app.json</code> when Production upgrades to activate new capabilities.</p>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Early Feature Adoption:</strong> Test cutting-edge platform methods in Sandbox without blocking Production deployments.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Zero Code Debt:</strong> Eliminates manual comparison workarounds that often remain permanently in codebases.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Single Unified Branch:</strong> Prevents Git branch fragmentation across development and release pipelines.</li>
+            <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Frictionless Cutover:</strong> Flip the symbol in <code>app.json</code> when Production upgrades to activate new capabilities.</li>
         </div>
         <div class="highlight-box" style="margin-top:15px; border-left-color: #718096; background: #f7fafc;">
             <strong><i class="ri-error-warning-line"></i> Trade-offs:</strong>
@@ -153,5 +153,3 @@ end;</code></pre>
         <p>Version disparity across Business Central Cloud environments is standard practice. Rather than creating temporary workarounds, conditional directives let you write modern code today, produce clean production builds immediately, and switch on new platform capabilities with a single configuration flag when ready.</p>
     </section>
 </div>
-
-
