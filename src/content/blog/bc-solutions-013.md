@@ -12,7 +12,6 @@ draft: false
 format: html
 ---
 
-
 <div class="container">
     <section>
         <h2><i class="ri-information-line"></i> Background</h2>
