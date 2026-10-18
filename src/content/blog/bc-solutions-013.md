@@ -138,10 +138,9 @@ end;</code></pre>
             <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Zero Code Debt:</strong> Eliminates manual comparison workarounds that often remain permanently in codebases.</li>
             <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Single Unified Branch:</strong> Prevents Git branch fragmentation across development and release pipelines.</li>
             <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Frictionless Cutover:</strong> Flip the symbol in <code>app.json</code> when Production upgrades to activate new capabilities.</li>
-            <li><i class="ri-check-line" style="color:var(--failed-color)"></i> <strong>Code Clutter:</strong> Excessive nested <code>#if ... #endif</code> blocks can reduce inline readability if overused.</li>
-            <li><i class="ri-check-line" style="color:var(--failed-color)"></i> <strong>Build Vigilance:</strong> CI/CD workflows must ensure the correct preprocessor symbols are mapped to the intended deployment environment.</li>
-            </ul>
-        </div>
+            <li><i class="ri-check-line" style="color:var(--fail-color)"></i> <strong>Code Clutter:</strong> Excessive nested <code>#if ... #endif</code> blocks can reduce inline readability if overused.</li>
+            <li><i class="ri-check-line" style="color:var(--fail-color)"></i> <strong>Build Vigilance:</strong> CI/CD workflows must ensure the correct preprocessor symbols are mapped to the intended deployment environment.</li>
+        </ul>
     </section>
 
     <section>
