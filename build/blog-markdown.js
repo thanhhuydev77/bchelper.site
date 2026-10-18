@@ -110,6 +110,40 @@ function wrapSections(html) {
     .join('\n')
 }
 
+// Hand-written posts are listed in src/data/blogs.js; read their metadata from source
+function loadLegacyPosts(root) {
+  const file = path.resolve(root, 'src/data/blogs.js')
+  if (!fs.existsSync(file)) return []
+  const match = fs.readFileSync(file, 'utf8').match(/const htmlPosts = (\[[\s\S]*?\n\])/)
+  return match ? new Function(`return ${match[1]}`)() : []
+}
+
+// Rough HTML -> Markdown-ish plain text, good enough for LLMs
+function htmlToText(html) {
+  const strip = s => s.replace(/<[^>]+>/g, '')
+  const decode = s => s
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, '\'')
+    .replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&')
+  // Code blocks are set aside so their indentation survives the whitespace cleanup
+  const code = []
+  const body = html.match(/<body[^>]*>([\s\S]*)<\/body>/i)?.[1] ?? html
+  return decode(body
+    .replace(/\r/g, '')
+    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, '')
+    .replace(/<div class="code-title">([\s\S]*?)<\/div>/gi, '\n**$1**\n')
+    .replace(/<pre[^>]*>([\s\S]*?)<\/pre>/gi, (_, c) => `\n\0${code.push(strip(c).replace(/^\n+|\s+$/g, '')) - 1}\0\n`)
+    .replace(/<h([1-6])[^>]*>([\s\S]*?)<\/h\1>/gi, (_, n, t) => `\n${'#'.repeat(Number(n))} ${strip(t).trim()}\n`)
+    .replace(/<li[^>]*>\s*/gi, '\n- ')
+    .replace(/<img[^>]*alt="([^"]*)"[^>]*>/gi, '[Image: $1]')
+    .replace(/<\/(p|div|section|ul|ol|table|tr|header)>|<br\s*\/?>/gi, '\n')
+    .replace(/<\/t[dh]>/gi, ' | ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/^[ \t]+|[ \t]+$/gm, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim())
+    .replace(/\0(\d+)\0/g, (_, i) => `\`\`\`\n${decode(code[i])}\n\`\`\``)
+}
+
 function formatDate(value) {
   const date = value instanceof Date ? value : new Date(`${value}T00:00:00Z`)
   if (Number.isNaN(date.getTime())) return null
@@ -244,13 +278,47 @@ export default function blogMarkdown({ contentDir = 'src/content/blog', legacyDi
     },
 
     generateBundle() {
-      for (const post of loadPosts()) {
+      const posts = loadPosts()
+      for (const post of posts) {
         this.emitFile({
           type: 'asset',
           fileName: `blog/${post.slug}.html`,
           source: renderPage(post, renderBody(post)),
         })
       }
+
+      // llms.txt / llms-full.txt: plain-text index and content for AI crawlers,
+      // which usually don't run the Vue app behind /blog/<id>
+      const all = [
+        ...loadLegacyPosts(root).map(p => ({
+          ...p,
+          html: fs.readFileSync(path.resolve(root, legacyDir, path.basename(p.contentFile)), 'utf8'),
+        })),
+        ...posts.map(p => ({ ...p, html: renderPage(p, renderBody(p)) })),
+      ].sort((a, b) => Date.parse(b.date) - Date.parse(a.date))
+
+      const header = '# BC Helper\n\n> Blog and PowerShell script generators for Microsoft Dynamics 365 Business Central developers: AL programming solutions, performance patterns, and on-premise/Docker administration.\n'
+      const index = all.map(p => `- [${p.title}](${SITE_URL}${p.contentFile})${p.excerpt ? `: ${p.excerpt}` : ''} (${p.date})`)
+      this.emitFile({
+        type: 'asset',
+        fileName: 'llms.txt',
+        source: `${header}\nFull text of every post: ${SITE_URL}/llms-full.txt\n\n## Blog posts\n\n${index.join('\n')}\n`,
+      })
+
+      const full = all.map(p => [
+        `# ${p.title}`,
+        `URL: ${SITE_URL}/blog/${encodeURIComponent(p.id)}`,
+        `Date: ${p.date}`,
+        ...(p.tags?.length ? [`Tags: ${p.tags.join(', ')}`] : []),
+        ...(p.excerpt ? [`Summary: ${p.excerpt}`] : []),
+        '',
+        htmlToText(p.html).replace(/^# .*\n+/, ''),
+      ].join('\n'))
+      this.emitFile({
+        type: 'asset',
+        fileName: 'llms-full.txt',
+        source: `${header}\n${full.join('\n\n---\n\n')}\n`,
+      })
     },
 
     writeBundle() {
