@@ -133,12 +133,12 @@ end;</code></pre>
 
     <section>
         <h2><i class="ri-thumb-up-line"></i> Pros and Cons</h2>
-        <div class="pro-list">
+        <ul  class="pro-list">
             <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Early Feature Adoption:</strong> Test cutting-edge platform methods in Sandbox without blocking Production deployments.</li>
             <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Zero Code Debt:</strong> Eliminates manual comparison workarounds that often remain permanently in codebases.</li>
             <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Single Unified Branch:</strong> Prevents Git branch fragmentation across development and release pipelines.</li>
             <li><i class="ri-check-line" style="color:var(--success-color)"></i> <strong>Frictionless Cutover:</strong> Flip the symbol in <code>app.json</code> when Production upgrades to activate new capabilities.</li>
-        </div>
+        </ul >
         <div class="highlight-box" style="margin-top:15px; border-left-color: #718096; background: #f7fafc;">
             <strong><i class="ri-error-warning-line"></i> Trade-offs:</strong>
             <ul>
