@@ -14,10 +14,6 @@ format: html
 
 
 <div class="container">
-    <header>
-        <h1>Using Conditional Directives to Adopt New AL Features Early Without Breaking Production</h1>
-    </header>
-
     <section>
         <h2><i class="ri-information-line"></i> Background</h2>
         <p>When developing for Microsoft Dynamics 365 Business Central Cloud, managing different platform versions across tenants is a constant reality:</p>
