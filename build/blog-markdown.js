@@ -9,7 +9,7 @@ import container from 'markdown-it-container'
 
 const VIRTUAL_ID = 'virtual:blog-posts'
 const RESOLVED_VIRTUAL_ID = '\0' + VIRTUAL_ID
-const SITE_URL = 'https://alexxbc.site'
+const SITE_URL = 'https://www.alexxbc.site'
 
 const escapeHtml = MarkdownIt().utils.escapeHtml
 
